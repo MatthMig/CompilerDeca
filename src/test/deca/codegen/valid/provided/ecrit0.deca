@@ -6,7 +6,7 @@
 //    ok
 //
 // Historique:
-//    cree le @DATE@
+//    cree le 21/04/2023
 
 {
    println("ok") ; 

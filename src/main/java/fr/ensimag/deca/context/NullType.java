@@ -7,7 +7,7 @@ import fr.ensimag.ima.pseudocode.DVal;
 /**
  *
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class NullType extends Type {
 

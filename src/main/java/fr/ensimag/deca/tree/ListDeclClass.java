@@ -7,8 +7,8 @@ import org.apache.log4j.Logger;
 
 /**
  *
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl03
+ * @date 21/04/2023
  */
 public class ListDeclClass extends TreeList<AbstractDeclClass> {
     private static final Logger LOG = Logger.getLogger(ListDeclClass.class);

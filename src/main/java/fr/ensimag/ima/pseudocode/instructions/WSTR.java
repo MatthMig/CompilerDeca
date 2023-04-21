@@ -5,7 +5,7 @@ import fr.ensimag.ima.pseudocode.UnaryInstruction;
 
 /**
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class WSTR extends UnaryInstruction {
     public WSTR(ImmediateString op) {

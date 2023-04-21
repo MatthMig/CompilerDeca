@@ -4,7 +4,7 @@ package fr.ensimag.ima.pseudocode;
  * Immediate operand representing a string.
  * 
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class ImmediateString extends Operand {
     private String value;

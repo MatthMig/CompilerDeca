@@ -15,7 +15,7 @@ import static org.mockito.Mockito.*;
  * was done without using Mockito.
  *
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class TestPlusPlain {
     final Type INT = new IntType(null);

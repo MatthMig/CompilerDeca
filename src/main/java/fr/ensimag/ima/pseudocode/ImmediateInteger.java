@@ -4,7 +4,7 @@ package fr.ensimag.ima.pseudocode;
  * Immediate operand representing an integer.
  * 
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class ImmediateInteger extends DVal {
     private int value;

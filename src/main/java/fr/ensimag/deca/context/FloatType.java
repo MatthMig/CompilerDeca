@@ -7,7 +7,7 @@ import fr.ensimag.ima.pseudocode.ImmediateFloat;
 /**
  *
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class FloatType extends Type {
 

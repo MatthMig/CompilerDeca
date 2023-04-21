@@ -12,8 +12,8 @@ import org.apache.commons.lang.Validate;
 
 /**
  *
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl03
+ * @date 21/04/2023
  */
 public class While extends AbstractInst {
     private AbstractExpr condition;

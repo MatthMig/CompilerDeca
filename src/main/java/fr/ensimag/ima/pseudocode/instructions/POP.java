@@ -6,7 +6,7 @@ import fr.ensimag.ima.pseudocode.UnaryInstructionToReg;
 /**
  *
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class POP extends UnaryInstructionToReg {
 

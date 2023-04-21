@@ -7,7 +7,7 @@ import org.apache.commons.lang.Validate;
  * Base class for instructions with 2 operands.
  *
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class BinaryInstruction extends Instruction {
     private Operand operand1, operand2;

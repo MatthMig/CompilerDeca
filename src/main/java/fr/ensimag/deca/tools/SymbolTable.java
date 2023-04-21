@@ -12,8 +12,8 @@ import java.util.Map;
  * method of Symbols can be used to define efficient HashMap (no string
  * comparison or hashing required).
  * 
- * @author @AUTHOR@
- * @date @DATE@
+ * @author gl03
+ * @date 21/04/2023
  */
 public class SymbolTable {
     private Map<String, Symbol> map = new HashMap<String, Symbol>();

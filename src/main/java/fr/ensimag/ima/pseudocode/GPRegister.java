@@ -4,7 +4,7 @@ package fr.ensimag.ima.pseudocode;
  * General Purpose Register operand (R0, R1, ... R15).
  * 
  * @author Ensimag
- * @date @DATE@
+ * @date 21/04/2023
  */
 public class GPRegister extends Register {
     /**
