@@ -11,6 +11,65 @@ options {
 @members {
 }
 
+OBRACE: '{';
+CBRACE: '}';
+SEMI: ';';
+COMMA: ',';
+EQUALS: '=';
+PRINT: 'print';
+OPARENT: '(';
+CPARENT: ')';
+PRINTLN: 'println';
+
 // Deca lexer rules.
-DUMMY_TOKEN: .; // A FAIRE : Règle bidon qui reconnait tous les caractères.
-                // A FAIRE : Il faut la supprimer et la remplacer par les vraies règles.
+//p.45
+// Identificateurs
+fragment DIGIT: '0' .. '9';
+fragment LETTER: 'a' .. 'z' | 'A' .. 'Z';
+IDENT: (LETTER | '$' | '_')(LETTER | '$' | '_' | DIGIT)*;
+
+// Symboles spéciaux
+
+// Littéraux entiers
+fragment POSITIVE_DIGIT: '1' .. '9';
+INT: '0'| (POSITIVE_DIGIT DIGIT*);
+
+// Littéraux flottants
+fragment NUM: DIGIT+;
+fragment SIGN: ('-' | '+')?;
+fragment EXP: ('E' | 'e') SIGN NUM;
+fragment FLOATSUF: ('F' | 'f')?;
+
+//// Decimal
+fragment DEC: NUM '.' NUM; 
+fragment FLOATDEC: (DEC | DEC EXP) FLOATSUF;
+
+//// Hex
+fragment HEXLETTER: 'A' .. 'F' | 'a' .. 'f';
+fragment DIGITHEX: DIGIT | HEXLETTER;
+fragment HEXPREF: '0x' | '0X';
+fragment NUMHEX: DIGITHEX+;
+fragment FLOATHEX: HEXPREF NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM FLOATSUF;
+FLOAT: FLOATHEX | FLOATDEC;
+
+
+// Skips
+SPACE:   ( 
+      ' '
+   |  '\t'
+   |  '\r'
+   |  '\n'
+   ) {
+      skip();
+   }
+;
+
+fragment LINE_COMMENT: '//' (. | '\n')*? '\n';
+fragment MULTI_COMMENT: '/*' .*? '*/';
+COMMENTS: (
+      LINE_COMMENT
+   |  MULTI_COMMENT
+   ) {
+      skip();
+   }
+;
