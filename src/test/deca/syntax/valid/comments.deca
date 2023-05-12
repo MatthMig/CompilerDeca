@@ -1,0 +1,22 @@
+// Quelques lignes
+// De commentaires
+// Ignorées
+///
+//
+/**/void main{
+/*Un commentaire 
+
+multiligne*/
+
+}
+
+/*
+
+Resultat attendu d'analyse syntaxique :
+
+    IDENT: [@0,61:64='void',<10>,6:4]
+    IDENT: [@1,66:69='main',<10>,6:9]
+    OBRACE: [@2,70:70='{',<1>,6:13]
+    CBRACE: [@3,105:105='}',<2>,11:0]
+
+*/

@@ -1,4 +1,4 @@
-// Description:
+/*// Description:
 //    tests de programme lexicalement correct.
 //
 // Resultats:
@@ -7,7 +7,7 @@
 //
 // Historique:
 //    cree le 21/04/2023
-
+*/
 idf _autre_idf
 {
 }

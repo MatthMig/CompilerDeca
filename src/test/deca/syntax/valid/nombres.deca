@@ -1,0 +1,8 @@
+// Tests de syntaxe de nombres
+
+0x0123456789.ABCDEFP+15F
+0xF0D.1p+1f
+14
+15.026f
+19.03
+0

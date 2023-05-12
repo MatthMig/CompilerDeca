@@ -30,10 +30,6 @@ IDENT: (LETTER | '$' | '_')(LETTER | '$' | '_' | DIGIT)*;
 
 // Symboles spéciaux
 
-// Littéraux entiers
-fragment POSITIVE_DIGIT: '1' .. '9';
-INT: '0'| (POSITIVE_DIGIT DIGIT*);
-
 // Littéraux flottants
 fragment NUM: DIGIT+;
 fragment SIGN: ('-' | '+')?;
@@ -52,6 +48,9 @@ fragment NUMHEX: DIGITHEX+;
 fragment FLOATHEX: HEXPREF NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM FLOATSUF;
 FLOAT: FLOATHEX | FLOATDEC;
 
+// Littéraux entiers
+fragment POSITIVE_DIGIT: '1' .. '9';
+INT: '0'| (POSITIVE_DIGIT DIGIT*);
 
 // Skips
 SPACE:   ( 
