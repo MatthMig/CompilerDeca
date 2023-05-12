@@ -43,6 +43,10 @@ public class CompilerOptions {
 
     
     public void parseArgs(String[] args) throws CLIException {
+
+        // On considère pour le rendu initial qu'il n'y aura que des "decac [fichier]"
+        sourceFiles.add(new File(args[0]));
+
         // A FAIRE : parcourir args pour positionner les options correctement.
         Logger logger = Logger.getRootLogger();
         // map command-line debug option to log4j's level.
@@ -67,7 +71,7 @@ public class CompilerOptions {
             logger.info("Java assertions disabled");
         }
 
-        throw new UnsupportedOperationException("not yet implemented");
+        // throw new UnsupportedOperationException("not yet implemented");
     }
 
     protected void displayUsage() {
