@@ -52,6 +52,10 @@ fragment NUMHEX: DIGITHEX+;
 fragment FLOATHEX: HEXPREF NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM FLOATSUF;
 FLOAT: FLOATHEX | FLOATDEC;
 
+// Strings
+fragment QUOTES: '"';
+fragment SINGLE_QUOTE: '\'';
+STRING: ( QUOTES .*? QUOTES ) | ( SINGLE_QUOTE .*? SINGLE_QUOTE ) ;
 
 // Skips
 SPACE:   ( 
