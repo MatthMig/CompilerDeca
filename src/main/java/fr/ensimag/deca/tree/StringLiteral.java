@@ -9,6 +9,9 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.ImmediateString;
 import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import java.io.PrintStream;
+
+import javax.swing.SwingWorker.StateValue;
+
 import org.apache.commons.lang.Validate;
 
 /**
@@ -34,7 +37,11 @@ public class StringLiteral extends AbstractStringLiteral {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        return this.getType();
+        //this.setType(compiler.environmentType.STRING);  // Problème ici
+        Type t = compiler.environmentType.STRING;
+        setType(t);
+        value = value.replace("\"", "");
+        return t;
         //throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -45,7 +52,7 @@ public class StringLiteral extends AbstractStringLiteral {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        //throw new UnsupportedOperationException("not yet implemented");
     }
 
     @Override

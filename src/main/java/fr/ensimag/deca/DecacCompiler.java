@@ -122,12 +122,11 @@ public class DecacCompiler {
  
 
     /** The global environment for types (and the symbolTable) */
-    public final EnvironmentType environmentType = new EnvironmentType(this);
     public final SymbolTable symbolTable = new SymbolTable();
+    public final EnvironmentType environmentType = new EnvironmentType(this);
 
     public Symbol createSymbol(String name) {
-        return null; // A FAIRE: remplacer par la ligne en commentaire ci-dessous
-        // return symbolTable.create(name);
+        return symbolTable.create(name);
     }
 
     /**
@@ -137,7 +136,10 @@ public class DecacCompiler {
      */
     public boolean compile() {
         String sourceFile = source.getAbsolutePath();
-        String destFile = null;
+        String[] path = sourceFile.split("/");
+        String sourceFileName = path[path.length-1].replace("deca", "ass");
+        path[path.length-1] = sourceFileName;
+        String destFile = String.join("/", path) ; // A modifier plus tard
         // A FAIRE: calculer le nom du fichier .ass à partir du nom du
         // A FAIRE: fichier .deca.
         PrintStream err = System.err;
@@ -198,7 +200,7 @@ public class DecacCompiler {
         prog.codeGenProgram(this);
         addComment("end main program");
         LOG.debug("Generated assembly code:" + nl + program.display());
-        LOG.info("Output file assembly file is: " + destName);
+        System.out.println("Output file assembly file is: " + destName);
 
         FileOutputStream fstream = null;
         try {
