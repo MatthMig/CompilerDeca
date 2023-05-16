@@ -95,9 +95,11 @@ decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
         }
       (EQUALS e=expr {
             init = new Initialization($e.tree);
+            setLocation($tree, $EQUALS);
         }
       )? {
             $tree = new DeclVar($t,$i.tree,init);
+            setLocation($tree, $i.start);
         }
     ;
 
@@ -191,6 +193,7 @@ assign_expr returns[AbstractExpr tree]
             assert($e.tree != null);
             assert($e2.tree != null);
             $tree = new Assign((AbstractLValue)$e.tree,$e2.tree);
+            setLocation($tree, $EQUALS);
         }
       | /* epsilon */ {
             assert($e.tree != null);
@@ -370,9 +373,11 @@ type returns[AbstractIdentifier tree]
 literal returns[AbstractExpr tree]
     : i=INT {
             $tree = new IntLiteral(Integer.parseInt($i.getText()));
+            setLocation($tree, $i);
         }
     | fd=FLOAT {
             $tree = new FloatLiteral(Float.parseFloat($fd.getText()));
+            setLocation($tree, $fd);
         }
     | s=STRING {
             $tree = new StringLiteral($s.getText());
@@ -391,6 +396,7 @@ literal returns[AbstractExpr tree]
 ident returns[AbstractIdentifier tree]
     : id=IDENT {
             $tree = new Identifier(getDecacCompiler().createSymbol($id.getText()));
+            setLocation($tree, $id);
         }
     ;
 
