@@ -14,7 +14,7 @@ import fr.ensimag.deca.context.*;
  */
 public class Main extends AbstractMain {
     private static final Logger LOG = Logger.getLogger(Main.class);
-    
+
     private ListDeclVar declVariables;
     private ListInst insts;
     public Main(ListDeclVar declVariables,
@@ -42,9 +42,10 @@ public class Main extends AbstractMain {
     protected void codeGenMain(DecacCompiler compiler) {
         // A FAIRE: traiter les déclarations de variables.
         compiler.addComment("Beginning of main instructions:");
+        declVariables.codeGenDeclVar(compiler);
         insts.codeGenListInst(compiler);
     }
-    
+
     @Override
     public void decompile(IndentPrintStream s) {
         s.println("{");
@@ -60,7 +61,7 @@ public class Main extends AbstractMain {
         declVariables.iter(f);
         insts.iter(f);
     }
- 
+
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         declVariables.prettyPrint(s, prefix, false);

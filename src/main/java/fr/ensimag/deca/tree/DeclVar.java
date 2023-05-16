@@ -11,6 +11,9 @@ import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.instructions.NEW;
+
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
 
@@ -53,6 +56,17 @@ public class DeclVar extends AbstractDeclVar {
         }
     }
 
+    @Override
+    public void codeGen(DecacCompiler compiler) {
+        // Compiler now knows he has this variable
+        DAddr addr = compiler.allocate();
+        ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
+        compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
+
+        // if (initialization.getClass() != NoInitialization ){
+        //     // STORE VALUE
+        // }
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
