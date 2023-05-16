@@ -13,6 +13,8 @@ import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.instructions.NEW;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.GPRegister;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -45,7 +47,7 @@ public class DeclVar extends AbstractDeclVar {
         this.initialization.verifyInitialization(compiler, t, localEnv, currentClass);
 
         VariableDefinition vardef = new VariableDefinition(t, getLocation());
-        TypeDefinition tdef = compiler.environmentType.defOfType(compiler.environmentType.INT.getName());
+        TypeDefinition tdef = compiler.environmentType.defOfType(type.getName());
         varName.setDefinition(vardef);
         type.setDefinition(tdef);
         try {
@@ -53,6 +55,14 @@ public class DeclVar extends AbstractDeclVar {
         } catch(DoubleDefException e) {
             String message = String.format("Variable %s already declared", varName.getName().getName());
             throw new ContextualError(message, getLocation());
+        }
+
+        if(this.initialization.getClass() != NoInitialization.class ){
+            if(((Initialization)this.initialization).getExpr().getClass() == Identifier.class){
+                if(((Identifier)((Initialization)this.initialization).getExpr()).getType() != varName.getDefinition().getType()){
+                    throw new ContextualError("trying to asign a var of type " + ((Identifier)((Initialization)this.initialization).getExpr()).getType() + " to a variable of type "+ varName.getDefinition().getType(), getLocation());
+                }
+            }
         }
     }
 
@@ -63,9 +73,10 @@ public class DeclVar extends AbstractDeclVar {
         ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
         compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
 
-        // if (initialization.getClass() != NoInitialization ){
-        //     // STORE VALUE
-        // }
+        if (initialization.getClass() != NoInitialization.class ){
+            this.initialization.codeGen(compiler);
+            compiler.addInstruction(new STORE(GPRegister.getR(1), addr));
+        }
     }
 
     @Override

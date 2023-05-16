@@ -4,6 +4,7 @@ import fr.ensimag.deca.context.Type;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -35,7 +36,7 @@ public class Assign extends AbstractBinaryExpr {
             ClassDefinition currentClass) throws ContextualError {
         Type t1 = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type t2 = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        if( t1 == compiler.environmentType.FLOAT && t2 == compiler.environmentType.INT || t1 == t2){
+        if( t1 == compiler.environmentType.FLOAT && t2 == compiler.environmentType.INT || t1 == t2) {
             this.setType(t1);
             return this.getType();
         }
@@ -47,6 +48,10 @@ public class Assign extends AbstractBinaryExpr {
         ExpDefinition varDef = compiler.getVar(((Identifier)this.getLeftOperand()).getName());
         DAddr leftAddr = varDef.getOperand();
         this.getRightOperand().codeGenInst(compiler);
+
+        if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
+            compiler.addInstruction(new FLOAT(GPRegister.getR(1), GPRegister.getR(1)));
+        }
         compiler.addInstruction(new STORE(GPRegister.getR(1), leftAddr));
     }
 

@@ -6,6 +6,8 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import net.bytebuddy.dynamic.scaffold.MethodGraph.Compiler;
+
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
 
@@ -35,7 +37,12 @@ public class Initialization extends AbstractInitialization {
     protected void verifyInitialization(DecacCompiler compiler, Type t,
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.expression.verifyExpr(compiler, localEnv, currentClass);
+    }
+
+    @Override
+    public void codeGen(DecacCompiler compiler) {
+        this.expression.codeGenInst(compiler);
     }
 
 
@@ -54,4 +61,9 @@ public class Initialization extends AbstractInitialization {
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         expression.prettyPrint(s, prefix, true);
     }
+
+    public AbstractExpr getExpr(){
+        return this.expression;
+    }
+
 }
