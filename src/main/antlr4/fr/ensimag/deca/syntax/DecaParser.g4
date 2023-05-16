@@ -85,13 +85,18 @@ list_decl_var[ListDeclVar l, AbstractIdentifier t]
     ;
 
 decl_var[AbstractIdentifier t] returns[AbstractDeclVar tree]
-@init   {
-        }
+@init {
+    AbstractInitialization init;
+}
     : i=ident {
+            AbstractIdentifier ai = $i.tree;
+            init = new NoInitialization();
         }
       (EQUALS e=expr {
+            init = new Initialization($e.tree);
         }
       )? {
+            $tree = new DeclVar($t,$i.tree,init);
         }
     ;
 
@@ -108,6 +113,7 @@ list_inst returns[ListInst tree]
 inst returns[AbstractInst tree]
     : e1=expr SEMI {
             assert($e1.tree != null);
+            $tree = $e1.tree;
         }
     | SEMI {
             $tree = new NoOperation();
@@ -183,6 +189,7 @@ assign_expr returns[AbstractExpr tree]
         EQUALS e2=assign_expr {
             assert($e.tree != null);
             assert($e2.tree != null);
+            $tree = new Assign((AbstractLValue)$e.tree,$e2.tree);
         }
       | /* epsilon */ {
             assert($e.tree != null);
@@ -325,6 +332,7 @@ select_expr returns[AbstractExpr tree]
 primary_expr returns[AbstractExpr tree]
     : ident {
             assert($ident.tree != null);
+            $tree = $ident.tree;
         }
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);
@@ -354,6 +362,7 @@ primary_expr returns[AbstractExpr tree]
 type returns[AbstractIdentifier tree]
     : ident {
             assert($ident.tree != null);
+            $tree = $ident.tree;
         }
     ;
 
@@ -380,6 +389,7 @@ literal returns[AbstractExpr tree]
 
 ident returns[AbstractIdentifier tree]
     : id=IDENT {
+            $tree = new Identifier(getDecacCompiler().createSymbol($id.getText()));
         }
     ;
 
