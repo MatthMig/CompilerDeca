@@ -48,8 +48,8 @@ public abstract class AbstractExpr extends AbstractInst {
 
     /**
      * Verify the expression for contextual error.
-     * 
-     * implements non-terminals "expr" and "lvalue" 
+     *
+     * implements non-terminals "expr" and "lvalue"
      *    of [SyntaxeContextuelle] in pass 3
      *
      * @param compiler  (contains the "env_types" attribute)
@@ -68,29 +68,29 @@ public abstract class AbstractExpr extends AbstractInst {
             throws ContextualError;
 
     /**
-     * Verify the expression in right hand-side of (implicit) assignments 
-     * 
+     * Verify the expression in right hand-side of (implicit) assignments
+     *
      * implements non-terminal "rvalue" of [SyntaxeContextuelle] in pass 3
      *
      * @param compiler  contains the "env_types" attribute
      * @param localEnv corresponds to the "env_exp" attribute
      * @param currentClass corresponds to the "class" attribute
-     * @param expectedType corresponds to the "type1" attribute            
+     * @param expectedType corresponds to the "type1" attribute
      * @return this with an additional ConvFloat if needed...
      */
     public AbstractExpr verifyRValue(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass, 
+            EnvironmentExp localEnv, ClassDefinition currentClass,
             Type expectedType)
             throws ContextualError {
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
-    
+
+
     @Override
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-                verifyExpr(compiler, localEnv, currentClass);
+        verifyExpr(compiler, localEnv, currentClass);
         //throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -122,7 +122,7 @@ public abstract class AbstractExpr extends AbstractInst {
     protected void codeGenInst(DecacCompiler compiler) {
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
+
 
     @Override
     protected void decompileInst(IndentPrintStream s) {
