@@ -14,6 +14,10 @@ import fr.ensimag.deca.context.VariableDefinition;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -167,9 +171,12 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        this.setType(localEnv.get(this.name).getType());
-        this.setDefinition(localEnv.get(this.name));
-        return this.getType();
+        if(localEnv.get(this.name).getType() != null){
+            this.setType(localEnv.get(this.name).getType());
+            this.setDefinition(localEnv.get(this.name));
+            return this.getType();
+        }
+        throw new ContextualError("undefined variable " + this.getName(),this.getLocation());
     }
 
     /**
@@ -193,6 +200,14 @@ public class Identifier extends AbstractIdentifier {
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         // leaf node => nothing to do
+    }
+
+    @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.R1));
+        if(this.getType() == compiler.environmentType.INT){
+            compiler.addInstruction(new WINT());
+        }
     }
 
     @Override

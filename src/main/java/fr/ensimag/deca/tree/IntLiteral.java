@@ -44,6 +44,11 @@ public class IntLiteral extends AbstractExpr {
     }
 
     @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(value, GPRegister.getR(1)));
+    }
+
+    @Override
     String prettyPrintNode() {
         return "Int (" + getValue() + ")";
     }
