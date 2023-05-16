@@ -31,6 +31,7 @@ public class ListInst extends TreeList<AbstractInst> {
                 // Aller chercher les verifyCHOSE et les implémenter
                 for(AbstractInst inst : this.getList()) {
                     inst.verifyInst(compiler, localEnv, currentClass, returnType);
+                    System.out.println(inst.prettyPrint());
                 }
         //throw new UnsupportedOperationException("not yet implemented");
     }

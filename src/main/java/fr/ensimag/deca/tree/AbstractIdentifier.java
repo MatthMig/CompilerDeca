@@ -56,7 +56,7 @@ public abstract class AbstractIdentifier extends AbstractLValue {
      *             if the definition is not a method definition.
      */
     public abstract MethodDefinition getMethodDefinition();
-
+    //getVariableDefinition
     public abstract SymbolTable.Symbol getName();
 
     /**
