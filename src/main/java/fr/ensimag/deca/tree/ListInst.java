@@ -9,7 +9,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
 
 /**
- * 
+ *
  * @author gl03
  * @date 21/04/2023
  */
@@ -19,11 +19,11 @@ public class ListInst extends TreeList<AbstractInst> {
      * Implements non-terminal "list_inst" of [SyntaxeContextuelle] in pass 3
      * @param compiler contains "env_types" attribute
      * @param localEnv corresponds to "env_exp" attribute
-     * @param currentClass 
+     * @param currentClass
      *          corresponds to "class" attribute (null in the main bloc).
      * @param returnType
      *          corresponds to "return" attribute (void in the main bloc).
-     */    
+     */
     public void verifyListInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
@@ -31,7 +31,6 @@ public class ListInst extends TreeList<AbstractInst> {
                 // Aller chercher les verifyCHOSE et les implémenter
                 for(AbstractInst inst : this.getList()) {
                     inst.verifyInst(compiler, localEnv, currentClass, returnType);
-                    System.out.println(inst.prettyPrint());
                 }
         //throw new UnsupportedOperationException("not yet implemented");
     }

@@ -25,7 +25,7 @@ import org.apache.log4j.Logger;
  * @date 21/04/2023
  */
 public class Identifier extends AbstractIdentifier {
-    
+
     @Override
     protected void checkDecoration() {
         if (getDefinition() == null) {
@@ -41,10 +41,10 @@ public class Identifier extends AbstractIdentifier {
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a
      * ClassDefinition.
-     * 
+     *
      * This method essentially performs a cast, but throws an explicit exception
      * when the cast fails.
-     * 
+     *
      * @throws DecacInternalError
      *             if the definition is not a class definition.
      */
@@ -63,10 +63,10 @@ public class Identifier extends AbstractIdentifier {
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a
      * MethodDefinition.
-     * 
+     *
      * This method essentially performs a cast, but throws an explicit exception
      * when the cast fails.
-     * 
+     *
      * @throws DecacInternalError
      *             if the definition is not a method definition.
      */
@@ -85,10 +85,10 @@ public class Identifier extends AbstractIdentifier {
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a
      * FieldDefinition.
-     * 
+     *
      * This method essentially performs a cast, but throws an explicit exception
      * when the cast fails.
-     * 
+     *
      * @throws DecacInternalError
      *             if the definition is not a field definition.
      */
@@ -107,10 +107,10 @@ public class Identifier extends AbstractIdentifier {
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a
      * VariableDefinition.
-     * 
+     *
      * This method essentially performs a cast, but throws an explicit exception
      * when the cast fails.
-     * 
+     *
      * @throws DecacInternalError
      *             if the definition is not a field definition.
      */
@@ -128,10 +128,10 @@ public class Identifier extends AbstractIdentifier {
 
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a ExpDefinition.
-     * 
+     *
      * This method essentially performs a cast, but throws an explicit exception
      * when the cast fails.
-     * 
+     *
      * @throws DecacInternalError
      *             if the definition is not a field definition.
      */
@@ -167,8 +167,9 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+        this.setType(localEnv.get(this.name).getType());
+        this.setDefinition(localEnv.get(this.name));
         return this.getType();
-                //throw new UnsupportedOperationException("not yet implemented");
     }
 
     /**
@@ -178,10 +179,9 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyType(DecacCompiler compiler) throws ContextualError {
         return compiler.environmentType.defOfType(this.name).getType();
-        //throw new UnsupportedOperationException("not yet implemented");
     }
-    
-    
+
+
     private Definition definition;
 
 
