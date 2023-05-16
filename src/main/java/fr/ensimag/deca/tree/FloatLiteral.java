@@ -41,13 +41,18 @@ public class FloatLiteral extends AbstractExpr {
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
         this.setType(compiler.environmentType.FLOAT);
-        return getType();     
+        return getType();
     }
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(value, GPRegister.getR(1)));
         compiler.addInstruction(new WFLOAT());
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(value, GPRegister.getR(1)));
     }
 
     @Override

@@ -16,6 +16,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 
 import java.io.PrintStream;
@@ -171,7 +172,7 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        if(localEnv.get(this.name).getType() != null){
+        if(localEnv.get(this.name) != null){
             this.setType(localEnv.get(this.name).getType());
             this.setDefinition(localEnv.get(this.name));
             return this.getType();
@@ -185,7 +186,10 @@ public class Identifier extends AbstractIdentifier {
      */
     @Override
     public Type verifyType(DecacCompiler compiler) throws ContextualError {
-        return compiler.environmentType.defOfType(this.name).getType();
+        if(compiler.environmentType.defOfType(this.name) != null){
+            return compiler.environmentType.defOfType(this.name).getType();
+        }
+        throw new ContextualError("class " + this.getName() + " doesn't exist", getLocation());
     }
 
 
@@ -208,6 +212,14 @@ public class Identifier extends AbstractIdentifier {
         if(this.getType() == compiler.environmentType.INT){
             compiler.addInstruction(new WINT());
         }
+        if(this.getType() == compiler.environmentType.FLOAT){
+            compiler.addInstruction(new WFLOAT());
+        }
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.R1));
     }
 
     @Override
