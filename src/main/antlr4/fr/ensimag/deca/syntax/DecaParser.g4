@@ -139,10 +139,14 @@ inst returns[AbstractInst tree]
         }
     | if_then_else {
             assert($if_then_else.tree != null);
+            $tree = $if_then_else.tree;
+            setLocation($tree, $if_then_else.start);
         }
     | WHILE OPARENT condition=expr CPARENT OBRACE body=list_inst CBRACE {
             assert($condition.tree != null);
             assert($body.tree != null);
+            $tree = new While($expr.tree, $body.tree);
+            setLocation($tree, $WHILE);
         }
     | RETURN expr SEMI {
             assert($expr.tree != null);
@@ -151,13 +155,24 @@ inst returns[AbstractInst tree]
 
 if_then_else returns[IfThenElse tree]
 @init {
+    ListInst dernierElse = new ListInst();
+    ListInst tmpElse = new ListInst();
 }
     : if1=IF OPARENT condition=expr CPARENT OBRACE li_if=list_inst CBRACE {
+        $tree = new IfThenElse($condition.tree, $li_if.tree, dernierElse);
         }
       (ELSE elsif=IF OPARENT elsif_cond=expr CPARENT OBRACE elsif_li=list_inst CBRACE {
+        IfThenElse elsif = new IfThenElse($condition.tree, $elsif_li.tree, tmpElse);
+        dernierElse.add(elsif);
+        dernierElse = tmpElse;
+        setLocation(elsif, $elsif);
         }
       )*
       (ELSE OBRACE li_else=list_inst CBRACE {
+        for(AbstractInst inst : $li_else.tree.getList()) {
+            dernierElse.add(inst);
+        }
+        setLocation(dernierElse, $ELSE);
         }
       )?
     ;
@@ -230,6 +245,8 @@ eq_neq_expr returns[AbstractExpr tree]
             $tree = $e.tree;
         }
     | e1=eq_neq_expr EQEQ e2=inequality_expr {
+            $tree = new Equals($e1.tree, $e2.tree);
+            setLocation($tree, $e1.start);
             assert($e1.tree != null);
             assert($e2.tree != null);
         }

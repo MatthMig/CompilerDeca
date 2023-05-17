@@ -16,10 +16,19 @@ CBRACE: '}';
 SEMI: ';';
 COMMA: ',';
 EQUALS: '=';
-PRINT: 'print';
 OPARENT: '(';
 CPARENT: ')';
+PRINT: 'print';
 PRINTLN: 'println';
+READINT: 'readInt';
+
+// Conditions
+EQEQ: '==';
+
+// Statements
+WHILE: 'while';
+IF: 'if';
+ELSE: 'else';
 
 // Deca lexer rules.
 //p.45
