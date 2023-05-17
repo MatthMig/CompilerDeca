@@ -20,7 +20,17 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        Type t1 = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+        Type t2 = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+        if(t1 != t2) {
+            throw new ContextualError(
+                String.format("Cannot compare %s with %s because types are different", t1, t2)
+                , getLocation()
+            );
+        }
+        
+        setType(compiler.environmentType.BOOLEAN);
+        return getType();
     }
 
 
