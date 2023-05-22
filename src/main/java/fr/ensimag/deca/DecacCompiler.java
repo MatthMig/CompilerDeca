@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.DecacInternalError;
+import fr.ensimag.deca.tools.LabelManager;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
@@ -49,7 +50,9 @@ public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private int varCount = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
-
+    
+    private final LabelManager labelManager = new LabelManager();
+    
     /**
      * Portable newline character.
      */
@@ -59,6 +62,14 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.source = source;
+    }
+
+    public Label[] createWhileLabels() {
+        return labelManager.createWhileLabels();
+    }
+
+    public Label[] createIfLabels() {
+        return labelManager.createIfLables();
     }
 
     /**

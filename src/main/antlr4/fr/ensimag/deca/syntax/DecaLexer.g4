@@ -23,6 +23,7 @@ PRINTLN: 'println';
 READINT: 'readInt';
 
 // Conditions
+EXCLAM: '!';
 EQEQ: '==';
 
 // Statements
