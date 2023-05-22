@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -32,6 +33,4 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
         setType(compiler.environmentType.BOOLEAN);
         return getType();
     }
-
-
 }

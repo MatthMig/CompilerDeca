@@ -162,7 +162,7 @@ if_then_else returns[IfThenElse tree]
         $tree = new IfThenElse($condition.tree, $li_if.tree, dernierElse);
         }
       (ELSE elsif=IF OPARENT elsif_cond=expr CPARENT OBRACE elsif_li=list_inst CBRACE {
-        IfThenElse elsif = new IfThenElse($condition.tree, $elsif_li.tree, tmpElse);
+        IfThenElse elsif = new IfThenElse($elsif_cond.tree, $elsif_li.tree, tmpElse);
         dernierElse.add(elsif);
         dernierElse = tmpElse;
         setLocation(elsif, $elsif);
@@ -324,6 +324,8 @@ unary_expr returns[AbstractExpr tree]
         }
     | op=EXCLAM e=unary_expr {
             assert($e.tree != null);
+            $tree = new Not($e.tree);
+            setLocation($tree, $op);
         }
     | select_expr {
             assert($select_expr.tree != null);
@@ -361,6 +363,7 @@ primary_expr returns[AbstractExpr tree]
         }
     | OPARENT expr CPARENT {
             assert($expr.tree != null);
+            $tree = $expr.tree;
         }
     | READINT OPARENT CPARENT {
         }

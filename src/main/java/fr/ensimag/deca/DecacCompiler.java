@@ -51,7 +51,7 @@ public class DecacCompiler {
     private int varCount = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     
-    public final LabelManager labelManager = new LabelManager();
+    private final LabelManager labelManager = new LabelManager();
     
     /**
      * Portable newline character.
@@ -64,8 +64,12 @@ public class DecacCompiler {
         this.source = source;
     }
 
-    public Label createLabel() {
+    public Label[] createWhileLabels() {
+        return labelManager.createWhileLabels();
+    }
 
+    public Label[] createIfLabels() {
+        return labelManager.createIfLables();
     }
 
     /**

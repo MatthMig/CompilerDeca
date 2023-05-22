@@ -40,12 +40,12 @@ public class While extends AbstractInst {
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         //throw new UnsupportedOperationException("not yet implemented");
-        Label[] labels = compiler.labelManager.createWhileLabels();
-        compiler.add(new Line(labels[0]));
-        condition.codeGenInst(compiler);
-        compiler.addInstruction(new BRA(labels[0]), null);
-        body.codeGenListInst(compiler);
-        compiler.add(new Line(labels[1]));
+        Label[] labels = compiler.createWhileLabels();
+        compiler.addInstruction(new BRA(labels[1]), null); 
+        compiler.add(new Line(labels[0]));                          // while_X:
+        body.codeGenListInst(compiler);                             // code corps de la boucle
+        compiler.add(new Line(labels[1]));                          // cond_while_X
+        condition.codeGenCondition(compiler, false, labels[0]);                            // code condition (CMP % % + BCC end_while_X)
 
         // BRA label2
         // label1:
