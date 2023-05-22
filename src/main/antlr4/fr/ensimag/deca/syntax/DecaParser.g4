@@ -162,6 +162,7 @@ if_then_else returns[IfThenElse tree]
         $tree = new IfThenElse($condition.tree, $li_if.tree, dernierElse);
         }
       (ELSE elsif=IF OPARENT elsif_cond=expr CPARENT OBRACE elsif_li=list_inst CBRACE {
+        tmpElse = new ListInst();
         IfThenElse elsif = new IfThenElse($elsif_cond.tree, $elsif_li.tree, tmpElse);
         dernierElse.add(elsif);
         dernierElse = tmpElse;
@@ -264,6 +265,8 @@ inequality_expr returns[AbstractExpr tree]
     | e1=inequality_expr LEQ e2=sum_expr {
             assert($e1.tree != null);
             assert($e2.tree != null);
+            $tree = new LowerOrEqual($e1.tree, $e2.tree);
+            setLocation($tree, $e1.start);
         }
     | e1=inequality_expr GEQ e2=sum_expr {
             assert($e1.tree != null);

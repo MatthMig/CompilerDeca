@@ -26,6 +26,7 @@ READINT: 'readInt';
 EXCLAM: '!';
 EQEQ: '==';
 LT: '<';
+LEQ: '<=';
 
 // Statements
 WHILE: 'while';
