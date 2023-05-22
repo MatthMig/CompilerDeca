@@ -366,6 +366,8 @@ primary_expr returns[AbstractExpr tree]
             $tree = $expr.tree;
         }
     | READINT OPARENT CPARENT {
+            $tree = new ReadInt();
+            setLocation($tree, $READINT.start);
         }
     | READFLOAT OPARENT CPARENT {
         }
