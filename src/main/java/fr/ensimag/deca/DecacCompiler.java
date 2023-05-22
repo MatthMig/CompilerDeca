@@ -177,6 +177,8 @@ public class DecacCompiler {
         String destFile = String.join("/", path) ; // A modifier plus tard
         // A FAIRE: calculer le nom du fichier .ass à partir du nom du
         // A FAIRE: fichier .deca.
+
+
         PrintStream err = System.err;
         PrintStream out = System.out;
         LOG.debug("Compiling file " + sourceFile + " to assembly file " + destFile);
@@ -228,14 +230,24 @@ public class DecacCompiler {
         assert(prog.checkAllLocations());
 
 
-        prog.verifyProgram(this);
-        assert(prog.checkAllDecorations());
 
         addComment("start main program");
-        prog.codeGenProgram(this);
-        addComment("end main program");
-        LOG.debug("Generated assembly code:" + nl + program.display());
-        System.out.println("Output file assembly file is: " + destName);
+        if(this.compilerOptions.getPrintTree()){
+            prog.prettyPrint(System.out);
+        }
+        else if(this.compilerOptions.getPrintContext()){
+            prog.verifyProgram(this);
+            assert(prog.checkAllDecorations());
+            prog.prettyPrint(System.out);
+        }
+        else{
+            prog.verifyProgram(this);
+            assert(prog.checkAllDecorations());
+            prog.codeGenProgram(this);
+            addComment("end main program");
+            LOG.debug("Generated assembly code:" + nl + program.display());
+            System.out.println("Output file assembly file is: " + destName);
+        }
 
         FileOutputStream fstream = null;
         try {

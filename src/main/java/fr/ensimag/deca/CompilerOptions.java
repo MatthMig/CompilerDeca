@@ -31,7 +31,15 @@ public class CompilerOptions {
     public boolean getPrintBanner() {
         return printBanner;
     }
-    
+
+    public boolean getPrintTree(){
+        return printTree;
+    }
+
+    public boolean getPrintContext(){
+        return printContext;
+    }
+        
     public List<File> getSourceFiles() {
         return Collections.unmodifiableList(sourceFiles);
     }
@@ -39,13 +47,27 @@ public class CompilerOptions {
     private int debug = 0;
     private boolean parallel = false;
     private boolean printBanner = false;
+    private boolean printTree = false;
+    private boolean printContext = false;
     private List<File> sourceFiles = new ArrayList<File>();
 
     
     public void parseArgs(String[] args) throws CLIException {
 
-        // On considère pour le rendu initial qu'il n'y aura que des "decac [fichier]"
-        sourceFiles.add(new File(args[0]));
+        for(int i = 0 ; i < args.length ; i++){
+            String arg = args[i];
+            if(arg.equals("-p")){
+                printTree = true;
+            }
+
+            else if(arg.equals("-v")){
+                printContext = true;
+            }
+
+            else {
+                sourceFiles.add(new File(args[i]));
+            }
+        }
 
         // A FAIRE : parcourir args pour positionner les options correctement.
         Logger logger = Logger.getRootLogger();
