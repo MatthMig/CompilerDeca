@@ -144,7 +144,7 @@ public abstract class AbstractExpr extends AbstractInst {
         }
     }
 
-    public void codeGenCondition(DecacCompiler compiler, Boolean trueOrFalse, Label label) {
+    public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 }
