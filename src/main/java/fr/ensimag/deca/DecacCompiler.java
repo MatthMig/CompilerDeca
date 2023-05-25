@@ -232,13 +232,13 @@ public class DecacCompiler {
 
 
         addComment("start main program");
-        if(this.compilerOptions.getPrintTree()){
-            prog.prettyPrint(System.out);
+        if(this.compilerOptions.getVerifyOnly()){
+            prog.verifyProgram(this);
         }
-        else if(this.compilerOptions.getPrintContext()){
+        else if(this.compilerOptions.getDecompile()){
             prog.verifyProgram(this);
             assert(prog.checkAllDecorations());
-            prog.prettyPrint(System.out);
+            System.out.println(prog.decompile());
         }
         else{
             prog.verifyProgram(this);

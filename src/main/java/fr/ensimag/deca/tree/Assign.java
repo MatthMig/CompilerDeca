@@ -55,6 +55,8 @@ public class Assign extends AbstractBinaryExpr {
         compiler.addInstruction(new STORE(GPRegister.getR(1), leftAddr));
     }
 
+    public void decompile(IndentPrintStream s){
+    }
 
     @Override
     protected String getOperatorName() {
