@@ -1,6 +1,7 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -29,6 +30,13 @@ public class Not extends AbstractUnaryExpr {
     @Override
     public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
         this.getOperand().codeGenCondition(compiler, !neg, label);
+    }
+
+    @Override
+    public void decompile(IndentPrintStream s){
+        s.print(this.getOperatorName() + "(");
+        this.getOperand().decompile(s);
+        s.print(")");
     }
 
     @Override
