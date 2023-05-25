@@ -32,12 +32,12 @@ public class CompilerOptions {
         return printBanner;
     }
 
-    public boolean getPrintTree(){
-        return printTree;
+    public boolean getVerifyOnly(){
+        return verifyOnly;
     }
 
-    public boolean getPrintContext(){
-        return printContext;
+    public boolean getDecompile(){
+        return decompile;
     }
         
     public List<File> getSourceFiles() {
@@ -47,8 +47,8 @@ public class CompilerOptions {
     private int debug = 0;
     private boolean parallel = false;
     private boolean printBanner = false;
-    private boolean printTree = false;
-    private boolean printContext = false;
+    private boolean verifyOnly = false;
+    private boolean decompile = false;
     private List<File> sourceFiles = new ArrayList<File>();
 
     
@@ -56,12 +56,12 @@ public class CompilerOptions {
 
         for(int i = 0 ; i < args.length ; i++){
             String arg = args[i];
-            if(arg.equals("-p")){
-                printTree = true;
+            if(arg.equals("-v")){
+                verifyOnly = true;
             }
 
-            else if(arg.equals("-v")){
-                printContext = true;
+            else if(arg.equals("-p")){
+                decompile = true;
             }
 
             else {
