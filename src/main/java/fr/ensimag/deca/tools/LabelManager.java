@@ -6,6 +6,7 @@ public class LabelManager {
     
     private int whileCount;
     private int ifCount;
+    private int ifOnlyCount;
 
     public LabelManager() {
         whileCount = 0;
@@ -27,4 +28,9 @@ public class LabelManager {
         ifCount++;
         return l;
     }
+
+	public Label createIfLabel() {
+        ifOnlyCount++;
+        return new Label("if_only_" + ifOnlyCount);
+	}
 }

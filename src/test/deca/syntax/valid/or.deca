@@ -1,0 +1,12 @@
+{
+    
+    int age;
+    int vieux = 64;
+    print("Votre âge : ");
+    age = readInt();
+    if(age < 18 || vieux < age) {
+        println("Vous n'êtes pas en mesure de travailler !");
+    } else {
+        println("Vous êtes probablement travailleur");
+    }
+}

@@ -4,8 +4,12 @@
         print("Goodbye");
     } else if (x == 2) {
         print("Hi");
-    } else {
+    } else if (x == 3) {
         print("Hello");
+    } else if (x == 4) {
+        print("Good morning");
+    } else {
+        print("Good afernoon");
     }
     print(" world!");
 }
