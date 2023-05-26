@@ -28,6 +28,7 @@ EQEQ: '==';
 LT: '<';
 LEQ: '<=';
 AND: '&&';
+OR: '||';
 
 // Statements
 WHILE: 'while';

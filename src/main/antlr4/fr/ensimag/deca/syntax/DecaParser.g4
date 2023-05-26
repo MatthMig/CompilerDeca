@@ -226,6 +226,8 @@ or_expr returns[AbstractExpr tree]
     | e1=or_expr OR e2=and_expr {
             assert($e1.tree != null);
             assert($e2.tree != null);
+            $tree = new Or($e1.tree, $e2.tree);
+            setLocation($tree, $OR);
        }
     ;
 
