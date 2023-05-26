@@ -72,6 +72,11 @@ public class DecacCompiler {
         return labelManager.createIfLables();
     }
 
+
+    public Label createIfLabel() {
+        return labelManager.createIfLabel();
+    }
+
     /**
      * Source file associated with this compiler instance.
      */

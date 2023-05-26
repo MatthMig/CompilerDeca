@@ -27,7 +27,9 @@ public class Or extends AbstractOpBool {
         // Vérifier la condition de gauche
         //  => si vrai, on execute le corps de la condition
         //  => sinon on vérifie le membre de droite
-        getLeftOperand().codeGenCondition(compiler, neg, label);
+        Label ifLabel = compiler.createIfLabel();
+        getLeftOperand().codeGenCondition(compiler, !neg, ifLabel);
         getRightOperand().codeGenCondition(compiler, neg, label);
+        compiler.addLabel(ifLabel);
     }
 }
