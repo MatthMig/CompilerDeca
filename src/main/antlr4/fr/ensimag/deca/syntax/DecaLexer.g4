@@ -27,6 +27,7 @@ EXCLAM: '!';
 EQEQ: '==';
 LT: '<';
 LEQ: '<=';
+AND: '&&';
 
 // Statements
 WHILE: 'while';
