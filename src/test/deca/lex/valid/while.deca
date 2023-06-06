@@ -1,0 +1,10 @@
+{
+    int x = 0;
+    int y = 1;
+    while(!(x == y)) {
+        print("Hello");
+        x = 1;
+    }
+
+    print(" world!");
+}

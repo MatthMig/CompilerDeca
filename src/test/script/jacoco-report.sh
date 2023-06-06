@@ -1,5 +1,7 @@
 #! /bin/sh
 
+echo "Lancement du script "$0" ......"
+
 POM="$(dirname "$0")"/../../../pom.xml
 
 # If we're not in the root of the Maven project, then find it using

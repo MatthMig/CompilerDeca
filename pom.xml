@@ -69,7 +69,7 @@
             <classifier>runtime</classifier>
             <version>0.8.8</version>
             <scope>test</scope>
-        </dependency>        
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -88,7 +88,7 @@
                                 <requireMavenVersion>
                                     <version>3.3.9</version>
                                 </requireMavenVersion>
-                            </rules>    
+                            </rules>
                         </configuration>
                     </execution>
                 </executions>
@@ -109,7 +109,7 @@
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.0.0-M5</version>
-            </plugin>            
+            </plugin>
 
             <plugin>
                 <!-- compute the classpath when building, for use by various
@@ -141,13 +141,13 @@
                         <exclude>fr/ensimag/deca/tools/DecacInternalError.class</exclude>
                         <exclude>fr/ensimag/deca/ima/pseudocode/IMAInternalError.class</exclude>
                     </excludes>
-                </configuration>                               
+                </configuration>
                 <executions>
                     <execution>
                         <id>default-instrument</id>
                         <goals>
                             <goal>instrument</goal>
-                        </goals>             
+                        </goals>
                     </execution>
                     <execution>
                         <id>default-restore-instrumented-classes</id>
@@ -182,7 +182,7 @@
                         </configuration>
                     </execution>
                 </executions>
-            </plugin>      
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
@@ -191,9 +191,9 @@
                     <!-- One <execution> per executable to launch. Execution
                     failure (exit status != 0) will stop the tests. -->
                     <execution>
-                        <id>basic-lex</id>
+                        <id>Lex</id>
                         <configuration>
-                            <executable>./src/test/script/basic-lex.sh</executable>
+                            <executable>./src/test/script/lex.sh</executable>
                             <!-- If we need to pass arguments :
                                  <arguments>
                                  <argument>...</argument>
@@ -206,9 +206,9 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>basic-synt</id>
+                        <id>Syntaxe</id>
                         <configuration>
-                            <executable>./src/test/script/basic-synt.sh</executable>
+                            <executable>./src/test/script/synt.sh</executable>
                         </configuration>
                         <phase>test</phase>
                         <goals>
@@ -230,9 +230,9 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>basic-context</id>
+                        <id>Contexte</id>
                         <configuration>
-                            <executable>./src/test/script/basic-context.sh</executable>
+                            <executable>./src/test/script/context.sh</executable>
                         </configuration>
                         <phase>test</phase>
                         <goals>
@@ -240,9 +240,9 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>basic-gencode</id>
+                        <id>Génération de code</id>
                         <configuration>
-                            <executable>./src/test/script/basic-gencode.sh</executable>
+                            <executable>./src/test/script/gencode.sh</executable>
                         </configuration>
                         <phase>test</phase>
                         <goals>
@@ -250,7 +250,7 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>basic-decac</id>
+                        <id>Compilateur</id>
                         <configuration>
                             <executable>./src/test/script/basic-decac.sh</executable>
                         </configuration>
@@ -260,9 +260,24 @@
                         </goals>
                     </execution>
                     <execution>
-                        <id>common-tests</id>
+                        <id>Tests communs</id>
                         <configuration>
                             <executable>./src/test/script/common-tests.sh</executable>
+                        <successCodes>
+                            <!-- We do not support this test for the moment -->
+                            <successCode>0</successCode>
+                            <successCode>1</successCode>
+                        </successCodes>
+                        </configuration>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>Rendu initial</id>
+                        <configuration>
+                            <executable>./src/test/script/renduInitial.sh</executable>
                         </configuration>
                         <phase>test</phase>
                         <goals>

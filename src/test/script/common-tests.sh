@@ -1,5 +1,7 @@
 #! /bin/sh
 
+echo "Lancement du script "$0" ......"
+
 # Quelques tests que tous les compilateurs devraient passer.
 # Le code est volontairement peu illisible : ce n'est pas un exemple à
 # suivre pour écrire une belle base de tests.

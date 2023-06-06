@@ -1,0 +1,10 @@
+{
+    int x = readInt();
+    if (x <= 17) {
+        println("Vous êtes mineur");
+    } else if (x <= 60) {
+        println("Vous êtes majeur");
+    } else {
+        println("Vous être sûrement grand-parent");
+    }
+}
