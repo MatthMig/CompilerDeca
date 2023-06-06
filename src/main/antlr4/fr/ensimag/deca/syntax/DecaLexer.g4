@@ -30,6 +30,13 @@ LEQ: '<=';
 AND: '&&';
 OR: '||';
 
+PLUS: '+';
+MINUS: '-';
+TIMES: '*';
+SLASH: '/';
+PERCENT: '%';
+
+
 // Statements
 WHILE: 'while';
 IF: 'if';
