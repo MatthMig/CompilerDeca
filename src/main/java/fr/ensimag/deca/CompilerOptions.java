@@ -20,6 +20,7 @@ public class CompilerOptions {
     public static final int INFO  = 1;
     public static final int DEBUG = 2;
     public static final int TRACE = 3;
+
     public int getDebug() {
         return debug;
     }
@@ -44,7 +45,18 @@ public class CompilerOptions {
         return Collections.unmodifiableList(sourceFiles);
     }
 
+    // Getter allowing you to set maximum register count in options
+    public void setRMAX(int RMAX){
+        this.RMAX = RMAX;
+    }
+
+    // Getter returning RMAX value.
+    public int getRMAX(){
+        return this.RMAX;
+    }
+
     private int debug = 0;
+    private int RMAX = 16;
     private boolean parallel = false;
     private boolean printBanner = false;
     private boolean verifyOnly = false;
@@ -62,6 +74,21 @@ public class CompilerOptions {
 
             else if(arg.equals("-p")){
                 decompile = true;
+            }
+
+            else if(arg.equals("-r")){
+                try{         
+                    if(Integer.parseInt(args[i+1]) <= 16 && Integer.parseInt(args[i+1]) > 2){
+                        this.setRMAX(Integer.parseInt(args[i+1]) - 1);
+                        System.out.println("Nombre maximum de registre mis à " + Integer.parseInt(args[i+1])  + " les registres utilisables sont les registres R0 à R" + this.getRMAX() );
+                        i++;
+                    } else {
+                        throw new CLIException("L'option du compilateur -r ne prend en charge que les nombres positifs <= 16 et >= 2");
+                    }
+                }
+                catch(NumberFormatException nfe){
+                    throw new CLIException("L'option du compilateur -r ne prend en charge que les nombres");
+                }
             }
 
             else {

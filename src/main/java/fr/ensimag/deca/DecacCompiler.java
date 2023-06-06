@@ -50,7 +50,7 @@ public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private int varCount = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
-    
+
     private final LabelManager labelManager = new LabelManager();
     
     /**
@@ -75,6 +75,10 @@ public class DecacCompiler {
 
     public Label createIfLabel() {
         return labelManager.createIfLabel();
+    }
+
+    public int getRMAX(){
+        return compilerOptions.getRMAX();
     }
 
     /**
