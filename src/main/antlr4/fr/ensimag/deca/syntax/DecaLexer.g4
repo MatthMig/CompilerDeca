@@ -13,9 +13,6 @@ options {
 
 OBRACE: '{';
 CBRACE: '}';
-SEMI: ';';
-COMMA: ',';
-EQUALS: '=';
 OPARENT: '(';
 CPARENT: ')';
 PRINT: 'print';
@@ -25,8 +22,8 @@ READINT: 'readInt';
 // Conditions
 EXCLAM: '!';
 EQEQ: '==';
-LT: '<';
 LEQ: '<=';
+LT: '<';
 AND: '&&';
 OR: '||';
 
@@ -34,6 +31,10 @@ OR: '||';
 WHILE: 'while';
 IF: 'if';
 ELSE: 'else';
+
+SEMI: ';';
+COMMA: ',';
+EQUALS: '=';
 
 // Deca lexer rules.
 //p.45
