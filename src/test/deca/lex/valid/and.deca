@@ -1,0 +1,16 @@
+{
+    int age, genre;
+    print("Votre âge : ");
+    age = readInt();
+    print("Votre genre (0 homme, 1 femme) : ");
+    genre = readInt();
+    if (age < 18 && genre == 0) {
+        println("Vous êtes un garçon");
+    } else if (age < 18 && genre == 1) {
+        println("Vous êtes une fille");
+    } else if(genre == 0) {
+        println("Vous êtes un homme");
+    } else {
+        println("Vous êtes une femme");
+    }
+}

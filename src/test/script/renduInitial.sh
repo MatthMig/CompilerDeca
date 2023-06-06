@@ -1,5 +1,7 @@
 #!/bin/bash
 
+echo "Lancement du script "$0" ......"
+
 cd "$(dirname "$0")/../deca"
 root="$(pwd)"
 
