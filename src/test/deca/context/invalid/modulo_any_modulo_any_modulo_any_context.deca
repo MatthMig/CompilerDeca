@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test contextuellement incorrect de la modulo d'un any et d'un any puis en sommant un autre any dans une variable float.
+// 
+// Résultats :
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    float y= 3 % "bonjour" % 2.5;
+}

@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test contextuellement incorrect de la modulo d'un int et d'une comparaison dans une variable int
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int y= 3 % (2<3);
+}

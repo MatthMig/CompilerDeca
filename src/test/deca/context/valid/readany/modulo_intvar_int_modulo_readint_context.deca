@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test contextuellement correct de la modulo d'un int et d'un readInt dans une variable int
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int y= 3 % readInt();
+    print(y);
+}
