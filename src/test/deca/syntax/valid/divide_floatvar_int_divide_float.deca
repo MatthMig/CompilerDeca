@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test syntaxiquement correct de la division d'un int et d'un float dans une variable float
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 06/06/2023 par gl03
+
+
+{
+    float y=2/ 3.5;
+}
