@@ -69,7 +69,7 @@ public class DecacCompiler {
     }
 
     public Label[] createIfLabels() {
-        return labelManager.createIfLables();
+        return labelManager.createIfLabels();
     }
 
 

@@ -21,7 +21,7 @@ public class LabelManager {
         return l;
     }
 
-    public Label[] createIfLables() {
+    public Label[] createIfLabels() {
         Label[] l = new Label[2];
         l[0] = new Label("else_" + ifCount);
         l[1] = new Label("end_if_" + ifCount);
