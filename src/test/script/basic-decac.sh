@@ -58,3 +58,54 @@ do
     echo "----- OK -----"
     echo ""
 done
+
+echo ""
+echo "############# TEST DE L'OPTION DU COMPILATEUR -r X #############"
+echo ""
+
+rmax=16
+
+for i in `seq 1 20`
+do
+    if [ "$i" -le 16 ] && [ "$i" -gt 2 ]; 
+    then
+        for cas_de_test in src/test/deca/context/valid/*.deca
+        do
+            echo "----- Test de decac -r $1 pour le fichier $cas_de_test :  -----"
+            decac_moins_r=$(decac -r "$i" "$cas_de_test")
+
+            if [ "$?" -ne 0 ]; then
+                echo "ERREUR: decac -r "$i" a termine avec un status different de zero"
+                exit 1
+            fi
+
+            if [ "$decac_moins_r" = "" ]; then
+                echo "ERREUR: decac -r "$i" n'a produit aucune sortie"
+                exit 1
+            fi
+
+            if echo "$decac_moins_r" | grep -i -e "erreur" -e "error"; then
+                echo "ERREUR: La sortie de decac -r "$i" contient erreur ou error"
+                exit 1
+            fi
+
+            echo "----- OK -----"
+            echo ""
+        done
+
+    else
+        for cas_de_test in src/test/deca/context/valid/*.deca
+        do
+            echo "----- Test de decac -r $i pour le fichier $cas_de_test :  -----"
+            decac_moins_r=$(decac -r "$i" "$cas_de_test")
+            
+            if [ "$?" -ne 1 ]; then
+                echo "ERREUR: decac -r "$i" a termine avec un status égal à zero : $? imprévu."
+                exit 1
+            else
+                echo "----- KO -----"
+                echo ""
+            fi
+        done
+    fi
+done
