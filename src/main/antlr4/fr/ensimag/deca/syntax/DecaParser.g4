@@ -356,7 +356,6 @@ unary_expr returns[AbstractExpr tree]
 
 select_expr returns[AbstractExpr tree]
     : e=primary_expr {
-        System.out.println($e.tree);
             assert($e.tree != null);
             $tree = $e.tree;
         }
