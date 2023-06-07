@@ -67,33 +67,39 @@ public class CompilerOptions {
     public void parseArgs(String[] args) throws CLIException {
 
         for(int i = 0 ; i < args.length ; i++){
-            String arg = args[i];
-            if(arg.equals("-v")){
-                verifyOnly = true;
-            }
-
-            else if(arg.equals("-p")){
-                decompile = true;
-            }
-
-            else if(arg.equals("-r")){
-                try{         
-                    if(Integer.parseInt(args[i+1]) <= 16 && Integer.parseInt(args[i+1]) > 2){
-                        this.setRMAX(Integer.parseInt(args[i+1]) - 1);
-                        System.out.println("Nombre maximum de registre mis à " + Integer.parseInt(args[i+1])  + " les registres utilisables sont les registres R0 à R" + this.getRMAX() );
-                        i++;
-                    } else {
-                        throw new CLIException("L'option du compilateur -r ne prend en charge que les nombres positifs <= 16 et >= 2");
+                String arg = args[i];
+                if(arg.equals("-v")){
+                    verifyOnly = true;
+                }
+    
+                else if(arg.equals("-p")){
+                    decompile = true;
+                }
+    
+                else if(arg.equals("-r")){
+                    if( i < args.length -1 ){
+                        try{         
+                            if(Integer.parseInt(args[i+1]) <= 16 && Integer.parseInt(args[i+1]) > 2){
+                                this.setRMAX(Integer.parseInt(args[i+1]) - 1);
+                                System.out.println("Nombre maximum de registres mis à " + Integer.parseInt(args[i+1])  + " les registres utilisables sont les registres R0 à R" + this.getRMAX() );
+                                i++;
+                            } else {
+                                throw new CLIException("L'option du compilateur \"-r\" ne prend en charge que les entiers positifs <= 16 et >= 2");
+                            }
+                        }
+                        catch(NumberFormatException nfe){
+                            throw new CLIException("L'option du compilateur \"-r\" ne prend en charge que les entiers");
+                        }
+                    }
+                    else{
+                        throw new CLIException("L'option du compilateur \"-r\" nécessite un paramètre");
                     }
                 }
-                catch(NumberFormatException nfe){
-                    throw new CLIException("L'option du compilateur -r ne prend en charge que les nombres");
+    
+                else {
+                    sourceFiles.add(new File(args[i]));
                 }
-            }
 
-            else {
-                sourceFiles.add(new File(args[i]));
-            }
         }
 
         // A FAIRE : parcourir args pour positionner les options correctement.
