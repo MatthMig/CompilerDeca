@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.ImmediateInteger;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -30,6 +31,7 @@ public class IntLiteral extends AbstractExpr {
         this.value = value;
     }
 
+    
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
@@ -46,6 +48,16 @@ public class IntLiteral extends AbstractExpr {
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(this.getValue(), GPRegister.getR(1)));
+    }
+
+    @Override
+    protected void codeGenExp(DecacCompiler compiler, int n) {
+        compiler.addInstruction(new LOAD(this.getValue(), GPRegister.getR(n)));
+    }
+
+    @Override
+    protected DVal dval(DecacCompiler compiler) {
+        return new ImmediateInteger(this.value);            
     }
 
     @Override
