@@ -8,7 +8,7 @@ import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.DIV;
 import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
-import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.Label;
 
 /**
@@ -23,12 +23,8 @@ public class Divide extends AbstractOpArith {
 
     @Override
     protected void codeGenMnemo(DecacCompiler compiler, DVal a, GPRegister b) {
-        
-        // check division by 0 (not allowed)
-        compiler.addInstruction(new CMP(new ImmediateFloat(0.0f), b));
-        compiler.addInstruction(new BEQ(new Label("zeroDivision_error")));
-    
         compiler.addInstruction(new DIV(a, b));
+        compiler.addInstruction(new BOV(new Label("zeroDivision_error")));
     }
 
 

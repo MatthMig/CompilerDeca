@@ -16,7 +16,7 @@ import fr.ensimag.deca.tree.ConvFloat;
 
 /**
  * Arithmetic binary operations (+, -, /, ...)
- * 
+ *
  * @author gl03
  * @date 21/04/2023
  */
@@ -32,8 +32,8 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n){
-        if(this.getRightOperand().getClass() == IntLiteral.class 
-        || this.getRightOperand().getClass() == FloatLiteral.class 
+        if(this.getRightOperand().getClass() == IntLiteral.class
+        || this.getRightOperand().getClass() == FloatLiteral.class
         || this.getRightOperand().getClass() == Identifier.class){
             this.getLeftOperand().codeGenExp(compiler, n);
             DVal a = this.getRightOperand().dval(compiler);
@@ -53,10 +53,10 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             this.getLeftOperand().codeGenExp(compiler, n);
             compiler.addInstruction(new PUSH(GPRegister.getR(n)),"sauvegarde");
             this.getRightOperand().codeGenExp(compiler, n);
-            
+
             compiler.addInstruction(new LOAD(GPRegister.getR(n), GPRegister.getR(1)));
             compiler.addInstruction(new POP(GPRegister.getR(n)),"restauration");
-            
+
 
             DVal a = GPRegister.getR(1);
 
@@ -80,39 +80,41 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         }
 
         //if one of the operands is not a number: problem !
-        
+
         if (!t1.isInt()&&!t1.isFloat()) {
             throw new ContextualError("left operand is not an int nor a float",this.getLocation());
 
-        } else if (!t2.isInt()&&!t2.isFloat()){
+        }
+
+        if (!t2.isInt()&&!t2.isFloat()){
             throw new ContextualError("right operand is not an int nor a float",this.getLocation());
         }
         // Check if the operation is division and the divisor is 0
-
-        else if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0) 
+        if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0)
                                             || ( this.getRightOperand().getClass() == FloatLiteral.class &&  (((FloatLiteral) this.getRightOperand()).getValue() == 0.0)))){
             throw new ContextualError("division by zero not allowed", this.getLocation());
-        
-        } else if (this instanceof Divide && t2.isInt()) {
-            this.setRightOperand(this.getRightOperand().convFloat(compiler, localEnv, currentClass));
-            this.setType(compiler.environmentType.INT);
-            return compiler.environmentType.INT;
-        // both operands are valid numbers
-        // the problem was that i use an non implemented convFloat, if you can implement it
-        } else {
+
+        }
+
+        if (this instanceof Divide) {
+            if(t2.isInt()){
+                this.setRightOperand(new ConvFloat(this.getRightOperand()));
+                t2 = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+
+            if(t1.isInt()){
+                this.setLeftOperand(new ConvFloat(this.getLeftOperand()));
+                t1 = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+        else {
             // Operands have different types
-            if (t1.isFloat() && t2.isInt()) {
-                // Convert int to float
-                // * here code: use convFloat to convert
-                // Set the type of the expression to float (t1)
-                this.setType(t1);
-                return t1;
+            if (t1.isFloat() && t2.isInt()) {;
+                this.setRightOperand(new ConvFloat(this.getRightOperand()));
+                t2 = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
             } else if (t1.isInt() && t2.isFloat()) {
-                // Convert int to float
-                // * here code: use convFloat to convert
-                // Set the type of the expression to float (t2)
-                this.setType(t2);
-                return t2;
+                this.setLeftOperand(new ConvFloat(this.getLeftOperand()));
+                t1 = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
             }
         }
         // here it means operands have the same type, we can set the type of the expression to t1 for example
