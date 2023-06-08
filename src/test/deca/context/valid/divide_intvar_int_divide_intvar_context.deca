@@ -1,17 +1,17 @@
-// Description : 
-// 
+// Description :
+//
 //      Test contextuellement correct de la division d'un int et d'une variable int
-// 
-// Résultats : 
-// 
-//      N/A 
-// 
-// Historique : 
-// 
+//
+// Résultats :
+//
+//      N/A
+//
+// Historique :
+//
 //      Créé le 07/06/2023 par le gl03
 
 {
     int x=3;
-    int y= 3/ x;
+    float y= 3/ x;
     print(y);
 }
