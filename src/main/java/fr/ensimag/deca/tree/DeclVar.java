@@ -12,6 +12,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.ima.pseudocode.instructions.NEW;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.GPRegister;
@@ -58,25 +59,38 @@ public class DeclVar extends AbstractDeclVar {
         }
 
         if(this.initialization.getClass() != NoInitialization.class ){
-            if(((Initialization)this.initialization).getExpr().getClass() == Identifier.class){
+            // If i implicitly initialize a float with an int value.
+            if(((Initialization)this.initialization).getExpr().getType() == compiler.environmentType.INT &&
+                this.varName.getDefinition().getType() == compiler.environmentType.FLOAT ){
+                ((Initialization)this.initialization).setExpression(new ConvFloat(((Initialization)this.initialization).getExpr()));
+                ((Initialization)this.initialization).getExpression().verifyExpr(compiler, localEnv, currentClass);
+            }
+
+            else if(((Initialization)this.initialization).getExpr().getType() == compiler.environmentType.FLOAT &&
+                this.varName.getDefinition().getType() == compiler.environmentType.INT ){
+                    throw new ContextualError("impossible conversion from float to int", getLocation());
+            }
+
+            // If i assign anything that isn't same type and isn't convFloat
+            else if(((Initialization)this.initialization).getExpr().getClass() == Identifier.class){
                 if(((Identifier)((Initialization)this.initialization).getExpr()).getType() != varName.getDefinition().getType()){
                     throw new ContextualError("trying to asign a var of type " + ((Identifier)((Initialization)this.initialization).getExpr()).getType() + " to a variable of type "+ varName.getDefinition().getType(), getLocation());
                 }
             }
-        }
-        
-    }
 
-    @Override
-    public void codeGen(DecacCompiler compiler) {
+        }
         // Compiler now knows he has this variable
         DAddr addr = compiler.allocate();
         ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
         compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
+    }
+
+    @Override
+    public void codeGen(DecacCompiler compiler) {
 
         if (initialization.getClass() != NoInitialization.class ){
             this.initialization.codeGen(compiler);
-            compiler.addInstruction(new STORE(GPRegister.getR(2), addr));
+            compiler.addInstruction(new STORE(GPRegister.getR(2), this.varName.getExpDefinition().getOperand()));
         }
     }
 
