@@ -10,6 +10,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.tree.FloatLiteral;
 
 /**
  * Arithmetic binary operations (+, -, /, ...)
@@ -83,7 +84,13 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
         } else if (!t2.isInt()&&!t2.isFloat()){
             throw new ContextualError("right operand is not an int nor a float",this.getLocation());
-        
+        }
+        // Check if the operation is division and the divisor is 0
+
+        else if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0) 
+                                            || ( this.getRightOperand().getClass() == FloatLiteral.class &&  (((FloatLiteral) this.getRightOperand()).getValue() == 0.0)))){
+            throw new ContextualError("division by zero not allowed", this.getLocation());
+          
         // both operands are valid numbers
         } else {
             // operands have different types 

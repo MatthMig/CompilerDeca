@@ -34,7 +34,7 @@ public class Modulo extends AbstractOpArith {
         }
         
         // if one of the operands is not an int: problem !
-        if ((! leftOperand.isInt()) && (! rightOperand.isInt())) {
+        if ((! leftOperand.isInt()) || (! rightOperand.isInt())) {
             throw new ContextualError("modulo is only allowed for integers",this.getLocation());
         }
 
