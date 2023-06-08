@@ -18,6 +18,7 @@ CPARENT: ')';
 PRINT: 'print';
 PRINTLN: 'println';
 READINT: 'readInt';
+READFLOAT: 'readFloat';
 
 // Conditions
 EXCLAM: '!';

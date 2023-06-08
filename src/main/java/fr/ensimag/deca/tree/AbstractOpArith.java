@@ -10,6 +10,8 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.IntType;
+import fr.ensimag.deca.tree.ConvFloat;
 
 
 /**
@@ -90,20 +92,25 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         else if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0) 
                                             || ( this.getRightOperand().getClass() == FloatLiteral.class &&  (((FloatLiteral) this.getRightOperand()).getValue() == 0.0)))){
             throw new ContextualError("division by zero not allowed", this.getLocation());
-          
+        
+        } else if (this instanceof Divide && t2.isInt()) {
+            this.setRightOperand(this.getRightOperand().convFloat(compiler, localEnv, currentClass));
+            this.setType(compiler.environmentType.INT);
+            return compiler.environmentType.INT;
         // both operands are valid numbers
+        // the problem was that i use an non implemented convFloat, if you can implement it
         } else {
-            // operands have different types 
-            if (t1.isFloat() && t2.isInt()){
-                // convert int to float
-                this.setRightOperand(this.getRightOperand().verifyRValue(compiler, localEnv, currentClass,t1));
-                // we set the type of the expression to float (t1)
+            // Operands have different types
+            if (t1.isFloat() && t2.isInt()) {
+                // Convert int to float
+                // * here code: use convFloat to convert
+                // Set the type of the expression to float (t1)
                 this.setType(t1);
                 return t1;
             } else if (t1.isInt() && t2.isFloat()) {
-                // convert int to float
-                this.setLeftOperand(this.getLeftOperand().verifyRValue(compiler, localEnv, currentClass, t2));
-                // we set the type of the expression to float (t2)
+                // Convert int to float
+                // * here code: use convFloat to convert
+                // Set the type of the expression to float (t2)
                 this.setType(t2);
                 return t2;
             }
