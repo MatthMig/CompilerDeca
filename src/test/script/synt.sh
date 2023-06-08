@@ -16,7 +16,7 @@ test_synt_valid () {
         grep -q -e "$1:[0-9][0-9]*:"
     then
         echo "Echec inattendu pour test_synt pour le fichier $1"
-        exit 1
+        return 1
     else
         echo "Succes attendu de test_synt pour le fichier $1"
     fi
@@ -30,22 +30,46 @@ test_synt_invalid () {
         echo "Echec attendu pour test_synt sur $1"
     else
         echo "Succes inattendu de test_synt sur $1"
-        exit 1
+        return 1
     fi
 }
 
+i=0
+success=0
 for cas_de_test in src/test/deca/syntax/valid/*.deca
 do
     echo "----- Test de syntaxe pour le fichier $cas_de_test (valide) :  -----"
-    test_synt_valid "$cas_de_test" || exit 1
-    echo "----- OK -----"
+    if test_synt_valid "$cas_de_test"
+    then
+        success=$((success+1))
+        echo "----- OK -----"
+    else
+        echo "----- KO -----"
+    fi
     echo ""
+
+    i=$((i+1))
 done
 
 for cas_de_test in src/test/deca/syntax/invalid/*.deca
 do
     echo "----- Test de syntaxe pour le fichier $cas_de_test (invalide) :  -----"
-    test_synt_invalid "$cas_de_test" || exit 1
-    echo "----- KO -----"
+    if test_synt_invalid "$cas_de_test"
+    then
+        success=$((success+1))
+        echo "----- OK -----"
+    else
+        echo "----- KO -----"
+    fi
     echo ""
+
+    i=$((i+1))
 done
+
+
+echo "### SCORE: ${success} PASSED / ${i} TESTS ###"
+
+if [ "$i" -gt "$success" ]
+then
+    exit 1
+fi
