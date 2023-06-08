@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test de programme contextuellement incorrect d'un produit de deux entiers menant à un overflow.
+//      
+// 
+// Résultats : 
+// 
+//      N/A 
+//
+// Historique :
+// 
+//    Créé le 06/06/2023 par gl03
+
+{ 
+    int y =99999*999990;
+}
