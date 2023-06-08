@@ -47,8 +47,14 @@ public class Program extends AbstractProgram {
         compiler.addComment("Main program");
         main.codeGenMain(compiler);
         compiler.addInstruction(new HALT());
+
         compiler.addLabel(new Label("io_error"));
         compiler.addInstruction(new WSTR("Error : Input/Output error"));
+        compiler.addInstruction(new WNL());
+        compiler.addInstruction(new ERROR());
+
+        compiler.addLabel(new Label("zeroDivision_error"));
+        compiler.addInstruction(new WSTR("Error : Division by zero"));
         compiler.addInstruction(new WNL());
         compiler.addInstruction(new ERROR());
     }
