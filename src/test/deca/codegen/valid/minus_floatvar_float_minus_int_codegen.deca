@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test contextuellement correct de la somme d'un float et d'un int dans une variable float
+//      Test contextuellement correct de la soustraction d'un float et d'un int dans une variable float
 // 
 // Résultats : 
 // 
@@ -12,6 +12,6 @@
 
 
 {
-    float y=2.5+3;
+    float y=2.5-3;
     print(y);
 }

@@ -1,6 +1,6 @@
 // Description : 
 // 
-//      Test contextuellement correct de la somme d'un int avec la somme d'un int avec la somme d'un int.
+//      Test contextuellement correct de la soustraction d'un int avec la soustraction d'un int avec la soustraction d'un int.
 // 
 // Résultats : 
 // 
@@ -11,6 +11,6 @@
 //      Créé le 07/06/2023 par le gl03
 
 {
-    int y =3+2+5;
+    int y =3-2-5;
     print(y);
 }

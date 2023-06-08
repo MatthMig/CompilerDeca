@@ -1,7 +1,7 @@
 // Description :
 //
 //      Test de programme syntaxiquement incorrect(non respect des attentes à
-//      droite de l'opérateur + avec un float à gauche).
+//      droite de l'opérateur - avec un float à gauche).
 // 
 // Résultats : 
 // 
@@ -12,6 +12,6 @@
 //    Créé le 06/06/2023 par gl03
 
 {
-    float y = 2.8+;
+    float y = 2.8-;
     print(y);
 }

@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test contextuellement correct de la somme de la variable stockant la somme avec définition et d'un int.
+//      Test contextuellement correct de la soustraction de la variable stockant la soustraction avec définition et d'un int.
 // 
 // Résultats : 
 // 
@@ -12,6 +12,6 @@
 
 {
     int y=3;
-    y= y+2;
+    y= y-2;
     print(y);
 }

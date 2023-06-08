@@ -1,7 +1,7 @@
 // Description :
 //
 //      Test de programme syntaxiquement incorrect(non respect des attentes à 
-//      droite de l'opérateur + avec une variable déclarée et initialisée à gauche )
+//      droite de l'opérateur - avec une variable déclarée et initialisée à gauche )
 // 
 // Résultats : 
 // 
@@ -14,6 +14,6 @@
 
 {
     int x = 3;
-    int y= x+;
+    int y= x-;
     print(y);
 }

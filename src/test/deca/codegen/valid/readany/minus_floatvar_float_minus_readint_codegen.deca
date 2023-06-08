@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test contextuellement correct de la somme d'un float et d'un readInt dans une variable float
+//      Test contextuellement correct de la soustraction d'un float et d'un readInt dans une variable float
 // 
 // Résultats : 
 // 
@@ -11,6 +11,6 @@
 //      Créé le 07/06/2023 par gl03
 
 {
-    float y= 3.5+ readInt();
+    float y= 3.5- readInt();
     print(y);
 }

@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test syntaxiquement correct de la somme d'un int et d'un float dans une variable float
+//      Test syntaxiquement correct de la soustraction d'un int et d'un float dans une variable float
 // 
 // Résultats : 
 // 
@@ -12,5 +12,5 @@
 
 
 {
-    float y=2+3.5;
+    float y=2-3.5;
 }

@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test syntaxiquement correct de la somme d'un any et d'un any puis en sommant un autre any dans une variable float.
+//      Test syntaxiquement correct de la soustraction d'un any et d'un any puis en sommant un autre any dans une variable float.
 // 
 // Résultats : 
 // 
@@ -11,5 +11,5 @@
 //      Créé le 07/06/2023 par gl03
 
 {
-   float y= 3 + "bonjour" + 2.5;
+   float y= 3 - "bonjour" - 2.5;
 }

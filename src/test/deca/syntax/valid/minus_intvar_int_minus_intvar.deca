@@ -1,6 +1,6 @@
 // Description : 
 // 
-//      Test syntaxiquement correctde la somme d'un int et d'une variable int
+//      Test syntaxiquement correctde la soustraction d'un int et d'une variable int
 // 
 // Résultats : 
 // 
@@ -12,5 +12,5 @@
 
 {
     int x=3;
-    int y= 3+x;
+    int y= 3-x;
 }

@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test de programme contextuellement incorrect de seulement +.
+//      Test de programme contextuellement incorrect de seulement -.
 //      
 // 
 // Résultats : 
@@ -12,5 +12,5 @@
 //    Créé le 06/06/2023 par gl03
 
 { 
-    +;
+    -;
 }

@@ -1,0 +1,17 @@
+// Description :
+// 
+//      Test de programme syntaxiquement incorrect(non_respect des attentes à
+//      gauche de l'opérateur - avec un int à droite).
+// 
+// Résultats : 
+// 
+//       N/A
+// 
+// Historique : 
+// 
+//      Créé le 06/06/2023 par gl03
+
+{
+    int y=-3;
+    print(y);
+}

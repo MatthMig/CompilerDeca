@@ -1,17 +1,17 @@
 // Description :
-// 
+//
 //      Test de programme syntaxiquement incorrect(non respect des attentes à
-//      droite de l'opérateur avec un int à gauche).
+//      gauche de l'opérateur - avec un float à droite).
 // 
 // Résultats : 
 // 
-//       N/A
-// 
-// Historique : 
+//      N/A 
+//
+// Historique :
 // 
 //      Créé le 06/06/2023 par gl03
 
 {
-    int y=3-;
+    float y = -2.8;
     print(y);
 }

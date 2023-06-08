@@ -1,6 +1,6 @@
 // Description : 
 // 
-//      Test contextuellement correct de la somme de deux floats avec un int
+//      Test contextuellement correct de la soustraction de deux floats avec un int
 // 
 // Résultats : 
 // 
@@ -11,5 +11,5 @@
 //      Créé le 07/06/2023 par le gl03
 
 {
-    float y =3.5+2.8+5;
+    float y =3.5-2.8-5;
 }

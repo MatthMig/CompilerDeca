@@ -1,6 +1,6 @@
 // Description :
 //
-//      Test de programme syntaxiquement incorrect(enchaînement de '+' et de '%').
+//      Test de programme syntaxiquement incorrect(enchaînement de '-' et de '%').
 // 
 // Résultats : 
 // 
@@ -11,7 +11,7 @@
 //    Créé le 06/06/2023 par gl03
 
 {
-    int y= 3+%2;
+    int y= 3-%2;
     print(y);
 
 }

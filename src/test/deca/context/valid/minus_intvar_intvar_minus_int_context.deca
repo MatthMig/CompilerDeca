@@ -1,6 +1,6 @@
 // Description : 
 // 
-//      Test contextuellement correct de la somme d'une variable int et d'un int
+//      Test contextuellement correct de la soustraction d'une variable int et d'un int
 // 
 // Résultats : 
 // 
@@ -12,5 +12,5 @@
 
 {
     int x=3;
-    int y= x+3;
+    int y= x-3;
 }
