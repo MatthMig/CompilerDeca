@@ -11,7 +11,7 @@
 //      Créé le 07/06/2023 par gl03
 
 {
-    int y=3;
+    float y=3;
     y= y/ 2;
     print(y);
 }
