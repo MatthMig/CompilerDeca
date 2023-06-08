@@ -14,6 +14,7 @@ import fr.ensimag.deca.tree.LocationException;
 import fr.ensimag.ima.pseudocode.AbstractLine;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.IMAProgram;
+import fr.ensimag.ima.pseudocode.ImmediateInteger;
 import fr.ensimag.ima.pseudocode.Instruction;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
@@ -52,7 +53,7 @@ public class DecacCompiler {
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
 
     private final LabelManager labelManager = new LabelManager();
-    
+
     /**
      * Portable newline character.
      */
@@ -158,6 +159,7 @@ public class DecacCompiler {
 
     public void addVar(Symbol s, ExpDefinition def){
         this.varList.put(s, def);
+        varCount++;
     }
 
     public ExpDefinition getVar(Symbol s){
@@ -298,6 +300,10 @@ public class DecacCompiler {
         DecaParser parser = new DecaParser(tokens);
         parser.setDecacCompiler(this);
         return parser.parseProgramAndManageErrors(err);
+    }
+
+    public int getVarCount() {
+        return this.varList.size();
     }
 
 }
