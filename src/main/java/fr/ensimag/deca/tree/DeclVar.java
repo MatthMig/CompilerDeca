@@ -75,7 +75,7 @@ public class DeclVar extends AbstractDeclVar {
 
         if (initialization.getClass() != NoInitialization.class ){
             this.initialization.codeGen(compiler);
-            compiler.addInstruction(new STORE(GPRegister.getR(1), addr));
+            compiler.addInstruction(new STORE(GPRegister.getR(2), addr));
         }
     }
 
