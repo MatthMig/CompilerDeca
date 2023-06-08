@@ -3,8 +3,10 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.DIV;
+import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.BEQ;
 import fr.ensimag.ima.pseudocode.Label;
@@ -23,11 +25,11 @@ public class Divide extends AbstractOpArith {
     protected void codeGenMnemo(DecacCompiler compiler, DVal a, GPRegister b) {
         
         // check division by 0 (not allowed)
-        compiler.addInstruction(new CMP(0, b));
+        compiler.addInstruction(new CMP(new ImmediateFloat(0.0f), b));
         compiler.addInstruction(new BEQ(new Label("zeroDivision_error")));
-
+    
         compiler.addInstruction(new DIV(a, b));
-}
+    }
 
 
     @Override
