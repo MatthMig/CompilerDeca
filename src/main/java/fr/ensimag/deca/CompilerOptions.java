@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
+
 /**
  * User-specified options influencing the compilation.
  *
@@ -143,7 +144,60 @@ public class CompilerOptions {
         // throw new UnsupportedOperationException("not yet implemented");
     }
 
+    public static String getLogo() {
+        StringBuilder logoBuilder = new StringBuilder();
+
+        // Building the first line of the logo
+        logoBuilder.append("  GGGGG   L         0000  3333\n");
+
+        // Building the second line of the logo
+        logoBuilder.append(" G     G  L        0    0    3 \n");
+
+        // Building the third line of the logo
+        logoBuilder.append("G         L        0    0    3 \n");
+
+        // Building the fourth line of the logo
+        logoBuilder.append("G   GGG   L        0    0   3  \n");
+
+        // Building the fifth line of the logo
+        logoBuilder.append("G     G  L        0    0   3  \n");
+
+        // Building the sixth line of the logo
+        logoBuilder.append(" G     G L        0    0    3 \n");
+
+        // Building the seventh line of the logo
+        logoBuilder.append("  GGGGG  LLLLLLL   0000  3333\n");
+
+        return logoBuilder.toString();
+
+    }
+
+
+    public static final String DECAC_OPTIONS =
+            "Syntaxe : decac [[-p | -v] [-n] [-r X] <fichier deca>...] | " +
+			"[-b]\n" +
+			"\t-b (banner) : affiche une bannière indiquant le nom de " +
+			"l'équipe\n" +
+			"\t-p (parse) : arrête decac après l'étape de construction de " +
+			"l'arbre, et affiche la décompilation de ce dernier\n" +
+			"\t-v (verification) : arrête decac après l'étape de " +
+			"vérifications (ne produit aucune sortie en l'absence d'erreur)" +
+			"\n" +
+			"\t-n (no check) : n'ajoute pas les tests de débordement au " +
+			"pogramme compilé (débordement arithmétique, débordement mémoire" +
+			" " +
+			"et déréférencement de null)\n" +
+			"\t-r X (registers) : limite les registres banalisés disponibles" +
+			" " +
+			"à R0 ... R{X-1}, avec 4 <= X <= 16\n" +
+			"\t-d (debug) : active les traces de debug. Répéter l'option " +
+			"jusqu'à 3 fois pour avoir plus de traces\n" +
+			"\t-P (parallel) : s'il y a plusieurs fichiers sources, lance la" +
+			" " +
+			"compilation des fichiers en parallèle pour l'accélérer\n" +
+			"\t-w (warnings) : affiche les warnings à la compilation\n";
+
     protected void displayUsage() {
-        throw new UnsupportedOperationException("not yet implemented");
+        System.out.println(DECAC_OPTIONS);
     }
 }
