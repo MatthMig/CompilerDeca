@@ -81,6 +81,10 @@ public class DecacCompiler {
         return compilerOptions.getRMAX();
     }
 
+    public boolean getNoCheck() {
+        return compilerOptions.getNoCheck();
+    }
+
     /**
      * Source file associated with this compiler instance.
      */
