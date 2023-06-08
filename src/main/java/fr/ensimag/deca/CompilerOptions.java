@@ -40,6 +40,10 @@ public class CompilerOptions {
     public boolean getDecompile(){
         return decompile;
     }
+
+    public boolean getNoCheck(){
+        return noCheck;
+    }
         
     public List<File> getSourceFiles() {
         return Collections.unmodifiableList(sourceFiles);
@@ -61,6 +65,7 @@ public class CompilerOptions {
     private boolean printBanner = false;
     private boolean verifyOnly = false;
     private boolean decompile = false;
+    private boolean noCheck = false;
     private List<File> sourceFiles = new ArrayList<File>();
 
     
@@ -74,6 +79,10 @@ public class CompilerOptions {
     
                 else if(arg.equals("-p")){
                     decompile = true;
+                }
+
+                else if(arg.equals("-n")){
+                    noCheck = true;
                 }
     
                 else if(arg.equals("-r")){
@@ -95,7 +104,7 @@ public class CompilerOptions {
                         throw new CLIException("L'option du compilateur \"-r\" nécessite un paramètre");
                     }
                 }
-    
+
                 else {
                     sourceFiles.add(new File(args[i]));
                 }

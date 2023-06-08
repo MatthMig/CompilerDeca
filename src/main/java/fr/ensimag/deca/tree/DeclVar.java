@@ -59,7 +59,7 @@ public class DeclVar extends AbstractDeclVar {
 
         if(this.initialization.getClass() != NoInitialization.class ){
             if(((Initialization)this.initialization).getExpr().getClass() == Identifier.class){
-                if(((Identifier)((Initialization)this.initialization).getExpr()).getType() != varName.getDefinition().getType()){
+                if(!compiler.getNoCheck() && (((Identifier)((Initialization)this.initialization).getExpr()).getType() != varName.getDefinition().getType())){
                     throw new ContextualError("trying to asign a var of type " + ((Identifier)((Initialization)this.initialization).getExpr()).getType() + " to a variable of type "+ varName.getDefinition().getType(), getLocation());
                 }
             }

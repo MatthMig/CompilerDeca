@@ -109,3 +109,14 @@ do
         done
     fi
 done
+
+    # echo "----- Test de decac -n pour le fichier $cas_de_test :  -----"
+    # decac_moins_n=$(decac -n "src/test/deca/context/invalid/affect-incompatible.deca")
+
+    # if "echo $decac_moins_n" | grep "src/test/deca/context/invalid/affect-incompatible.deca:"; then
+    #     echo "Erreur : decac -n a envoyé un message d'erreur qui n'aurait pas dû être envoyé";
+    #     exit 1;
+    # else
+    #     echo "----- OK -----"
+    #     echo ""
+    # fi
