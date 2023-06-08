@@ -1,6 +1,10 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -38,4 +42,16 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
         setType(compiler.environmentType.BOOLEAN);
         return getType();
     }
+
+    public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) throws UnsupportedOperationException {
+        // On the left there is only a variable or a literal or an arithmetic expression
+        this.getLeftOperand().codeGenExp(compiler, 2);
+        compiler.incrementStackSize();
+        compiler.addInstruction(new PUSH(GPRegister.getR(2)));
+        // On the right there is only a variable or a literal or an arithmetic expression
+        this.getRightOperand().codeGenExp(compiler, 2);
+        compiler.addInstruction(new POP(GPRegister.getR(3)));
+        // then compare
+        compiler.addInstruction(new CMP(GPRegister.getR(2), GPRegister.getR(3)));
+    } 
 }

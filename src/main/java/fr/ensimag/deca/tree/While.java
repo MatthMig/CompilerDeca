@@ -7,7 +7,6 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.BRA;
 
 import java.io.PrintStream;
@@ -39,19 +38,21 @@ public class While extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        //throw new UnsupportedOperationException("not yet implemented");
-        Label[] labels = compiler.createWhileLabels();
-        compiler.addInstruction(new BRA(labels[1]), null); 
-        compiler.add(new Line(labels[0]));                          // while_X:
-        body.codeGenListInst(compiler);                             // code corps de la boucle
-        compiler.add(new Line(labels[1]));                          // cond_while_X
-        condition.codeGenCondition(compiler, false, labels[0]);                            // code condition (CMP % % + BCC end_while_X)
+        Label labelWhile = new Label("while."+compiler.getLabelCount());
+        Label labelEndWhile = new Label("endWhile."+compiler.getLabelCount());
+        compiler.incrementLabelCount();
+        compiler.addLabel(labelWhile);
+        condition.codeGenCondition(compiler, false, labelEndWhile);
+        body.codeGenListInst(compiler);
+        compiler.addInstruction(new BRA(labelWhile));
+        compiler.addLabel(labelEndWhile);
 
-        // BRA label2
-        // label1:
-        // ...
-        //compiler.addInstruction(new BRA())), null);
-        // label2
+        // while_x:
+        // condition
+        // Faux : end_while_x
+        // code corps de la boucle
+        // Jump while_x
+        // end_while_x:
     }
 
     @Override

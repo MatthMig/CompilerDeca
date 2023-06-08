@@ -16,11 +16,18 @@ public class And extends AbstractOpBool {
 
     @Override
     public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
-        // Vérifier la condition de gauche
-        //  => si vrai, on vérifie la droite
-        //  => sinon on saute au else
-        getLeftOperand().codeGenCondition(compiler, neg, label);
-        getRightOperand().codeGenCondition(compiler, neg, label);
+        // 2 different cases for AND whether neg is true or false
+        compiler.addComment("and." + compiler.getLabelCount());
+        if (neg) {
+            Label endLabel = new Label("endAnd."+ compiler.getLabelCount());
+            compiler.incrementLabelCount();
+            getLeftOperand().codeGenCondition(compiler, !neg, endLabel);
+            getRightOperand().codeGenCondition(compiler, neg, label);
+            compiler.addLabel(endLabel);
+        } else {
+            getLeftOperand().codeGenCondition(compiler, neg, label);
+            getRightOperand().codeGenCondition(compiler, neg, label);
+        }
     }
 
     @Override

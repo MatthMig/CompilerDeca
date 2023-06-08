@@ -7,7 +7,6 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.BRA;
 
 import java.io.PrintStream;
@@ -45,14 +44,17 @@ public class IfThenElse extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        //throw new UnsupportedOperationException("not yet implemented");
-        Label[] labels = compiler.createIfLabels();
-        condition.codeGenCondition(compiler, true, labels[0]);
+        Label labelEndif = new Label("endif."+compiler.getLabelCount());
+        compiler.incrementLabelCount();
+        Label labelElse = new Label("else."+compiler.getLabelCount());
+        compiler.incrementLabelCount();
+        condition.codeGenCondition(compiler, false, labelElse);
         thenBranch.codeGenListInst(compiler);
-        compiler.addInstruction(new BRA(labels[1]));
-        compiler.add(new Line(labels[0]));
+        compiler.addInstruction(new BRA(labelEndif));
+        compiler.addLabel(labelElse);
         elseBranch.codeGenListInst(compiler);
-        compiler.add(new Line(labels[1]));
+
+        compiler.addLabel(labelEndif);
     }
 
     @Override

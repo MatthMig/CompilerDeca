@@ -6,7 +6,6 @@ import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.DecacInternalError;
-import fr.ensimag.deca.tools.LabelManager;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
@@ -49,9 +48,9 @@ import org.apache.log4j.Logger;
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private int varCount = 0;
+    private int labelCount = 1;
+    private int stackSize = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
-
-    private final LabelManager labelManager = new LabelManager();
     
     /**
      * Portable newline character.
@@ -62,23 +61,28 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.source = source;
-    }
-
-    public Label[] createWhileLabels() {
-        return labelManager.createWhileLabels();
-    }
-
-    public Label[] createIfLabels() {
-        return labelManager.createIfLabels();
-    }
-
-
-    public Label createIfLabel() {
-        return labelManager.createIfLabel();
+        this.labelCount = 1;
+        stackSize = 0;
     }
 
     public int getRMAX(){
         return compilerOptions.getRMAX();
+    }
+
+    public int getStackSize(){
+        return this.stackSize;
+    }
+
+    public int getLabelCount(){
+        return this.labelCount;
+    }
+
+    public void incrementLabelCount(){
+        this.labelCount += 1;
+    }
+
+    public void incrementStackSize(){
+        this.stackSize += 1;
     }
 
     /**
@@ -136,6 +140,15 @@ public class DecacCompiler {
         program.addInstruction(instruction, comment);
     }
 
+    /**
+     * @see
+     * fr.ensimag.ima.pseudocode.IMAProgram#addFirst(fr.ensimag.ima.pseudocode.Instruction,
+     * java.lang.String)
+     */
+    public void addFirst(Instruction instruction, String comment) {
+        program.addFirst(instruction, comment);
+    }
+    
     /**
      * @see
      * fr.ensimag.ima.pseudocode.IMAProgram#display()

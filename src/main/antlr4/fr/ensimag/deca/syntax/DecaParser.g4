@@ -258,6 +258,8 @@ eq_neq_expr returns[AbstractExpr tree]
     | e1=eq_neq_expr NEQ e2=inequality_expr {
             assert($e1.tree != null);
             assert($e2.tree != null);
+            $tree = new NotEquals($e1.tree, $e2.tree);
+            setLocation($tree, $e1.start);
         }
     ;
 
@@ -275,10 +277,14 @@ inequality_expr returns[AbstractExpr tree]
     | e1=inequality_expr GEQ e2=sum_expr {
             assert($e1.tree != null);
             assert($e2.tree != null);
+            $tree = new GreaterOrEqual($e1.tree, $e2.tree);
+            setLocation($tree, $e1.start);
         }
     | e1=inequality_expr GT e2=sum_expr {
             assert($e1.tree != null);
             assert($e2.tree != null);
+            $tree = new Greater($e1.tree, $e2.tree);
+            setLocation($tree, $e1.start);
         }
     | e1=inequality_expr LT e2=sum_expr {
             assert($e1.tree != null);

@@ -3,6 +3,8 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
@@ -44,6 +46,7 @@ public class Main extends AbstractMain {
         compiler.addComment("Beginning of main instructions:");
         declVariables.codeGenDeclVar(compiler);
         insts.codeGenListInst(compiler);
+        compiler.addFirst(new ADDSP(compiler.getStackSize()), "size of stack needed");
     }
 
     @Override
