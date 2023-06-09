@@ -6,6 +6,9 @@ import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
+
+import java.io.PrintStream;
+
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -31,6 +34,13 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
     }
 
     @Override
+    public void decompile(PrintStream s) {
+        this.getLeftOperand().decompile(s);
+        s.print(getOperatorName());
+        this.getRightOperand().decompile(s);
+    }
+
+    @Override
     protected void codeGenExp(DecacCompiler compiler, int n){
         if(this.getRightOperand().getClass() == IntLiteral.class
         || this.getRightOperand().getClass() == FloatLiteral.class
@@ -45,8 +55,8 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             this.getLeftOperand().codeGenExp(compiler, n);
             this.getRightOperand().codeGenExp(compiler, n+1);
 
-            DVal a = GPRegister.getR(n+1);
-            this.codeGenMnemo(compiler, a, GPRegister.getR(n));
+            DVal regN = GPRegister.getR(n+1);
+            this.codeGenMnemo(compiler, regN, GPRegister.getR(n));
         }
 
         else{
@@ -57,10 +67,8 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             compiler.addInstruction(new LOAD(GPRegister.getR(n), GPRegister.getR(1)));
             compiler.addInstruction(new POP(GPRegister.getR(n)),"restauration");
 
-
-            DVal a = GPRegister.getR(1);
-
-            this.codeGenMnemo(compiler, a, GPRegister.getR(n));
+            DVal regN = GPRegister.getR(1);
+            this.codeGenMnemo(compiler, regN, GPRegister.getR(n));
         }
 
     }
@@ -72,12 +80,8 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         Type t1;
         Type t2;
 
-        try{
-            t1 = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-            t2 = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        } catch (ContextualError e) {
-            throw e;
-        }
+        t1 = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+        t2 = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
 
         //if one of the operands is not a number: problem !
 

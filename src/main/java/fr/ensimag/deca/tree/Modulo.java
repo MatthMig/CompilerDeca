@@ -26,12 +26,10 @@ public class Modulo extends AbstractOpArith {
             ClassDefinition currentClass) throws ContextualError {
         Type leftOperand;
         Type rightOperand;
-        try {
-            leftOperand = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
-            rightOperand = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
-        } catch (ContextualError e) {
-            throw e;
-        }
+        
+        leftOperand = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+        rightOperand = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+
         
         // if one of the operands is not an int: problem !
         if ((! leftOperand.isInt()) || (! rightOperand.isInt())) {

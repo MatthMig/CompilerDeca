@@ -1,11 +1,8 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
-import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.OPP;
-import fr.ensimag.ima.pseudocode.instructions.SUB;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -27,11 +24,7 @@ public class UnaryMinus extends AbstractUnaryExpr {
 
         Type t;
 
-        try {
-            t = this.getOperand().verifyExpr(compiler, localEnv, currentClass);
-        } catch (ContextualError e) {
-            throw e;
-        }
+        t = this.getOperand().verifyExpr(compiler, localEnv, currentClass);
 
         // if operand is not a number: problem !
         if (!t.isInt() && !t.isFloat()) {

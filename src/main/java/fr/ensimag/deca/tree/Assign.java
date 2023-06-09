@@ -40,7 +40,7 @@ public class Assign extends AbstractBinaryExpr {
             this.setType(t1);
             return this.getType();
         }
-        throw new ContextualError("Trying to assign value of type "+t2+" to a var of type " + t2, getLocation());
+        throw new ContextualError("Trying to assign value of type "+t2+" to a var of type " + t1, getLocation());
     }
 
     @Override
