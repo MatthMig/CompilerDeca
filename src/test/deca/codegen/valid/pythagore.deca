@@ -1,0 +1,26 @@
+// Description:
+
+// Dans cet exemple, nous utilisons les variables a, b et c pour représenter les longueurs
+// des côtés d'un triangle. Ensuite, nous vérifions si le théorème de Pythagore est vérifié
+// pour ce triangle en utilisant l'expression
+// (a * a + b * b == c * c) || (a * a + c * c == b * b) || (b * b + c * c == a * a).
+// Cette expression évalue si l'une des équations du théorème de Pythagore est vraie pour les longueurs données.
+// 
+// En fonction du résultat, nous affichons un message approprié en utilisant une instruction if-else.
+// Si pythagore est évalué à true, nous affichons "Le triangle est rectangle selon le théorème de Pythagore".
+// Sinon, nous affichons "Le triangle n'est pas rectangle selon le théorème de Pythagore".
+
+{
+    float a = 3.0;
+    float b = 4.0;
+    float c = 5.0;
+
+    // Vérification du théorème de Pythagore
+    boolean pythagore = (a * a + b * b == c * c) || (a * a + c * c == b * b) || (b * b + c * c == a * a);
+    
+    if (pythagore) {
+        println("Le triangle est rectangle selon le théorème de Pythagore");
+    } else {
+        println("Le triangle n'est pas rectangle selon le théorème de Pythagore");
+    }
+}
