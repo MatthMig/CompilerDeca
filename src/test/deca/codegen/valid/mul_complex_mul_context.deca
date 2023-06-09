@@ -1,0 +1,20 @@
+// Description :
+//
+//      Test contextuellement correct d'une multiplication  complexe.
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int i=99;
+    int y=((((2*3)))*((4*5))*6*(7*8))*9;
+
+    
+    i=i*y;
+    println(y);
+    println(i);
+}

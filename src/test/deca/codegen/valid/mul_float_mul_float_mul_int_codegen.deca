@@ -1,0 +1,16 @@
+// Description : 
+// 
+//      Test contextuellement correct de la multiplication  de deux floats avec un int
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 07/06/2023 par le gl03
+
+{
+    float y =3.5*2.8*5;
+    print(y);
+}

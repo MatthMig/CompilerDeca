@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test contextuellement incorrect de la division d'un string et d'un float dans une variable float
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    float y= "Bonjour"/ 3.5;
+}

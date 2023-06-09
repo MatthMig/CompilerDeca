@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test contextuellement incorrect de la division d'un int et de la variable stockant la division sans définition
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int y= 3 /  y;
+}

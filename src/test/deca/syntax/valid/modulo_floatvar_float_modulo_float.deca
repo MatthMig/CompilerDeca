@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test syntaxiquement correct de la modulo d'un float et d'un float dans une variable float
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    float y= 3.5 % 2.7;
+}

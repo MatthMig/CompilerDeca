@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test de programme syntaxiquement incorrect(enchaînement de '/' et '+').
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//    Créé le 06/06/2023 par gl03
+
+{
+    int y=3/+2;
+    print(y);
+}
