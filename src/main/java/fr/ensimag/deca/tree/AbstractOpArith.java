@@ -41,7 +41,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             this.codeGenMnemo(compiler, a, GPRegister.getR(n));
         }
 
-        else if (n < 15){
+        else if (n < compiler.getRMAX()){
             this.getLeftOperand().codeGenExp(compiler, n);
             this.getRightOperand().codeGenExp(compiler, n+1);
 
