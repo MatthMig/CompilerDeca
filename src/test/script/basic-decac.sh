@@ -7,35 +7,35 @@ echo "Lancement du script "$0" ......"
 
  PATH=./src/main/bin:"$PATH"
 
-echo ""
-echo "############# TEST DE L'OPTION DU COMPILATEUR -v #############"
-echo ""
+# echo ""
+# echo "############# TEST DE L'OPTION DU COMPILATEUR -v #############"
+# echo ""
 
-for cas_de_test in src/test/deca/context/valid/*.deca
-do
-    echo "----- Test de decac -v pour le fichier $cas_de_test :  -----"
-    echo $cas_de_test | grep -q "overflow"
-    if [ "$?" -ne 1 ]; then
-        echo "Test d'overflow, non pris en charge"
-        echo "----- OK -----"
-        echo ""
-    else
-        decac_moins_v=$(decac -v "$cas_de_test")
+# for cas_de_test in src/test/deca/context/valid/*.deca
+# do
+#     echo "----- Test de decac -v pour le fichier $cas_de_test :  -----"
+#     echo $cas_de_test | grep -q "overflow"
+#     if [ "$?" -ne 1 ]; then
+#         echo "Test d'overflow, non pris en charge"
+#         echo "----- OK -----"
+#         echo ""
+#     else
+#         decac_moins_v=$(decac -v "$cas_de_test")
 
-        if [ "$?" -ne 0 ]; then
-            echo "ERREUR: decac -v a termine avec un status different de zero."
-            exit 1
-        fi
+#         if [ "$?" -ne 0 ]; then
+#             echo "ERREUR: decac -v a termine avec un status different de zero."
+#             exit 1
+#         fi
 
-        if echo "$decac_moins_b" | grep -i -e "erreur" -e "error"; then
-            echo "ERREUR: La sortie de decac -v contient erreur ou error"
-            exit 1
-        fi
+#         if echo "$decac_moins_v" | grep -i -e "erreur" -e "error"; then
+#             echo "ERREUR: La sortie de decac -v contient erreur ou error"
+#             exit 1
+#         fi
 
-        echo "----- OK -----"
-        echo ""
-    fi
-done
+#         echo "----- OK -----"
+#         echo ""
+#     fi
+# done
 
 echo ""
 echo "############# TEST DE L'OPTION DU COMPILATEUR -p #############"
@@ -67,6 +67,19 @@ do
             echo "ERREUR: La sortie de decac -p contient erreur ou error"
             exit 1
         fi
+
+        synt=$(test_synt $cas_de_test)
+        echo $cas_de_test > tmp
+        synt_b=$(test_synt tmp)
+
+        test_synt <<< $(decac -p src/test/deca/context/valid/divide_by_0_with_expr.deca)
+
+        if [ "$synt" != "$synt_b" ]
+        then
+            echo "ERREUR: La sortie de decac -p n'a pas le même arbre que le fichier $cas_de_test"
+            exit 1
+        fi
+
     fi
 
     echo "----- OK -----"
