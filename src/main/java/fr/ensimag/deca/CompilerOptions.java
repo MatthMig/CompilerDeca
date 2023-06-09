@@ -105,6 +105,10 @@ public class CompilerOptions {
                     }
                 }
 
+                else if (arg.equals("-P")){
+                    this.parallel = true;
+                }
+    
                 else {
                     sourceFiles.add(new File(args[i]));
                 }

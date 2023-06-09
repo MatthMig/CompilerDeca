@@ -1,6 +1,13 @@
 package fr.ensimag.deca;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -12,7 +19,7 @@ import org.apache.log4j.Logger;
 public class DecacMain {
     private static Logger LOG = Logger.getLogger(DecacMain.class);
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
         // example log4j message.
         LOG.info("Decac compiler started");
         boolean error = false;
@@ -32,11 +39,26 @@ public class DecacMain {
             throw new UnsupportedOperationException("decac without argument not yet implemented");
         }
         if (options.getParallel()) {
-            // A FAIRE : instancier DecacCompiler pour chaque fichier à
-            // compiler, et lancer l'exécution des méthodes compile() de chaque
-            // instance en parallèle. Il est conseillé d'utiliser
-            // java.util.concurrent de la bibliothèque standard Java.
-            throw new UnsupportedOperationException("Parallel build not yet implemented");
+            // Initialize threads factory
+            ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
+
+            for (File source : options.getSourceFiles()) {
+                DecacCompiler compiler = new DecacCompiler(options, source);
+                results.add(execService.submit(() -> compiler.compile()));
+            }
+
+            // Wait for each thread to end to get their return code
+            for (int i = 0 ; i <= results.size() -1 ; i++){
+                if (results.get(i).get()){
+                    error = true;
+                }
+            }
+
+            // Properly finish threads factory
+            execService.shutdown();
+            execService.awaitTermination(2, TimeUnit.HOURS);
+
         } else {
             for (File source : options.getSourceFiles()) {
                 DecacCompiler compiler = new DecacCompiler(options, source);

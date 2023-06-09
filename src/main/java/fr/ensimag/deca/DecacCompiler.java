@@ -52,6 +52,7 @@ public class DecacCompiler {
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
 
     private final LabelManager labelManager = new LabelManager();
+
     
     /**
      * Portable newline character.
@@ -183,6 +184,7 @@ public class DecacCompiler {
      * @return true on error
      */
     public boolean compile() {
+        System.out.println("Starting compilation for file " + source.getAbsolutePath());
         String sourceFile = source.getAbsolutePath();
         String[] path = sourceFile.split("/");
         String sourceFileName = path[path.length-1].replace("deca", "ass");
