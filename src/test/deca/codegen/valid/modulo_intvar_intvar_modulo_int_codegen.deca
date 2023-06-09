@@ -1,0 +1,17 @@
+// Description : 
+// 
+//      Test contextuellement correct de la modulo d'une variable int et d'un int
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 07/06/2023 par le gl03
+
+{
+    int x=3;
+    int y= x%3;
+    print(y);
+}

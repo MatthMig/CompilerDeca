@@ -18,6 +18,7 @@ CPARENT: ')';
 PRINT: 'print';
 PRINTLN: 'println';
 READINT: 'readInt';
+READFLOAT: 'readFloat';
 
 // Conditions
 EXCLAM: '!';
@@ -26,6 +27,13 @@ LEQ: '<=';
 LT: '<';
 AND: '&&';
 OR: '||';
+
+PLUS: '+';
+MINUS: '-';
+TIMES: '*';
+SLASH: '/';
+PERCENT: '%';
+
 
 // Statements
 WHILE: 'while';

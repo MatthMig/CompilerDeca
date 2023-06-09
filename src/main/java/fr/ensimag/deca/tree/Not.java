@@ -33,13 +33,6 @@ public class Not extends AbstractUnaryExpr {
     }
 
     @Override
-    public void decompile(IndentPrintStream s){
-        s.print(this.getOperatorName() + "(");
-        this.getOperand().decompile(s);
-        s.print(")");
-    }
-
-    @Override
     protected String getOperatorName() {
         return "!";
     }

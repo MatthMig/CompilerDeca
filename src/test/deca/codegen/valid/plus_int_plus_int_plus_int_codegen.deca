@@ -1,0 +1,16 @@
+// Description : 
+// 
+//      Test contextuellement correct de la somme d'un int avec la somme d'un int avec la somme d'un int.
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 07/06/2023 par le gl03
+
+{
+    int y =3+2+5;
+    print(y);
+}

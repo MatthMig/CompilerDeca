@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test syntaxiquement correct de la somme d'un float et d'un int dans une variable float
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 06/06/2023 par gl03
+
+
+{
+    float y=2.5+3;
+}

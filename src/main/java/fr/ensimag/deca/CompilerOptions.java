@@ -87,13 +87,14 @@ public class CompilerOptions {
     
                 else if(arg.equals("-r")){
                     if( i < args.length -1 ){
-                        try{         
-                            if(Integer.parseInt(args[i+1]) <= 16 && Integer.parseInt(args[i+1]) > 2){
-                                this.setRMAX(Integer.parseInt(args[i+1]) - 1);
+                        try{
+                            int parsedArg = Integer.parseInt(args[i+1]);
+                            if( parsedArg <= 16 && parsedArg > 2){
+                                this.setRMAX(parsedArg - 1);
                                 System.out.println("Nombre maximum de registres mis à " + Integer.parseInt(args[i+1])  + " les registres utilisables sont les registres R0 à R" + this.getRMAX() );
                                 i++;
                             } else {
-                                throw new CLIException("L'option du compilateur \"-r\" ne prend en charge que les entiers positifs <= 16 et >= 2");
+                                throw new CLIException("L'option du compilateur \"-r\" ne prend en charge que les entiers positifs <= 16 et > 2");
                             }
                         }
                         catch(NumberFormatException nfe){

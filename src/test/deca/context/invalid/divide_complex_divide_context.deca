@@ -1,0 +1,20 @@
+// Description :
+//
+//      Test contextuellement correct d'une division complexe.
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int i=1;
+    int y=((((2/ 3)))/ ((4/ 5)));
+
+    
+    i=i/ y;
+    println(y);
+    println(i);
+}
