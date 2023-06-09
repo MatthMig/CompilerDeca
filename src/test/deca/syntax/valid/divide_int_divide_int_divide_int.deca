@@ -1,0 +1,15 @@
+// Description : 
+// 
+//      Test syntaxiquement correctde la division d'un int avec la division d'un int avec la division d'un int.
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 07/06/2023 par le gl03
+
+{
+    int y =3/ 2/ 5;
+}

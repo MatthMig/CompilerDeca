@@ -1,0 +1,16 @@
+// Description : 
+// 
+//      Test syntaxiquement correctde la soustraction d'une variable float et d'un float
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 07/06/2023 par le gl03
+
+{
+    float x=3.5;
+    float y= x-3.5;
+}

@@ -40,19 +40,19 @@ public class Assign extends AbstractBinaryExpr {
             this.setType(t1);
             return this.getType();
         }
-        throw new ContextualError(getOperatorName(), getLocation());
+        throw new ContextualError("Trying to assign value of type "+t2+" to a var of type " + t1, getLocation());
     }
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         ExpDefinition varDef = compiler.getVar(((Identifier)this.getLeftOperand()).getName());
         DAddr leftAddr = varDef.getOperand();
-        this.getRightOperand().codeGenInst(compiler);
+        this.getRightOperand().codeGenExp(compiler, 2);
 
         if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
-            compiler.addInstruction(new FLOAT(GPRegister.getR(1), GPRegister.getR(1)));
+            compiler.addInstruction(new FLOAT(GPRegister.getR(2), GPRegister.getR(2)));
         }
-        compiler.addInstruction(new STORE(GPRegister.getR(1), leftAddr));
+        compiler.addInstruction(new STORE(GPRegister.getR(2), leftAddr));
     }
     @Override
     protected String getOperatorName() {

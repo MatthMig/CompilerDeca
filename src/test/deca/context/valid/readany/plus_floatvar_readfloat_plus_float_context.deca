@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test contextuellement correct de la somme d'un readFloat et d'un float dans une variable float
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    float y= readFloat()+ 3.5;
+    print(y);
+}

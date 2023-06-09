@@ -1,0 +1,15 @@
+// Description :
+//
+//      Test contextuellement incorrect de la somme d'une comparaison et d'un int dans une variable int
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int y=  (2<3)+3;
+}

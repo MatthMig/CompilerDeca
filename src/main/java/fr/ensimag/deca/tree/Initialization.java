@@ -42,7 +42,7 @@ public class Initialization extends AbstractInitialization {
 
     @Override
     public void codeGen(DecacCompiler compiler) {
-        this.expression.codeGenInst(compiler);
+        this.expression.codeGenExp(compiler, 2);
     }
 
 

@@ -11,6 +11,8 @@ import fr.ensimag.ima.pseudocode.ImmediateFloat;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.WSTR;
+import fr.ensimag.ima.pseudocode.DVal;
+
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -56,6 +58,11 @@ public class FloatLiteral extends AbstractExpr {
     }
 
     @Override
+    protected void codeGenExp(DecacCompiler compiler, int n) {
+        compiler.addInstruction(new LOAD(this.getValue(), GPRegister.getR(n)));
+    }
+
+    @Override
     public void decompile(IndentPrintStream s) {
         s.print(java.lang.Float.toHexString(value));
     }
@@ -64,6 +71,12 @@ public class FloatLiteral extends AbstractExpr {
     String prettyPrintNode() {
         return "Float (" + getValue() + ")";
     }
+
+    @Override
+    protected DVal dval(DecacCompiler compiler) {
+        return new ImmediateFloat(this.value);            
+    }
+
 
     @Override
     protected void iterChildren(TreeFunction f) {

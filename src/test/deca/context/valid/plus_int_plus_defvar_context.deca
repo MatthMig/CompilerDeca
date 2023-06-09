@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test contextuellement correct de la somme de la variable stockant la somme avec définition et d'un int.
+// 
+// Résultats : 
+// 
+//      N/A
+//
+// Historique :
+// 
+//      Créé le 07/06/2023 par gl03
+
+{
+    int y=3;
+    y= y+2;
+}
