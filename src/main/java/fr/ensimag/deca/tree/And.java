@@ -17,7 +17,6 @@ public class And extends AbstractOpBool {
     @Override
     public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
         // 2 different cases for AND whether neg is true or false
-        compiler.addComment("and." + compiler.getLabelCount());
         if (neg) {
             Label endLabel = new Label("endAnd."+ compiler.getLabelCount());
             compiler.incrementLabelCount();

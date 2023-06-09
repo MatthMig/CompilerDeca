@@ -38,21 +38,22 @@ public class While extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        Label labelWhile = new Label("while."+compiler.getLabelCount());
-        Label labelEndWhile = new Label("endWhile."+compiler.getLabelCount());
+        Label labelWhileLoop = new Label("whileLoop."+compiler.getLabelCount());
+        Label labelWhileCond = new Label("whileCond."+compiler.getLabelCount());
         compiler.incrementLabelCount();
-        compiler.addLabel(labelWhile);
-        condition.codeGenCondition(compiler, false, labelEndWhile);
+        compiler.addInstruction(new BRA(labelWhileCond));
+        compiler.addLabel(labelWhileLoop);
         body.codeGenListInst(compiler);
-        compiler.addInstruction(new BRA(labelWhile));
-        compiler.addLabel(labelEndWhile);
+        compiler.addLabel(labelWhileCond);
+        condition.codeGenCondition(compiler, true, labelWhileLoop);
 
-        // while_x:
-        // condition
-        // Faux : end_while_x
+        // Jump whileCond
+        // whileLoop:
         // code corps de la boucle
-        // Jump while_x
-        // end_while_x:
+        // whileCond:
+        // condition
+        // Vrai : whileLoop
+
     }
 
     @Override
