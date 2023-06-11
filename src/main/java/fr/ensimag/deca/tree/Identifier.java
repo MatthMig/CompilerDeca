@@ -15,10 +15,19 @@ import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.ima.pseudocode.DVal;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.BRA;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.BNE;
+import fr.ensimag.ima.pseudocode.ImmediateInteger;
+import fr.ensimag.ima.pseudocode.Label;
+
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -178,6 +187,7 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+
         if(localEnv.get(this.name) != null){
             this.setType(localEnv.get(this.name).getType());
             this.setDefinition(localEnv.get(this.name));
@@ -221,6 +231,18 @@ public class Identifier extends AbstractIdentifier {
         if(this.getType() == compiler.environmentType.FLOAT){
             compiler.addInstruction(new WFLOAT());
         }
+        if(this.getType() == compiler.environmentType.BOOLEAN){
+            Label[] labels = compiler.getLabelManager().createBooleanVarPrintLabel();
+
+            compiler.addInstruction(new CMP(1, GPRegister.getR(1)));
+            compiler.addInstruction(new BEQ(labels[0]));
+            compiler.addInstruction(new WSTR("false"));
+            compiler.addInstruction(new BRA(labels[1]));
+            compiler.addLabel(labels[0]);
+            compiler.addInstruction(new WSTR("true"));
+            compiler.addLabel(labels[1]);
+
+        }
     }
 
     @Override
@@ -231,6 +253,27 @@ public class Identifier extends AbstractIdentifier {
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
         compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.getR(n)));
+    }
+
+    @Override
+    public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label labelElse) {
+        compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.R1));
+        compiler.addInstruction(new CMP(new ImmediateInteger(1),Register.R1));
+        if(!neg){
+            compiler.addInstruction(new BNE(labelElse));
+        }
+        else{
+            compiler.addInstruction(new BEQ(labelElse));
+        }
+    }
+
+    @Override
+    public void verifyCondition(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
+            throws ContextualError {
+        Type t = verifyExpr(compiler, localEnv, currentClass);
+        if(!t.isBoolean()){
+            throw new ContextualError("error when trying to use var " + this.getName() + " of type " + this.getType() + " as a condition.", getLocation());
+        }
     }
 
     @Override
@@ -253,5 +296,7 @@ public class Identifier extends AbstractIdentifier {
             s.println();
         }
     }
+
+
 
 }

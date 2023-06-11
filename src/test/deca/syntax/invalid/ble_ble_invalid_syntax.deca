@@ -1,0 +1,15 @@
+// Description : 
+// 
+//      Test syntaxiquement incorrect qui ne reconnaît pas "=<"
+// 
+// Resultat : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    =<;
+}

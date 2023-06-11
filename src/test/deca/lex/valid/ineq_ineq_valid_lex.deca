@@ -1,0 +1,15 @@
+// Description : 
+// 
+//      Test lexicalement correct qui reconnait les tokens "=" et "!"
+// 
+// Resultat : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    =!;
+}

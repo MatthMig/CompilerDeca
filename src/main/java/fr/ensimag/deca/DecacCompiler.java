@@ -1,6 +1,5 @@
 package fr.ensimag.deca;
 
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
@@ -14,7 +13,6 @@ import fr.ensimag.deca.tree.LocationException;
 import fr.ensimag.ima.pseudocode.AbstractLine;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.IMAProgram;
-import fr.ensimag.ima.pseudocode.ImmediateInteger;
 import fr.ensimag.ima.pseudocode.Instruction;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
@@ -25,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -50,10 +47,9 @@ import org.apache.log4j.Logger;
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private int varCount = 0;
+    private int stackSize = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
-
-    private final LabelManager labelManager = new LabelManager();
-
+    private final LabelManager labelManager;
     /**
      * Portable newline character.
      */
@@ -62,20 +58,17 @@ public class DecacCompiler {
     public DecacCompiler(CompilerOptions compilerOptions, File source) {
         super();
         this.compilerOptions = compilerOptions;
+        this.labelManager = new LabelManager();
         this.source = source;
+        this.stackSize = 0;
     }
 
-    public Label[] createWhileLabels() {
-        return labelManager.createWhileLabels();
+    public LabelManager getLabelManager(){
+        return this.labelManager;
     }
 
-    public Label[] createIfLabels() {
-        return labelManager.createIfLables();
-    }
-
-
-    public Label createIfLabel() {
-        return labelManager.createIfLabel();
+    public int getLabelCount(){
+        return this.labelManager.getLabelCount();
     }
 
     public int getRMAX(){
@@ -84,6 +77,14 @@ public class DecacCompiler {
 
     public boolean getNoCheck() {
         return compilerOptions.getNoCheck();
+    }
+
+    public int getStackSize(){
+        return this.stackSize;
+    }
+
+    public void incrementStackSize(){
+        this.stackSize += 1;
     }
 
     /**
@@ -139,6 +140,14 @@ public class DecacCompiler {
      */
     public void addInstruction(Instruction instruction, String comment) {
         program.addInstruction(instruction, comment);
+    }
+    /**
+     * @see
+     * fr.ensimag.ima.pseudocode.IMAProgram#addFirst(fr.ensimag.ima.pseudocode.Instruction,
+     * java.lang.String)
+     */
+    public void addFirst(Instruction instruction, String comment) {
+        program.addFirst(instruction, comment);
     }
 
     /**
@@ -303,10 +312,6 @@ public class DecacCompiler {
         DecaParser parser = new DecaParser(tokens);
         parser.setDecacCompiler(this);
         return parser.parseProgramAndManageErrors(err);
-    }
-
-    public int getVarCount() {
-        return this.varList.size();
     }
 
 }

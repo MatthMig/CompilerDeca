@@ -7,7 +7,6 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.BRA;
 
 import java.io.PrintStream;
@@ -38,28 +37,31 @@ public class While extends AbstractInst {
     }
 
     @Override
+    /**
+     * Generates
+     * Jump whileCond
+     * whileLoop:
+     * loop body
+     * whileCond:
+     * condition
+     * True : whileLoop
+     * @param compiler
+     */
     protected void codeGenInst(DecacCompiler compiler) {
-        //throw new UnsupportedOperationException("not yet implemented");
-        Label[] labels = compiler.createWhileLabels();
-        compiler.addInstruction(new BRA(labels[1]), null); 
-        compiler.add(new Line(labels[0]));                          // while_X:
-        body.codeGenListInst(compiler);                             // code corps de la boucle
-        compiler.add(new Line(labels[1]));                          // cond_while_X
-        condition.codeGenCondition(compiler, false, labels[0]);                            // code condition (CMP % % + BCC end_while_X)
-
-        // BRA label2
-        // label1:
-        // ...
-        //compiler.addInstruction(new BRA())), null);
-        // label2
+        Label[] whenLabels = compiler.getLabelManager().createWhileLabels(); // we create 2 labels for the while statement
+        compiler.addInstruction(new BRA(whenLabels[1]));   // add a jump to the 'whileCond' label
+        compiler.addLabel(whenLabels[0]);                  // add a 'whileBody' label
+        body.codeGenListInst(compiler);                    // generate the 'while' body
+        compiler.addLabel(whenLabels[1]);                  // add a 'whileCond' label
+        condition.codeGenCondition(compiler, true, whenLabels[0]); // generate the condition
     }
 
     @Override
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
-            condition.verifyCondition(compiler, localEnv, currentClass);
-            body.verifyListInst(compiler, localEnv, currentClass, returnType);
+            condition.verifyCondition(compiler, localEnv, currentClass);       // verify the condition
+            body.verifyListInst(compiler, localEnv, currentClass, returnType); // then the 'while' body
     }
 
     @Override

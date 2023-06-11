@@ -19,12 +19,18 @@ PRINT: 'print';
 PRINTLN: 'println';
 READINT: 'readInt';
 READFLOAT: 'readFloat';
+TRUE: 'true';
+FALSE: 'false';
 
 // Conditions
+NEQ: '!=';
 EXCLAM: '!';
 EQEQ: '==';
+EQUALS: '=';
 LEQ: '<=';
 LT: '<';
+GEQ: '>=';
+GT: '>';
 AND: '&&';
 OR: '||';
 
@@ -42,7 +48,6 @@ ELSE: 'else';
 
 SEMI: ';';
 COMMA: ',';
-EQUALS: '=';
 
 // Deca lexer rules.
 //p.45

@@ -1,9 +1,6 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.DecacCompiler;
-import fr.ensimag.deca.context.ClassDefinition;
-import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.ima.pseudocode.Label;
 
 /**
@@ -24,12 +21,16 @@ public class Or extends AbstractOpBool {
 
     @Override
     public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
-        // Vérifier la condition de gauche
-        //  => si vrai, on execute le corps de la condition
-        //  => sinon on vérifie le membre de droite
-        Label ifLabel = compiler.createIfLabel();
-        getLeftOperand().codeGenCondition(compiler, !neg, ifLabel);
-        getRightOperand().codeGenCondition(compiler, neg, label);
-        compiler.addLabel(ifLabel);
+        // 2 different cases for OR whether neg is true or false (same as AND the other way around)
+        if (!neg) {
+            // a new label is needed in that case (same as AND)
+            Label endLabel = compiler.getLabelManager().createAndLabel();
+            getLeftOperand().codeGenCondition(compiler, !neg, endLabel);
+            getRightOperand().codeGenCondition(compiler, neg, label);
+            compiler.addLabel(endLabel);
+        } else {
+            getLeftOperand().codeGenCondition(compiler, neg, label);
+            getRightOperand().codeGenCondition(compiler, neg, label);
+        }
     }
 }

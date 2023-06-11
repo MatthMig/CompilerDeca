@@ -1,0 +1,17 @@
+// Description :
+//
+//      Test syntaxiquement incorrect de : boolean b <=
+//      
+// 
+// Résultats : 
+// 
+//      N/A 
+//
+// Historique :
+// 
+//    Créé le 09/06/2023 par gl03
+
+{ 
+    boolean b;
+    boolean y = b<=; 
+}

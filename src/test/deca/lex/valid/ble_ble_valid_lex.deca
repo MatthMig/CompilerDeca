@@ -1,0 +1,15 @@
+// Description : 
+// 
+//      Test lexicalement correct qui reconnaît le token "=" puis le token "<"
+// 
+// Resultat : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    =<;
+}

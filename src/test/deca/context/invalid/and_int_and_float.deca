@@ -1,0 +1,15 @@
+// Description :
+// 
+//      Test syntaxiquement correct de 3.0&&5.0
+// 
+// Résultats : 
+// 
+//      N/A
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    boolean y = 3&&5.0;
+}

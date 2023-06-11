@@ -4,6 +4,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.SUB;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
 
 /**
  * @author gl03
@@ -16,12 +17,15 @@ public class Minus extends AbstractOpArith {
 
     @Override
     protected void codeGenMnemo(DecacCompiler compiler, DVal a, GPRegister b) {
-        compiler.addInstruction(new SUB(a, b)); // ouff trop difficile
+        compiler.addInstruction(new SUB(a, b));
+        if(!compiler.getNoCheck())
+            compiler.addInstruction(new BOV(compiler.getLabelManager().getOverflowLabel()));
+
     }
 
     @Override
     protected String getOperatorName() {
         return "-";
     }
-    
+
 }

@@ -61,6 +61,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
         else{
             this.getLeftOperand().codeGenExp(compiler, n);
+            compiler.incrementStackSize();
             compiler.addInstruction(new PUSH(GPRegister.getR(n)),"sauvegarde");
             this.getRightOperand().codeGenExp(compiler, n);
 

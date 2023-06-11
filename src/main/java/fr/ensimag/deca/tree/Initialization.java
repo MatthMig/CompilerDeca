@@ -37,7 +37,25 @@ public class Initialization extends AbstractInitialization {
     protected void verifyInitialization(DecacCompiler compiler, Type t,
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
-        this.expression.verifyExpr(compiler, localEnv, currentClass);
+        Type t2 = this.expression.verifyExpr(compiler, localEnv, currentClass);
+
+
+        // If i implicitly initialize a float with an int value.
+        if(t2 == compiler.environmentType.INT &&
+            t == compiler.environmentType.FLOAT ){
+            this.setExpression(new ConvFloat(this.getExpr()));
+            t2 = this.getExpression().verifyExpr(compiler, localEnv, currentClass);
+        }
+
+        else if(t2 == compiler.environmentType.FLOAT &&
+            t == compiler.environmentType.INT ){
+                throw new ContextualError("impossible conversion from float to int", getLocation());
+        }
+
+        // If i assign anything that isn't same type and isn't convFloat
+        else if(t2 != t){
+            throw new ContextualError("trying to asign a var of type " + t2 + " to a variable of type "+ t, getLocation());
+        }
     }
 
     @Override

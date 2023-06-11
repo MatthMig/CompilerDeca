@@ -19,8 +19,6 @@ public class ConvFloat extends AbstractUnaryExpr {
         super(operand);
     }
 
-    // vous êtes nuls vous avez pas implémentés du coup on doit faire de la merde et Emilien il est pas content
-    // Le contenu du if (!compiler.getNoCheck()) devra être remplacé par la gestion des erreurs de la fonction lors de son implémentation
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) {

@@ -20,7 +20,8 @@ public class Divide extends AbstractOpArith {
     @Override
     protected void codeGenMnemo(DecacCompiler compiler, DVal a, GPRegister b) {
         compiler.addInstruction(new DIV(a, b));
-        compiler.addInstruction(new BOV(new Label("zeroDivision_error")));
+        if(!compiler.getNoCheck())
+            compiler.addInstruction(new BOV(compiler.getLabelManager().getZeroDivisionLabel()));
     }
 
 

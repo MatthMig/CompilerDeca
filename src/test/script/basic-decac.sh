@@ -55,17 +55,17 @@ do
         echo ""
     else
         decac -p "$cas_de_test" > tmp
-        decac_moins_b=$(cat tmp)
+        decac_moins_p=$(cat tmp)
 
         if [ "$?" -ne 0 ]; then
             echo "ERREUR: decac -p a termine avec un status different de zero."
             echo "----- KO -----"
 
-        elif [ "$decac_moins_b" = "" ]; then
+        elif [ "$decac_moins_p" = "" ]; then
             echo "ERREUR: decac -p n'a produit aucune sortie"
             echo "----- KO -----"
 
-        elif echo "$decac_moins_b" | grep -i -e "erreur" -e "error"; then
+        elif echo "$decac_moins_p" | grep -i -e "erreur" -e "error"; then
             echo "ERREUR: La sortie de decac -p contient erreur ou error"
             echo "----- KO -----"
 
