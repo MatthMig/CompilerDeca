@@ -253,8 +253,6 @@ public class DecacCompiler {
             prog.verifyProgram(this);
         }
         else if(this.compilerOptions.getDecompile()){
-            prog.verifyProgram(this);
-            assert(prog.checkAllDecorations());
             System.out.println(prog.decompile());
         }
         else{

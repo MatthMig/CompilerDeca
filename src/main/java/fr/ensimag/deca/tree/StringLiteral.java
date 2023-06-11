@@ -47,7 +47,7 @@ public class StringLiteral extends AbstractStringLiteral {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        s.print("\"" + this.value + "\"");
+        s.print(this.value);
     }
 
     @Override
@@ -59,7 +59,7 @@ public class StringLiteral extends AbstractStringLiteral {
     protected void prettyPrintChildren(PrintStream s, String prefix) {
         // leaf node => nothing to do
     }
-    
+
     @Override
     String prettyPrintNode() {
         return "StringLiteral (" + value + ")";
