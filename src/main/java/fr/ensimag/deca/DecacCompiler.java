@@ -261,7 +261,6 @@ public class DecacCompiler {
             prog.codeGenProgram(this);
             addComment("end main program");
             LOG.debug("Generated assembly code:" + nl + program.display());
-            System.out.println("Output file assembly file is: " + destName);
         }
 
         FileOutputStream fstream = null;
