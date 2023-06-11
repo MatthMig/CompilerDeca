@@ -46,11 +46,13 @@ public class DeclVar extends AbstractDeclVar {
             throws ContextualError {
         Type t = this.type.verifyType(compiler);
         this.initialization.verifyInitialization(compiler, t, localEnv, currentClass);
+        this.varName.setType(t);
 
         VariableDefinition vardef = new VariableDefinition(t, getLocation());
         TypeDefinition tdef = compiler.environmentType.defOfType(type.getName());
         varName.setDefinition(vardef);
         type.setDefinition(tdef);
+
         try {
             localEnv.declare(varName.getName(), vardef);
         } catch(DoubleDefException e) {
@@ -58,35 +60,14 @@ public class DeclVar extends AbstractDeclVar {
             throw new ContextualError(message, getLocation());
         }
 
-        if(this.initialization.getClass() != NoInitialization.class ){
-            // If i implicitly initialize a float with an int value.
-            if(((Initialization)this.initialization).getExpr().getType() == compiler.environmentType.INT &&
-                this.varName.getDefinition().getType() == compiler.environmentType.FLOAT ){
-                ((Initialization)this.initialization).setExpression(new ConvFloat(((Initialization)this.initialization).getExpr()));
-                ((Initialization)this.initialization).getExpression().verifyExpr(compiler, localEnv, currentClass);
-            }
-
-            else if(((Initialization)this.initialization).getExpr().getType() == compiler.environmentType.FLOAT &&
-                this.varName.getDefinition().getType() == compiler.environmentType.INT ){
-                    throw new ContextualError("impossible conversion from float to int", getLocation());
-            }
-
-            // If i assign anything that isn't same type and isn't convFloat
-            else if(((Initialization)this.initialization).getExpr().getClass() == Identifier.class){
-                if(((Identifier)((Initialization)this.initialization).getExpr()).getType() != varName.getDefinition().getType()){
-                    throw new ContextualError("trying to asign a var of type " + ((Identifier)((Initialization)this.initialization).getExpr()).getType() + " to a variable of type "+ varName.getDefinition().getType(), getLocation());
-                }
-            }
-
-        }
-        // Compiler now knows he has this variable
-        DAddr addr = compiler.allocate();
-        ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
-        compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
     }
 
     @Override
     public void codeGen(DecacCompiler compiler) {
+        // Compiler now knows he has this variable
+        DAddr addr = compiler.allocate();
+        ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
+        compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
 
         if (initialization.getClass() != NoInitialization.class ){
             this.initialization.codeGen(compiler);

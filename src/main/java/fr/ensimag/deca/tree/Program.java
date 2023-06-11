@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
  */
 public class Program extends AbstractProgram {
     private static final Logger LOG = Logger.getLogger(Program.class);
-    
+
     public Program(ListDeclClass classes, AbstractMain main) {
         Validate.notNull(classes);
         Validate.notNull(main);
@@ -39,7 +39,7 @@ public class Program extends AbstractProgram {
     public void verifyProgram(DecacCompiler compiler) throws ContextualError {
         LOG.debug("verify program: start");
         main.verifyMain(compiler);
-        LOG.debug("verify program: end");   
+        LOG.debug("verify program: end");
     }
 
     @Override
@@ -53,10 +53,17 @@ public class Program extends AbstractProgram {
         compiler.addInstruction(new WNL());
         compiler.addInstruction(new ERROR());
 
-        compiler.addLabel(new Label("zeroDivision_error"));
-        compiler.addInstruction(new WSTR("Error : Division by zero"));
-        compiler.addInstruction(new WNL());
-        compiler.addInstruction(new ERROR());
+        if(!compiler.getNoCheck()){
+            compiler.addLabel(compiler.getLabelManager().getOverflowLabel());
+            compiler.addInstruction(new WSTR("Error : Overflow on an arithmetic operation"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
+
+            compiler.addLabel(compiler.getLabelManager().getZeroDivisionLabel());
+            compiler.addInstruction(new WSTR("Error : Division by zero"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
+        }
     }
 
     @Override
@@ -64,7 +71,7 @@ public class Program extends AbstractProgram {
         getClasses().decompile(s);
         getMain().decompile(s);
     }
-    
+
     @Override
     protected void iterChildren(TreeFunction f) {
         classes.iter(f);

@@ -8,6 +8,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.REM;
 
 /**
@@ -26,11 +27,11 @@ public class Modulo extends AbstractOpArith {
             ClassDefinition currentClass) throws ContextualError {
         Type leftOperand;
         Type rightOperand;
-        
+
         leftOperand = this.getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         rightOperand = this.getRightOperand().verifyExpr(compiler, localEnv, currentClass);
 
-        
+
         // if one of the operands is not an int: problem !
         if ((! leftOperand.isInt()) || (! rightOperand.isInt())) {
             throw new ContextualError("modulo is only allowed for integers",this.getLocation());
@@ -45,6 +46,8 @@ public class Modulo extends AbstractOpArith {
     @Override
     protected void codeGenMnemo(DecacCompiler compiler, DVal a, GPRegister b) {
         compiler.addInstruction(new REM(a, b));
+        if(!compiler.getNoCheck())
+            compiler.addInstruction(new BOV(compiler.getLabelManager().getZeroDivisionLabel()));
     }
 
     @Override

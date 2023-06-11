@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test contextuellement incorrect de true!=true
+//
+// Résultats :
+//
+//      N/A
+//
+// Historique :
+//
+//      Créé le 09/06/2023 par gl03
+
+{
+    boolean y = true!=true;
+}
+

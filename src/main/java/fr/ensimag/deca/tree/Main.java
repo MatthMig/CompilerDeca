@@ -4,6 +4,7 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -43,10 +44,11 @@ public class Main extends AbstractMain {
     @Override
     protected void codeGenMain(DecacCompiler compiler) {
         // Place stack pointer
-        compiler.addInstruction(new ADDSP(compiler.getVarCount()));
         compiler.addComment("Beginning of main instructions:");
         declVariables.codeGenDeclVar(compiler);
         insts.codeGenListInst(compiler);
+        compiler.addFirst(new ADDSP(this.declVariables.getList().size()), "number of vars");
+        compiler.addFirst(new TSTO(compiler.getStackSize()), "size of stack needed");
     }
 
     @Override

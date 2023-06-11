@@ -1,0 +1,16 @@
+// Description :
+// 
+//      Test et false gauche
+// 
+// Résultats : 
+// 
+//      N/A
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    boolean y = false&&true;
+    println(y);
+}

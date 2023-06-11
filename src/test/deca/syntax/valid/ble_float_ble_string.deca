@@ -1,0 +1,16 @@
+// Description :
+// 
+//      Test syntaxiquement correct de 2.5<="Bonjour"
+// 
+// Résultats : 
+// 
+//      N/A
+// 
+// Historique : 
+// 
+//      Créé le 09/06/2023 par gl03
+
+{
+    boolean y = 2.5<="Bonjour";
+}
+

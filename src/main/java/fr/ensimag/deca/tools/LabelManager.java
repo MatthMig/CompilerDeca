@@ -3,34 +3,104 @@ package fr.ensimag.deca.tools;
 import fr.ensimag.ima.pseudocode.Label;
 
 public class LabelManager {
-    
-    private int whileCount;
-    private int ifCount;
-    private int ifOnlyCount;
+
+    private int labelCount;
+    private Label overflowLabel = new Label("overflow_error");
+    private Label zeroDivisionLabel = new Label("zeroDivision_error");
+    /**
+     * Getter of the lowest free label integer
+     * @return lowest free label int
+     */
+    public int getLabelCount() {
+        return this.labelCount;
+    }
 
     public LabelManager() {
-        whileCount = 0;
-        ifCount = 0;
+        this.labelCount = 1;
     }
 
+    /**
+     * Creates 2 labels with the given prefix, a dot and the label count as a suffix
+     * @param prefix The prefix of the label
+     * @return An array of 2 labels
+     */
+    private Label createLabel(String prefix) {
+        return new Label(prefix + "." + labelCount);
+    }
+
+    /**
+     * Returns 2 labels for a while node
+     * @return An array of 2 labels
+     */
     public Label[] createWhileLabels() {
-        Label[] l = new Label[2];
-        l[0] = new Label("while_" + whileCount);
-        l[1] = new Label("cond_while_" + whileCount);
-        whileCount++;
-        return l;
+        Label[] labels = new Label[]{
+            createLabel("whileBody"),
+            createLabel("whileCond")
+        };
+        this.labelCount += 1;
+        return labels;
     }
 
-    public Label[] createIfLables() {
-        Label[] l = new Label[2];
-        l[0] = new Label("else_" + ifCount);
-        l[1] = new Label("end_if_" + ifCount);
-        ifCount++;
-        return l;
+    /**
+     * Returns 2 labels for an if node
+     * @return An array of 2 labels
+     */
+    public Label[] createIfLabels() {
+        Label[] labels = new Label[]{
+            createLabel("else"),
+            createLabel("endif")
+        };
+        this.labelCount += 1;
+        return labels;
     }
 
-	public Label createIfLabel() {
-        ifOnlyCount++;
-        return new Label("if_only_" + ifOnlyCount);
-	}
+    /**
+     * Returns 2 labels for an AND or OR node
+     * @return label
+     */
+    public Label createAndLabel() {
+        Label label = createLabel("endAnd");
+        this.labelCount += 1;
+        return label;
+    }
+
+    /**
+     * Returns 2 labels for an AND or OR or NOT node when generating an expression
+     * @return label
+     */
+    public Label [] createBooleanExpLabel() {
+        Label[] labels = new Label[]{
+            createLabel("false"),
+            createLabel("endBooleanExp")
+        };
+        return labels;
+    }
+
+    /**
+     * Returns 2 labels for Boolean variable print
+     * @return labels
+     */
+    public Label [] createBooleanVarPrintLabel() {
+        Label[] labels = new Label[]{
+            createLabel("truePrint"),
+            createLabel("endPrint")
+        };
+        return labels;
+    }
+
+    /**
+     * Returns the Overflow label
+     * @return label
+     */
+    public Label getOverflowLabel(){
+        return this.overflowLabel;
+    }
+
+    /**
+     * Returns the ZeroDivision label
+     * @return label
+     */
+    public Label getZeroDivisionLabel(){
+        return this.zeroDivisionLabel;
+    }
 }
