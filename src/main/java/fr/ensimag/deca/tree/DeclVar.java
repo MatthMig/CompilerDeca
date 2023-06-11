@@ -99,7 +99,6 @@ public class DeclVar extends AbstractDeclVar {
         type.decompile(s);
         s.print(" ");
         varName.decompile(s);
-        s.print("=");
         initialization.decompile(s);
         s.print(";");
         s.println();

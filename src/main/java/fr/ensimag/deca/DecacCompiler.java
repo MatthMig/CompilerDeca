@@ -185,7 +185,8 @@ public class DecacCompiler {
      * @return true on error
      */
     public boolean compile() {
-        System.out.println("Starting compilation for file " + source.getAbsolutePath());
+        if(this.getCompilerOptions().getParallel())
+            System.out.println("Starting compilation for file " + source.getAbsolutePath());
         String sourceFile = source.getAbsolutePath();
         String[] path = sourceFile.split("/");
         String sourceFileName = path[path.length-1].replace("deca", "ass");
@@ -252,8 +253,6 @@ public class DecacCompiler {
             prog.verifyProgram(this);
         }
         else if(this.compilerOptions.getDecompile()){
-            prog.verifyProgram(this);
-            assert(prog.checkAllDecorations());
             System.out.println(prog.decompile());
         }
         else{
@@ -262,7 +261,6 @@ public class DecacCompiler {
             prog.codeGenProgram(this);
             addComment("end main program");
             LOG.debug("Generated assembly code:" + nl + program.display());
-            System.out.println("Output file assembly file is: " + destName);
         }
 
         FileOutputStream fstream = null;
