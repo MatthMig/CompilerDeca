@@ -14,7 +14,7 @@
     int b = 5;
     int addition = a + b;
     int soustraction = a - b;
-    int division = a / b;
+    float division = a / b;
     int modulo = a % b;
     int multiplication = a * b;
 
@@ -45,9 +45,6 @@
 
     int nombre = 10;
 
-
-    // Affichage
-    String message = "Hello, world!";
 
 
 
@@ -84,10 +81,4 @@
         println("Le nombre est nul");
     }
 
-    print("Affichage sans saut de ligne : ");
-    print(message);
-    println();
-
-    println("Affichage avec saut de ligne : ");
-    println(message);
 }
