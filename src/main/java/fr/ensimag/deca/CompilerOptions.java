@@ -110,6 +110,10 @@ public class CompilerOptions {
                 else if (arg.equals("-P")){
                     this.parallel = true;
                 }
+
+                else if (arg.equals("-b")){
+                    this.printBanner = true;
+                }
     
                 else {
                     sourceFiles.add(new File(args[i]));
@@ -160,13 +164,13 @@ public class CompilerOptions {
         logoBuilder.append("G   GGG   L        0    0   3  \n");
 
         // Building the fifth line of the logo
-        logoBuilder.append("G     G  L        0    0   3  \n");
+        logoBuilder.append("G     G   L        0    0   3  \n");
 
         // Building the sixth line of the logo
-        logoBuilder.append(" G     G L        0    0    3 \n");
+        logoBuilder.append(" G     G  L        0    0    3 \n");
 
         // Building the seventh line of the logo
-        logoBuilder.append("  GGGGG  LLLLLLL   0000  3333\n");
+        logoBuilder.append("  GGGGG   LLLLLLL   0000  3333\n");
 
         return logoBuilder.toString();
 

@@ -33,10 +33,11 @@ public class DecacMain {
             System.exit(1);
         }
         if (options.getPrintBanner()) {
-            throw new UnsupportedOperationException("decac -b not yet implemented");
+            System.out.println(options.getLogo());
         }
         if (options.getSourceFiles().isEmpty()) {
-            throw new UnsupportedOperationException("decac without argument not yet implemented");
+            System.err.println("Error in command syntax : No file provided to compile.");
+            options.displayUsage();
         }
         if (options.getParallel()) {
             // Initialize threads factory
