@@ -52,27 +52,27 @@
 
 
 
-    println("Addition : " + addition);
-    println("Soustraction : " + soustraction);
-    println("Division : " + division);
-    println("Modulo : " + modulo);
-    println("Multiplication : " + multiplication);
+    println("Addition : " , addition);
+    println("Soustraction : " , soustraction);
+    println("Division : " , division);
+    println("Modulo : " , modulo);
+    println("Multiplication : " , multiplication);
 
-    println("ET logique : " + et);
-    println("OU logique : " + ou);
+    println("ET logique : " , et);
+    println("OU logique : " , ou);
 
-    println("Supérieur ou égal : " + superieurOuEgal);
-    println("Supérieur : " + superieur);
-    println("Inférieur ou égal : " + inferieurOuEgal);
-    println("Inférieur : " + inferieur);
+    println("Supérieur ou égal : " , superieurOuEgal);
+    println("Supérieur : " , superieur);
+    println("Inférieur ou égal : " ,inferieurOuEgal);
+    println("Inférieur : " , inferieur);
     println("Non : " + non);
-    println("Différent : " + different);
-    println("Égal : " + egal);
+    println("Différent : " , different);
+    println("Égal : " , egal);
 
 
     while (i < 5) {
-        print(i + " ");
-        i++;
+        print(i , " ");
+        i = i+1;
     }
     println();
 

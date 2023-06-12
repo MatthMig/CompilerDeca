@@ -15,5 +15,5 @@
     // Calcul de la longueur inconnue c2
     float c2 = (c1 * b2) / b1;
 
-    println("La longueur inconnue c2 est : " + c2);
+    println("La longueur inconnue c2 est : " , c2);
 }
