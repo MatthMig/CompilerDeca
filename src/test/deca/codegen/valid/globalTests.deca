@@ -18,11 +18,7 @@
     int modulo = a % b;
     int multiplication = a * b;
 
-    println("Addition : " + addition);
-    println("Soustraction : " + soustraction);
-    println("Division : " + division);
-    println("Modulo : " + modulo);
-    println("Multiplication : " + multiplication);
+
 
     // Opérations logiques
     boolean vrai = true;
@@ -30,8 +26,6 @@
     boolean et = vrai && faux;
     boolean ou = vrai || faux;
 
-    println("ET logique : " + et);
-    println("OU logique : " + ou);
 
     // Opérations de comparaison
     int x = 5;
@@ -44,6 +38,29 @@
     boolean different = x != y;
     boolean egal = x == y;
 
+
+    // Instructions de contrôle
+    int i = 0;
+
+
+    int nombre = 10;
+
+
+    // Affichage
+    String message = "Hello, world!";
+
+
+
+
+    println("Addition : " + addition);
+    println("Soustraction : " + soustraction);
+    println("Division : " + division);
+    println("Modulo : " + modulo);
+    println("Multiplication : " + multiplication);
+
+    println("ET logique : " + et);
+    println("OU logique : " + ou);
+
     println("Supérieur ou égal : " + superieurOuEgal);
     println("Supérieur : " + superieur);
     println("Inférieur ou égal : " + inferieurOuEgal);
@@ -52,15 +69,13 @@
     println("Différent : " + different);
     println("Égal : " + egal);
 
-    // Instructions de contrôle
-    int i = 0;
+
     while (i < 5) {
         print(i + " ");
         i++;
     }
     println();
 
-    int nombre = 10;
     if (nombre > 0) {
         println("Le nombre est positif");
     } else if (nombre < 0) {
@@ -69,8 +84,6 @@
         println("Le nombre est nul");
     }
 
-    // Affichage
-    String message = "Hello, world!";
     print("Affichage sans saut de ligne : ");
     print(message);
     println();

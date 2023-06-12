@@ -9,12 +9,12 @@
 // Sinon, nous affichons "Les longueurs ne sont pas proportionnelles selon le théorème de Thalès"
 
 {    
-    double a1 = 3.0;
-    double a2 = 5.0;
-    double b1 = 2.0;
-    double b2 = 4.0;
-    double c1 = 6.0;
-    double c2 = 10.0;
+    float a1 = 3.0;
+    float a2 = 5.0;
+    float b1 = 2.0;
+    float b2 = 4.0;
+    float c1 = 6.0;
+    float c2 = 10.0;
 
     // Vérification du théorème de Thalès
     boolean thales = (a1 / a2 == b1 / b2) && (b1 / b2 == c1 / c2);
