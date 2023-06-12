@@ -1,0 +1,16 @@
+Addition : 15
+Soustraction : 5
+Division : 2.00000e+00
+Modulo : 0
+Multiplication : 50
+ET logique : false
+OU logique : true
+Supérieur ou égal : false
+Supérieur : false
+Inférieur ou égal : true
+Inférieur : true
+Non : false
+Différent : true
+Égal : false
+0 1 2 3 4 
+Le nombre est positif

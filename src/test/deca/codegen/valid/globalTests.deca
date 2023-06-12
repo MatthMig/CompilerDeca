@@ -1,0 +1,84 @@
+// Description:
+// Cet exemple utilise toutes les opérations implémentées:
+
+// Opérations arithmétiques : addition, soustraction, division, modulo et multiplication.
+// Opérations logiques : ET (&&) et OU (||).
+// Opérations de comparaison : supérieur ou égal (>=), supérieur (>), inférieur ou égal (<=), inférieur (<), non (!), différent (!=) et égal (==).
+// Instructions de contrôle : boucle while et structure if-else.
+// Affichage : print et println pour afficher du texte.
+
+// Cet algorithme effectue divers calculs et affiche les résultats à l'aide des instructions print et println.
+{
+    // Opérations arithmétiques
+    int a = 10;
+    int b = 5;
+    int addition = a + b;
+    int soustraction = a - b;
+    float division = a / b;
+    int modulo = a % b;
+    int multiplication = a * b;
+
+
+
+    // Opérations logiques
+    boolean vrai = true;
+    boolean faux = false;
+    boolean et = vrai && faux;
+    boolean ou = vrai || faux;
+
+
+    // Opérations de comparaison
+    int x = 5;
+    int y = 7;
+    boolean superieurOuEgal = x >= y;
+    boolean superieur = x > y;
+    boolean inferieurOuEgal = x <= y;
+    boolean inferieur = x < y;
+    boolean non = !vrai;
+    boolean different = x != y;
+    boolean egal = x == y;
+
+
+    // Instructions de contrôle
+    int i = 0;
+
+
+    int nombre = 10;
+
+
+
+
+
+    println("Addition : " , addition);
+    println("Soustraction : " , soustraction);
+    println("Division : " , division);
+    println("Modulo : " , modulo);
+    println("Multiplication : " , multiplication);
+
+    println("ET logique : " , et);
+    println("OU logique : " , ou);
+
+    println("Supérieur ou égal : " , superieurOuEgal);
+    println("Supérieur : " , superieur);
+    println("Inférieur ou égal : " ,inferieurOuEgal);
+    println("Inférieur : " , inferieur);
+    println("Non : " , non);
+    println("Différent : " , different);
+    println("Égal : " , egal);
+
+
+    while (i < 5) {
+        print(i , " ");
+        i = i+1;
+    }
+    println();
+
+    if (nombre > 0) {
+        println("Le nombre est positif");
+    } else if (nombre < 0) {
+        println("Le nombre est négatif");
+    } else {
+        println("Le nombre est nul");
+    }
+
+}

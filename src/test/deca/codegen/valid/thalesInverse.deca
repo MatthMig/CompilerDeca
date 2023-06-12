@@ -1,0 +1,19 @@
+// Description:
+// Dans cet exemple, nous utilisons les variables a1, a2, b1, b2 et c1 pour représenter les longueurs connues de deux segments et d'une longueur inconnue.
+// L'algorithme de Thalès inverse nous permet de calculer la longueur inconnue c2 en utilisant la formule (c1 * b2) / b1.
+
+// Dans l'exemple, nous effectuons le calcul de c2 et l'affichons à l'aide de l'instruction println().
+// Notez que les valeurs des longueurs a1, a2, b1, b2 et c1 sont arbitraires et peuvent être modifiées selon les besoins.
+
+{
+    float a1 = 3.0;
+    float a2 = 5.0;
+    float b1 = 2.0;
+    float b2 = 4.0;
+    float c1 = 6.0;
+
+    // Calcul de la longueur inconnue c2
+    float c2 = (c1 * b2) / b1;
+
+    println("La longueur inconnue c2 est : " , c2);
+}

@@ -73,6 +73,7 @@ public class LabelManager {
             createLabel("false"),
             createLabel("endBooleanExp")
         };
+        this.labelCount += 1;
         return labels;
     }
 
@@ -85,6 +86,7 @@ public class LabelManager {
             createLabel("truePrint"),
             createLabel("endPrint")
         };
+        this.labelCount += 1;
         return labels;
     }
 
