@@ -11,8 +11,8 @@
 //      Créé le 09/06/2023 par gl03
 
 {
-    int x=0;
-    int y=10;
+    float x=0;
+    float y=10;
     while (((x<=1)||(x<=2*2))||((x<10/1)&&(x<11%12)))
     {
         y=10;
@@ -22,7 +22,7 @@
             {
                 println("hello");
                 println(x);
-                print(y);
+                println(y);
             }
             y=y-1;
         }

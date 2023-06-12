@@ -172,7 +172,6 @@ public class DecacCompiler {
 
     public void addVar(Symbol s, ExpDefinition def){
         this.varList.put(s, def);
-        varCount++;
     }
 
     public ExpDefinition getVar(Symbol s){
