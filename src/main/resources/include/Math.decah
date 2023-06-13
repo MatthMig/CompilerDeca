@@ -11,9 +11,70 @@ class Math {
     float asin(float f) {
         println("asin(f) not yet implemented");
     }
+
+
+    float abs(float f){
+        if( f < 0){
+            return -f;
+        } else {
+            return f;
+        }
+    }
+
+    // Methode d approximation de la serie de Taylor
     float atan(float f) {
         println("atan(f) not yet implemented");
+        if (f == 0) {
+            return
+        }
+
+        int sign;
+        if (f > 0){
+            sign = 1;
+        } else{
+            sign = -1;
+        }
+
+        f = abs(f);
+        if(f > 1){
+            f = 1/f;
+            float atan_val = (3.141592653589793 / 2) - _atan_approximation(f);
+            return sign * atan_val;
+        } else {
+            float atan_val = _atan_approximation(f);
+            return sign * atan_val;
+        }
     }
+
+    float _atan_approximation(float f){
+        int iterations = 5;  // Nombre d'itérations pour l'approximation
+
+        float result = 0;
+        float power = f;
+        float divisor = 1;
+        boolean is_addition = true;
+        int i = 1;
+
+        while (i <= iterations) {
+            double term = power / divisor;
+
+            if (is_addition) {
+                result += term;
+            } else {
+                result -= term;
+            }
+
+            power = power * f * f;
+            divisor = divisor + 2;
+            is_addition = !is_addition;
+
+            i = i + 1;
+        }
+
+        return result;
+    }
+
+
     float ulp(float f) {
         println("ulp(f) not yet implemented");
     }
