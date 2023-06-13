@@ -2,6 +2,34 @@
 // Library for class Math of Deca, coded in Deca
 
 class Math {
+
+    float _floatMinimumValue = 1.4E-45;
+
+    float _abs(float f){
+        if( f < 0){
+            return -f;
+        } else {
+            return f;
+        }
+    }
+
+    float _puissance(float a, float puissance) {
+        if (puissance == 0.0) {
+            return 1.0;
+        }
+        if (puissance == 1.0) {
+            return a;
+        }
+        if (puissance == -1.0) {
+            return -a;
+        }
+        float resulat = 1.0;
+        while (puissance > 0) {
+            resultat = resultat * a;
+            puissance = puissance - 1;
+        }
+    }
+
     float sin(float f) {
         println("sin(f) not yet implemented");
     }
@@ -10,15 +38,6 @@ class Math {
     }
     float asin(float f) {
         println("asin(f) not yet implemented");
-    }
-
-
-    float abs(float f){
-        if( f < 0){
-            return -f;
-        } else {
-            return f;
-        }
     }
 
     // Methode d approximation de la serie de Taylor
@@ -35,7 +54,7 @@ class Math {
             sign = -1;
         }
 
-        f = abs(f);
+        f = _abs(f);
         if(f > 1){
             f = 1/f;
             float atan_val = (3.141592653589793 / 2) - _atan_approximation(f);
@@ -76,7 +95,33 @@ class Math {
 
 
     float ulp(float f) {
-        println("ulp(f) not yet implemented");
+
+        // Cas particulier pour zéro
+        if (f == 0.0) {
+            return _floatMinimumValue;
+        }
+
+        // Calcul du signe
+        float signe = 1.0;
+        if (f < 0.0) {
+            signe = -1.0;
+        }
+            
+        // Calcul de la mantisse et de l'exposant
+        float mantisse = f * signe;
+        int exposant = 0;
+
+        while (mantisse < 0.5) {
+            mantisse = mantisse / 2.0;
+            exposant = exposant - 1;
+        }
+
+        // Calcul de l'ulp
+        float ulp = _puissance(2.0, exposant);
+
+        // Retourne l'ulp multiplié par le signe de f
+        return ulp * signe;
+
     }
 }
 
