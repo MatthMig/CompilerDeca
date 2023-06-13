@@ -14,6 +14,16 @@ options {
 // Class related tokens
 CLASS: 'class';
 EXTENDS: 'extends';
+PROTECTED: 'protected';
+NEW: 'new';
+THIS: 'this';
+INSTANCEOF: 'instanceof';
+NULL: 'null';
+SUPER: 'super';
+ASM: 'asm';
+RETURN: 'return';
+
+IMPORT: 'import';
 
 OBRACE: '{';
 CBRACE: '}';

@@ -7,11 +7,11 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 
 public abstract class AbstractDeclField extends Tree{
-    @param compiler
-    @param localEnv
-
-    @param currentClass
-
+    /**
+     * @param compiler
+     * @param localEnv
+     * @param currentClass
+     */
     protected abstract void verifyDeclField(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError;
