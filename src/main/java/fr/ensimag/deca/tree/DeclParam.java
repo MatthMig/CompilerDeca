@@ -21,10 +21,29 @@ import org.apache.commons.lang.Validate;
 
 public class DeclParam extends AbstractDeclParam{
 
-    final private AbstractIdentifier type;
-    final private AbstractIdentifier varName;
+    final private AbstractIdentifier paramType;
+    final private AbstractIdentifier paramName;
     
-    public DeclMethod(AbstractIdentifier type, AbstractIdentifier varName, MethodBody methodBody){
+    public DeclParam(AbstractIdentifier paramType, AbstractIdentifier paramName){
+        Validate.notNull(paramType);
+        Validate.notNull(paramName);
+        this.paramType = paramType;
+        this.paramName = paramName;
+    }
+
+    @Override
+    protected void iterChildren(TreeFunction f) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    protected void prettyPrintChildren(PrintStream s, String prefix) {
+        paramType.prettyPrint(s, prefix, false);
+        paramName.prettyPrint(s, prefix, true);
+    }
+    
+    @Override
+    public void decompile(IndentPrintStream s) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 }

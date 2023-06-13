@@ -18,18 +18,20 @@ import org.apache.commons.lang.Validate;
  */
 public class DeclClass extends AbstractDeclClass {
 
-    final private AbstractIdentifier type;
-    final private AbstractIdentifier superClass;
-    final private AbstractIdentifier listDeclField;
-    final private AbstractIdentifier listDeclMethod;
+    final private AbstractIdentifier className;
+    final private AbstractIdentifier superClassName;
+    final private ListDeclField listDeclField;
+    final private ListDeclMethod listDeclMethod;
 
-    public DeclClass(AbstractIdentifier className, AbstractIdentifier superClass, AbstractIdentifier listDeclField, AbstractIdentifier listDeclMethod) {
+    public DeclClass(AbstractIdentifier className, AbstractIdentifier superClassName, ListDeclField listDeclField, ListDeclMethod listDeclMethod) {
         Validate.notNull(className);
-        this.type = className;
-        this.superClass = superClass;
+        // No check for superClassName, null is allowed.
+        Validate.notNull(listDeclField);
+        Validate.notNull(listDeclMethod);
+        this.className = className;
+        this.superClassName = superClassName;
         this.listDeclField = listDeclField;
         this.listDeclMethod = listDeclMethod;
-
     }
 
     @Override
@@ -56,11 +58,12 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        type.prettyPrint(s, prefix, false);
-        superClass.prettyPrint(s, prefix, false);
+        className.prettyPrint(s, prefix, false);
+        if (superClassName != null) {
+            superClassName.prettyPrint(s, prefix, false);
+        }
         listDeclField.prettyPrint(s, prefix, false);
-        listDeclMethod.prettyPrint(s, prefix, false);
-        //throw new UnsupportedOperationException("Not yet supported class");
+        listDeclMethod.prettyPrint(s, prefix, true);
     }
 
     @Override

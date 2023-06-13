@@ -6,12 +6,12 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 
-public class ListDeclMethod extends TreeList<AbstractDeclMethod> {
+public class ListDeclParam extends TreeList<AbstractDeclParam> {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        for(AbstractDeclMethod declMethod : this.getList()){
-            declMethod.decompile(s);
+        for(AbstractDeclParam declParam : this.getList()){
+            declParam.decompile(s);
         }
     }
 
