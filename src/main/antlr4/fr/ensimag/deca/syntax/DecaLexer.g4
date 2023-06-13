@@ -22,6 +22,7 @@ NULL: 'null';
 SUPER: 'super';
 ASM: 'asm';
 RETURN: 'return';
+DOT: '.';
 
 IMPORT: 'import';
 
@@ -30,7 +31,9 @@ CBRACE: '}';
 OPARENT: '(';
 CPARENT: ')';
 PRINT: 'print';
+PRINTX: 'printx';
 PRINTLN: 'println';
+PRINTLNX: 'printlnx';
 READINT: 'readInt';
 READFLOAT: 'readFloat';
 TRUE: 'true';
@@ -95,9 +98,10 @@ fragment FLOATHEX: HEXPREF NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM FLOATSUF;
 FLOAT: FLOATHEX | FLOATDEC;
 
 // Strings
-fragment QUOTES: '"';
 fragment SINGLE_QUOTE: '\'';
-STRING: ( QUOTES .*? QUOTES ) | ( SINGLE_QUOTE .*? SINGLE_QUOTE ) ;
+fragment STRING_CAR: ~('\n' | '"' | '\\');
+STRING: '"' (STRING_CAR | '\\"' | '\\\\')* '"';
+MULTI_LINE_STRING: '"' (STRING_CAR | '\n' | '\\"' | '\\\\')* '"';
 
 // Skips
 SPACE:   ( 
