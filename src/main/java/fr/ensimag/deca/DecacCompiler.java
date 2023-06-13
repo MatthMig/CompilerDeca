@@ -167,7 +167,7 @@ public class DecacCompiler {
 
     public DAddr allocate(){
         this.varCount += 1;
-        return new RegisterOffset(this.varCount, Register.LB);
+        return new RegisterOffset(this.varCount, Register.GB);
     }
 
     public void addVar(Symbol s, ExpDefinition def){
