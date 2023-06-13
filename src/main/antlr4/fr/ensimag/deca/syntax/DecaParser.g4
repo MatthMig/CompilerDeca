@@ -463,26 +463,40 @@ list_classes returns[ListDeclClass tree]
     }
     :
       (c1=class_decl {
+        $tree.add($c1.tree);
         }
       )*
     ;
 
-class_decl
+class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
+        assert($name.tree != null);
+        assert($superclass.tree != null);
+        $tree = new DeclClass($name.tree,$superclass.tree, $class_body.declFieldList, $class_body.declMethodList);
+        setLocation($tree, $CLASS);
         }
     ;
 
 class_extension returns[AbstractIdentifier tree]
     : EXTENDS ident {
+        assert($ident.tree != null);
+        $tree = $ident.tree;
         }
     | /* epsilon */ {
+        $tree = new Identifier(getDecacCompiler().createSymbol("Object"));
         }
     ;
 
-class_body
+class_body returns[AbstractIdentifier declFieldList, AbstractIdentifier declMethodList]
+@init{
+    $declFieldList = new Identifier(getDecacCompiler().createSymbol("To replace with 'ListDeclField [List with 0 elements]'"));
+    $declMethodList = new Identifier(getDecacCompiler().createSymbol("To replace with 'ListDeclMethod [List with 0 elements]'"));
+}
     : (m=decl_method {
+        
         }
-      | decl_field_set
+      | f=decl_field_set{
+        }
       )*
     ;
 

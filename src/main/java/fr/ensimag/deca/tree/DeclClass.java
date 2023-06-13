@@ -1,10 +1,14 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
+
 import java.io.PrintStream;
+import org.apache.commons.lang.Validate;
 
 /**
  * Declaration of a class (<code>class name extends superClass {members}<code>).
@@ -13,6 +17,20 @@ import java.io.PrintStream;
  * @date 21/04/2023
  */
 public class DeclClass extends AbstractDeclClass {
+
+    final private AbstractIdentifier type;
+    final private AbstractIdentifier superClass;
+    final private AbstractIdentifier listDeclField;
+    final private AbstractIdentifier listDeclMethod;
+
+    public DeclClass(AbstractIdentifier className, AbstractIdentifier superClass, AbstractIdentifier listDeclField, AbstractIdentifier listDeclMethod) {
+        Validate.notNull(className);
+        this.type = className;
+        this.superClass = superClass;
+        this.listDeclField = listDeclField;
+        this.listDeclMethod = listDeclMethod;
+
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
@@ -38,7 +56,11 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        throw new UnsupportedOperationException("Not yet supported");
+        type.prettyPrint(s, prefix, false);
+        superClass.prettyPrint(s, prefix, false);
+        listDeclField.prettyPrint(s, prefix, false);
+        listDeclMethod.prettyPrint(s, prefix, false);
+        //throw new UnsupportedOperationException("Not yet supported class");
     }
 
     @Override

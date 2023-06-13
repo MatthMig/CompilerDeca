@@ -11,6 +11,10 @@ options {
 @members {
 }
 
+// Class related tokens
+CLASS: 'class';
+EXTENDS: 'extends';
+
 OBRACE: '{';
 CBRACE: '}';
 OPARENT: '(';
