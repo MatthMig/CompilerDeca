@@ -42,8 +42,39 @@ class Math {
         return approximation;
     }
 
+    float reduceAngle(float x) {
+
+        x = x % (2 * _pi);
+        
+        if (x > _pi) {
+            x = x - (2 * _pi);
+        } else if (x < -_pi) {
+            x = x + (2 * _pi);
+        }
+        
+        return x;
+    }
+
     float sin(float f) {
-        println("sin not yet implemented");
+        x = reduceAngle(x);
+
+        float result = 0;
+        float term = x;
+        float power = x;
+        float factorial = 1;
+        int sign = 1;
+        int i = 1;
+
+        while (i <= 10) {
+            result = result + (sign * term / factorial);
+            power = power * x * x;
+            factorial = factorial * (i + 1) * (i + 2);
+            sign = sign * (-1);
+            i = i + 2;
+            term = power / factorial;
+        }
+
+        return result;
     }
 
     float cos(float f) {
@@ -84,9 +115,35 @@ class Math {
         return estimation;
     }
 
+    float _atan_approximation(float f){
+        int iterations = 5;  // Nombre d'itérations pour l'approximation
+
+        float result = 0;
+        float power = f;
+        float divisor = 1;
+        boolean is_addition = true;
+        int i = 1;
+
+        while (i <= iterations) {
+            float term = power / divisor;
+
+            if (is_addition) {
+                result += term;
+            } else {
+                result -= term;
+            }
+
+            power = power * f * f;
+            divisor = divisor + 2;
+            is_addition = !is_addition;
+
+            i = i + 1;
+        }
+
+        return result;
+    }
     // Methode d approximation de la serie de Taylor
     float atan(float f) {
-
         if (f == 0) {
             return
         }
@@ -107,34 +164,6 @@ class Math {
             float atan_val = _atan_approximation(f);
             return sign * atan_val;
         }
-    }
-
-    float _atan_approximation(float f){
-        int iterations = 5;  // Nombre d'itérations pour l'approximation
-
-        float result = 0;
-        float power = f;
-        float divisor = 1;
-        boolean is_addition = true;
-        int i = 1;
-
-        while (i <= iterations) {
-            double term = power / divisor;
-
-            if (is_addition) {
-                result += term;
-            } else {
-                result -= term;
-            }
-
-            power = power * f * f;
-            divisor = divisor + 2;
-            is_addition = !is_addition;
-
-            i = i + 1;
-        }
-
-        return result;
     }
 
 
@@ -167,6 +196,8 @@ class Math {
         return ulp * signe;
 
     }
+
+    
 }
 
 
