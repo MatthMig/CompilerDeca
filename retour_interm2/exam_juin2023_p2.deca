@@ -1,0 +1,15 @@
+{
+  boolean b;
+  println("entrez deux entiers");
+  if (readInt() >= 0
+      != (b = readInt() >= 0))  {
+    println("signes opposés");
+  } else {
+    print("de signe: ");
+    if (b) {
+      println("true");
+    } else {
+      println("false");
+    }
+  }
+}

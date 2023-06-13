@@ -35,39 +35,43 @@ public class DecacMain {
         if (options.getPrintBanner()) {
             System.out.println(options.getLogo());
         }
-        if (options.getSourceFiles().isEmpty()) {
-            System.err.println("Error in command syntax : No file provided to compile.");
-            options.displayUsage();
-        }
-        if (options.getParallel()) {
-            // Initialize threads factory
-            ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
-            ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
-
-            for (File source : options.getSourceFiles()) {
-                DecacCompiler compiler = new DecacCompiler(options, source);
-                results.add(execService.submit(() -> compiler.compile()));
+        else{
+            
+            if (options.getSourceFiles().isEmpty()) {
+                System.err.println("Error in command syntax : No file provided to compile.");
+                options.displayUsage();
             }
+            if (options.getParallel()) {
+                // Initialize threads factory
+                ExecutorService execService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+                ArrayList<Future<Boolean>> results = new ArrayList<Future<Boolean>>();
 
-            // Wait for each thread to end to get their return code
-            for (int i = 0 ; i <= results.size() -1 ; i++){
-                if (results.get(i).get()){
-                    error = true;
+                for (File source : options.getSourceFiles()) {
+                    DecacCompiler compiler = new DecacCompiler(options, source);
+                    results.add(execService.submit(() -> compiler.compile()));
+                }
+
+                // Wait for each thread to end to get their return code
+                for (int i = 0 ; i <= results.size() -1 ; i++){
+                    if (results.get(i).get()){
+                        error = true;
+                    }
+                }
+
+                // Properly finish threads factory
+                execService.shutdown();
+                execService.awaitTermination(2, TimeUnit.HOURS);
+
+            } else {
+                for (File source : options.getSourceFiles()) {
+                    DecacCompiler compiler = new DecacCompiler(options, source);
+                    if (compiler.compile()) {
+                        error = true;
+                    }
                 }
             }
-
-            // Properly finish threads factory
-            execService.shutdown();
-            execService.awaitTermination(2, TimeUnit.HOURS);
-
-        } else {
-            for (File source : options.getSourceFiles()) {
-                DecacCompiler compiler = new DecacCompiler(options, source);
-                if (compiler.compile()) {
-                    error = true;
-                }
-            }
+            System.exit(error ? 1 : 0);
         }
-        System.exit(error ? 1 : 0);
+        System.exit(0);
     }
 }

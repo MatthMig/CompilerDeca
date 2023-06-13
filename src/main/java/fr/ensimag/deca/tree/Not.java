@@ -5,7 +5,10 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
 import fr.ensimag.ima.pseudocode.instructions.BRA;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -26,8 +29,11 @@ public class Not extends AbstractUnaryExpr {
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
         Type t = this.getOperand().verifyExpr(compiler, localEnv, currentClass);
-        this.setType(t);
-        return t;
+        if(t.isBoolean()){
+            this.setType(t);
+            return t;
+        }
+        throw new ContextualError("cannot set a negation on a non boolean value", getLocation());
     }
 
     @Override
@@ -58,5 +64,28 @@ public class Not extends AbstractUnaryExpr {
 
         // End
         compiler.addLabel(labels[1]);
+    }
+
+    @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        // Generate new labels for the Boolean expression
+        Label [] labels = compiler.getLabelManager().createBooleanExpLabel();
+
+        // Generate unerlying expression as a condition
+        codeGenCondition(compiler, false, labels[0]);
+
+        // Case condition did evalutate as true
+        compiler.addInstruction(new WSTR("true"));
+        
+        compiler.addInstruction(new BRA(labels[1]));
+
+        // Other case
+        compiler.addLabel(labels[0]);
+        compiler.addInstruction(new WSTR("false"));
+
+
+        // End
+        compiler.addLabel(labels[1]);
+
     }
 }

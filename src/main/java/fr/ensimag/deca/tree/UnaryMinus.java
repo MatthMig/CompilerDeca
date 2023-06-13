@@ -25,7 +25,6 @@ public class UnaryMinus extends AbstractUnaryExpr {
         Type t;
 
         t = this.getOperand().verifyExpr(compiler, localEnv, currentClass);
-
         // if operand is not a number: problem !
         if (!t.isInt() && !t.isFloat()) {
             throw new ContextualError("operand after minus is not a number",this.getOperand().getLocation());

@@ -3,12 +3,12 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.ExpDefinition;
 
@@ -57,6 +57,18 @@ public class Assign extends AbstractBinaryExpr {
     @Override
     protected String getOperatorName() {
         return "=";
+    }
+
+    @Override
+    protected void codeGenExp(DecacCompiler compiler, int n) {
+        ExpDefinition varDef = compiler.getVar(((Identifier)this.getLeftOperand()).getName());
+        DAddr leftAddr = varDef.getOperand();
+        this.getRightOperand().codeGenExp(compiler, n);
+
+        if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
+            compiler.addInstruction(new FLOAT(GPRegister.getR(n), GPRegister.getR(n)));
+        }
+        compiler.addInstruction(new STORE(GPRegister.getR(n), leftAddr));
     }
 
 }
