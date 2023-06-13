@@ -6,13 +6,13 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 
-public abstract class AbstractDeclMethod extends Tree{
+public abstract class MethodAsmBody extends AbstractMethodBody{
     /**
      * @param compiler
      * @param localEnv
      * @param currentClass
      */
-    protected void verifyDeclMethod(DecacCompiler compiler,
+    protected abstract void verifyMethodBody(DecacCompiler compiler,
         EnvironmentExp localEnv, ClassDefinition currentClass)
         throws ContextualError {
         throw new UnsupportedOperationException("not yet implemented");

@@ -12,9 +12,13 @@ public abstract class AbstractDeclField extends Tree{
      * @param localEnv
      * @param currentClass
      */
-    protected abstract void verifyDeclField(DecacCompiler compiler,
-            EnvironmentExp localEnv, ClassDefinition currentClass)
-            throws ContextualError;
+    protected void verifyDeclField(DecacCompiler compiler,
+        EnvironmentExp localEnv, ClassDefinition currentClass)
+        throws ContextualError {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 
-    public void codeGen(DecacCompiler compiler){}
+    public void codeGen(DecacCompiler compiler){
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 }
