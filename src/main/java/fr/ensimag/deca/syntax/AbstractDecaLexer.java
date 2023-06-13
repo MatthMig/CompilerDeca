@@ -196,6 +196,11 @@ public abstract class AbstractDecaLexer extends Lexer {
      * @throws CircularInclude
      *             When an attempt to perform a circular inclusion is done
      */
+    /**
+     * The doInclude method is responsible for handling the #include directive. It extracts the filename from the include directive,
+     * calls findFile to get the corresponding Stream, and sets it as the new input stream for the lexer. 
+     * It also checks for circular includes to avoid infinite loop.
+     **/
     void doInclude(String includeDirective) throws IncludeFileNotFound, CircularInclude {
         String name = includeDirective.substring(includeDirective.indexOf('"') + 1,
                 includeDirective.lastIndexOf('"'));
@@ -245,6 +250,7 @@ public abstract class AbstractDecaLexer extends Lexer {
      * Override method nextToken for <code>#include</code> management.
      * @return the next Token which is read in an included files on
      *    a <code>#include</code>
+     * ok how it works !
      */
     @Override
     @SuppressWarnings("InfiniteRecursion")

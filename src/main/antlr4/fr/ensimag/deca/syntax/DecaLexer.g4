@@ -105,3 +105,12 @@ COMMENTS: (
       skip();
    }
 ;
+
+// the include directive invokes the doInclude method during the lexing process.
+fragment FILENAME: (LETTER | DIGIT | '.' | '-' | '_')+;
+// look AbstractDecaLexer.java to know how finding a file and circularInclude work.
+// Here we define a block of action for doInclude (look documentation of ANTLR4)
+INCLUDE: '#include' (' ')* '"' FILENAME '"' {
+   doInclude(getText());
+   skip(); 
+};
