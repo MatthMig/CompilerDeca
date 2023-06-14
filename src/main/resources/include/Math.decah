@@ -3,6 +3,7 @@
 
 class Math {
 
+    float _pi = 3.141592653589793;
     float _floatMinimumValue = 1.4E-45;
 
     float _abs(float f){
@@ -13,36 +14,79 @@ class Math {
         }
     }
 
-    float _puissance(float a, float puissance) {
-        if (puissance == 0.0) {
+    float _pow(float x, float pow) {
+        if (pow == 0.0) {
             return 1.0;
         }
-        if (puissance == 1.0) {
-            return a;
+        if (pow == 1.0) {
+            return x;
         }
-        if (puissance == -1.0) {
-            return -a;
+        if (pow == -1.0) {
+            return -x;
         }
-        float resulat = 1.0;
-        while (puissance > 0) {
-            resultat = resultat * a;
-            puissance = puissance - 1;
+        float result = 1.0;
+        while (pow > 0) {
+            result = result * x;
+            pow = pow - 1;
         }
     }
 
+    float _sqrt(float f){
+        float precision = 0.0001;
+        float approximation = f/2.0;
+        
+        while (abs(_pow(approximation, 2)- f) > precision) {
+            approximation = (approximation + f / approximation) / 2;
+        }
+        
+        return approximation;
+    }
+
     float sin(float f) {
-        println("sin(f) not yet implemented");
+        println("sin not yet implemented");
     }
+
     float cos(float f) {
-        println("cos(f) not yet implemented");
+
+        f = f % ( 2 * _pi);
+        float init = 1.0;
+        float sum = 1.0;
+        float fact = -1.0;
+        int i = 1;
+        
+        while (_abs(init) > 0.0000001) {
+            fact = fact * (-1.0);
+            init = init * f * f / (2 * i * (2 * i - 1));
+            sum = sum + fact * init;
+            i = i + 1;
+        }
+
+        return sum;
     }
+
     float asin(float f) {
-        println("asin(f) not yet implemented");
+
+        if (f > 1 || f < -1) {
+            println("Erreur : x doit être compris entre -1 et 1");
+        }
+
+        float precision = 1e-8;
+        float estimation = f;
+        float difference = precision + 1;
+
+        while (difference > precision) {
+            float derive = 1 / _sqrt(1-_pow(estimation, 2.0));
+            float correction = (estimation - f) / derivee;
+            estimation = estimation - correction;
+            difference = _abs(correction);
+        }
+
+        return estimation;
     }
 
     // Methode d approximation de la serie de Taylor
     float atan(float f) {
-        println("atan(f) not yet implemented");
+
         if (f == 0) {
             return
         }
@@ -57,7 +101,7 @@ class Math {
         f = _abs(f);
         if(f > 1){
             f = 1/f;
-            float atan_val = (3.141592653589793 / 2) - _atan_approximation(f);
+            float atan_val = (_pi / 2) - _atan_approximation(f);
             return sign * atan_val;
         } else {
             float atan_val = _atan_approximation(f);
