@@ -63,6 +63,8 @@ WHILE: 'while';
 IF: 'if';
 ELSE: 'else';
 
+NULL: 'null';
+
 SEMI: ';';
 COMMA: ',';
 
