@@ -373,9 +373,11 @@ select_expr returns[AbstractExpr tree]
         (o=OPARENT args=list_expr CPARENT {
             // we matched "e1.i(args)"
             assert($args.tree != null);
+            $tree = new Selection($e1.tree, $i.tree, $args.tree);
         }
         | /* epsilon */ {
             // we matched "e.i"
+            $tree = new Selection($e1.tree, $i.tree);
         }
         )
     ;
