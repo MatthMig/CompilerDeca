@@ -22,29 +22,58 @@ class Math {
             return x;
         }
         if (pow == -1.0) {
-            return -x;
+            return 1/x;
         }
         float result = 1.0;
-        while (pow > 0) {
+        float abs_pow = _abs(pow);
+        while (abs_pow > 0) {
             result = result * x;
-            pow = pow - 1;
+            abs_pow = abs_pow - 1;
         }
+        if (pow < 0) {
+            return 1/result;
+        }
+        return result;
+
+        //  asm ("
+        //         LOAD -2(LB), R1
+        //         LOAD -4(LB), R2
+
+        //         // LOAD #1, R0
+
+        //         CMP #0, R2
+        //         BEQ pow_0
+            
+        //         CMP #0, R2
+        //         BEQ pow_1
+
+        //     pow_0:
+        //         HALT
+
+        //     pow_1:
+        //         HALT
+        // ")
+
     }
 
     float _sqrt(float f){
-        float precision = 0.0001;
-        float approximation = f/2.0;
-        
-        while (abs(_pow(approximation, 2)- f) > precision) {
-            approximation = (approximation + f / approximation) / 2;
+        if (f < 0) {
+            print("Error: srqt impossible on negative value");
+        } else {
+            float precision = 0.0001;
+            float approximation = f/2.0;
+            
+            while (abs(_pow(approximation, 2)- f) > precision) {
+                approximation = (approximation + f / approximation) / 2;
+            }
+            
+            return approximation;
         }
-        
-        return approximation;
     }
 
     float reduceAngle(float x) {
 
-        x = x % (2 * _pi);
+        float x = x % (2 * _pi);
         
         if (x > _pi) {
             x = x - (2 * _pi);
@@ -56,7 +85,7 @@ class Math {
     }
 
     float sin(float f) {
-        x = reduceAngle(x);
+        float x = reduceAngle(x);
 
         float result = 0;
         float term = x;
@@ -142,6 +171,7 @@ class Math {
 
         return result;
     }
+
     // Methode d approximation de la serie de Taylor
     float atan(float f) {
         if (f == 0) {
