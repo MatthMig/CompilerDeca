@@ -196,8 +196,7 @@ class Math {
         return ulp * signe;
 
     }
-
-    
+   
 }
 
 
