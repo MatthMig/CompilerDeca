@@ -1,5 +1,6 @@
 package fr.ensimag.deca;
 
+import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
@@ -50,6 +51,7 @@ public class DecacCompiler {
     private int stackSize = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
+    private final EnvironmentExp environmentExp = new EnvironmentExp(null); 
     /**
      * Portable newline character.
      */
@@ -85,6 +87,10 @@ public class DecacCompiler {
 
     public void incrementStackSize(){
         this.stackSize += 1;
+    }
+
+    public EnvironmentExp getEnvironmentExp(){
+        return this.environmentExp;
     }
 
     /**

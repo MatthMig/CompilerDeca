@@ -4,6 +4,8 @@ import fr.ensimag.deca.DecacCompiler;
 import java.util.HashMap;
 import java.util.Map;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.deca.tree.AbstractIdentifier;
+import fr.ensimag.deca.tree.Identifier;
 import fr.ensimag.deca.tree.Location;
 
 // A FAIRE: étendre cette classe pour traiter la partie "avec objet" de Déca
@@ -46,6 +48,18 @@ public class EnvironmentType {
 
     public TypeDefinition defOfType(Symbol s) {
         return envTypes.get(s);
+    }
+
+    public ClassDefinition defOfClass(Symbol s){
+        TypeDefinition td = envTypes.get(s);
+        if(td instanceof ClassDefinition){
+            return (ClassDefinition)td;
+        }
+        return null;
+    }
+
+    public void declareClass(AbstractIdentifier className, ClassType classType, ClassDefinition superClassDef){
+        envTypes.put(className.getName(), new ClassDefinition(classType, className.getLocation(), superClassDef));
     }
 
     public final VoidType    VOID;

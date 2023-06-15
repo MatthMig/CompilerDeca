@@ -5,7 +5,13 @@ import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
+import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.RTS;
+import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -41,18 +47,45 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void verifyClass(DecacCompiler compiler) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(compiler.environmentType.defOfType(this.className.getName()) == null){
+            if(this.getSuperClassName() != null){
+                // if(compiler.environmentType.defOfType(this.getSuperClassName().getName()) != null){
+                //     compiler.environmentType.declareClass(null, null, null);
+                // } 
+                } else {
+                    compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), null), null);
+                    this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
+            }
+        }
     }
 
     @Override
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        int i = 0;
+        EnvironmentExp envExp = new EnvironmentExp(compiler.getEnvironmentExp());
+        for(AbstractDeclField declField : this.listDeclField.getList()){
+            declField.verifyDeclField(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
+        }
+        i = 1; // The equals method is the first method of the class no matter what.
+        // so we start at 2.
+        for(AbstractDeclMethod declMethod : this.listDeclMethod.getList()){
+            declMethod.verifyDeclMethod(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
+        }
+
     }
     
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    @Override
+    public void codeGenClass(DecacCompiler compiler){
+        Label initLabel = compiler.getLabelManager().createInitClassLabel(className.getName().getName());
+        compiler.addLabel(initLabel);
+        compiler.addInstruction(new ADDSP(compiler.environmentType.defOfClass(this.className.getName()).getNumberOfFields()));
+        this.listDeclField.codeGen(compiler);
+        compiler.addInstruction(new RTS());
     }
 
 
@@ -68,7 +101,15 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("Not yet supported");
+        className.iter(f);
+        if(superClassName != null)
+            superClassName.iter(f);
+        listDeclField.iter(f);
+        listDeclMethod.iter(f);
+    }
+
+    public AbstractIdentifier getSuperClassName() {
+        return superClassName;
     }
 
 }

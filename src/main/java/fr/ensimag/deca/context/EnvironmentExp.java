@@ -27,7 +27,11 @@ public class EnvironmentExp {
     // d'empilement).
     private HashMap<Symbol, Definition> definitions = new HashMap<>();
 
-    EnvironmentExp parentEnvironment;
+    private EnvironmentExp parentEnvironment;
+
+    public EnvironmentExp getParentEnvironment() {
+        return parentEnvironment;
+    }
 
     public EnvironmentExp(EnvironmentExp parentEnvironment) {
         this.parentEnvironment = parentEnvironment;

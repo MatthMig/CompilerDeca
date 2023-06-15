@@ -14,5 +14,4 @@ public class ListDeclMethod extends TreeList<AbstractDeclMethod> {
             declMethod.decompile(s);
         }
     }
-
 }

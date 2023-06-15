@@ -17,6 +17,7 @@ import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
 import fr.ensimag.ima.pseudocode.instructions.WSTR;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
@@ -224,7 +225,12 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
-        compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.R1));
+        if( this.getDefinition().isField()){
+            compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex() ,GPRegister.R1), GPRegister.R1));
+        }
+        else{
+            compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.R1));
+        }
         if(this.getType() == compiler.environmentType.INT){
             compiler.addInstruction(new WINT());
         }
@@ -252,7 +258,10 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.getR(n)));
+        if(this.getDefinition().isField())
+            compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex(), Register.getR(n)),Register.getR(n)));
+        else
+            compiler.addInstruction(new LOAD(compiler.getVar(this.getName()).getOperand(),Register.getR(n)));
     }
 
     @Override

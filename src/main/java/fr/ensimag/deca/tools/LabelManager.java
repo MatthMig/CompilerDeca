@@ -105,4 +105,12 @@ public class LabelManager {
     public Label getZeroDivisionLabel(){
         return this.zeroDivisionLabel;
     }
+
+    /**
+     * Returns the ZeroDivision label
+     * @return label
+     */
+    public Label createInitClassLabel(String className){
+        return new Label("init." + className);
+    }
 }

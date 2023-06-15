@@ -6,7 +6,17 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.BSR;
+import fr.ensimag.ima.pseudocode.instructions.LEA;
+import fr.ensimag.ima.pseudocode.instructions.NEW;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -31,7 +41,7 @@ public class New extends AbstractExpr {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        className.iter(f);
     }
 
     @Override
@@ -42,7 +52,28 @@ public class New extends AbstractExpr {
    @Override
    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
-       throw new UnsupportedOperationException("not yet implemented");
+        ClassDefinition cd  = compiler.environmentType.defOfClass(this.className.getName());
+        if(cd != null){
+            this.className.setType(cd.getType());
+            this.className.setDefinition(cd);
+            this.setType(cd.getType());
+            return this.getType();
+        }
+        throw new ContextualError("class " + this.className.getName().getName() + " is not defined.", getLocation());
+   }
+
+   @Override
+   protected void codeGenExp(DecacCompiler compiler, int n) {
+        compiler.addInstruction(new NEW(this.className.getClassDefinition().getNumberOfFields() + 1, GPRegister.getR(2)));
+        //compiler.addInstruction(new BOV(new Label(null)));
+
+        // HERE WE NEED TO ADD THE FUTURE ADDRESS OF THE METHOD TABLE compiler.addInstruction(new LEA());
+        // compiler.addInstruction(new STORE(GPRegister.R0, new RegisterOffset(0, Register.getR(n))));
+        compiler.addInstruction(new PUSH(GPRegister.getR(2)));
+
+        compiler.addInstruction(new BSR(compiler.getLabelManager().createInitClassLabel(this.className.getName().getName())));
+
+        compiler.addInstruction(new POP(GPRegister.getR(2)));
    }
 
 
