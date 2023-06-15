@@ -374,10 +374,12 @@ select_expr returns[AbstractExpr tree]
             // we matched "e1.i(args)"
             assert($args.tree != null);
             $tree = new Selection($e1.tree, $i.tree, $args.tree);
+            setLocation($tree, $e1.start);   
         }
         | /* epsilon */ {
             // we matched "e.i"
             $tree = new Selection($e1.tree, $i.tree);
+            setLocation($tree, $e1.start);
         }
         )
     ;
@@ -494,21 +496,17 @@ class_extension returns[AbstractIdentifier tree]
 class_body returns[ListDeclField declFieldList, ListDeclMethod declMethodList]
 @init{
     $declMethodList = new ListDeclMethod();
+    $declFieldList = new ListDeclField();
 }
     : (m=decl_method {
         $declMethodList.add($m.tree);
         }
-      | f=decl_field_set{
-        $declFieldList = $f.declFieldList;
-        }
+      | f=decl_field_set[$declFieldList]
       )*
     ;
 
-decl_field_set returns[ListDeclField declFieldList]
-@init{
-    $declFieldList = new ListDeclField();
-}
-    : v=visibility t=type list_decl_field[$declFieldList,$type.tree]
+decl_field_set[ListDeclField declFieldList]
+    : v=visibility t=type list_decl_field[$declFieldList,$t.tree]
       SEMI
     ;
 
@@ -560,6 +558,7 @@ decl_method returns[AbstractDeclMethod tree]
         }
       ) {
             $tree =new DeclMethod($type.tree, $ident.tree, $params.tree, body );
+            setLocation($tree, $type.start);
         }
     ;
 
@@ -568,9 +567,11 @@ list_params returns[ListDeclParam tree]
     $tree = new ListDeclParam();
 }
     : (p1=param {
-        $tree.add($p1.tree);
+            $tree.add($p1.tree);
+            setLocation($tree, $p1.start);
         } (COMMA p2=param {
-        $tree.add($p2.tree);
+            $tree.add($p2.tree);
+            setLocation($tree, $p2.start);
         }
       )*)?
     ;
@@ -589,5 +590,6 @@ multi_line_string returns[String text, Location location]
 param returns[AbstractDeclParam tree]
     : type ident {
             $tree = new DeclParam($type.tree, $ident.tree);
+            setLocation($tree, $type.start);
         }
     ;

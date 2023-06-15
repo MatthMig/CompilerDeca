@@ -3,25 +3,43 @@ package fr.ensimag.deca.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.ensimag.deca.tools.SymbolTable.Symbol;
+
 /**
  * Signature of a method (i.e. list of arguments)
  *
  * @author gl03
- * @date 21/04/2023
+ * @date 14/06/2023
  */
 public class Signature {
-    List<Type> args = new ArrayList<Type>();
+    Type returnType;
+    Symbol methodName;
+    List<Type> paramTypes;
+    
+    public Type getReturnType() {
+        return returnType;
+    }
 
-    public void add(Type t) {
-        args.add(t);
+    public Symbol getMethodName() {
+        return methodName;
     }
     
     public Type paramNumber(int n) {
-        return args.get(n);
+        return paramTypes.get(n);
+    }
+
+    public Signature(Type returnType, Symbol methodName) {
+        this.returnType = returnType;
+        this.methodName = methodName;
+        this.paramTypes = new ArrayList<Type>();
+    }
+
+    public void addParamType(Type t) {
+        paramTypes.add(t);
     }
     
-    public int size() {
-        return args.size();
+    public int paramListSize() {
+        return paramTypes.size();
     }
 
 }

@@ -1,14 +1,21 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.ExpDefinition;
+import fr.ensimag.deca.context.FieldDefinition;
+import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.DVal;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
 
 import java.io.PrintStream;
+
 import org.apache.commons.lang.Validate;
 
 /**
@@ -46,7 +53,8 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        operand.iter(f);
+        fieldName.iter(f);
     }
 
     @Override
@@ -60,11 +68,61 @@ public class Selection extends AbstractExpr {
         }
     }
 
-   @Override
-   public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
+    @Override
+    public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
-       throw new UnsupportedOperationException("not yet implemented");
-   }
+        operand.verifyExpr(compiler, localEnv, currentClass);
+        Type t = operand.verifyExpr(compiler, localEnv, currentClass);
+        TypeDefinition tdef = compiler.environmentType.defOfType(t.getName()); //compiler.environmentType.defOfType(((Identifier)operand).getVariableDefinition().getType().getName());
+        if(!(tdef instanceof ClassDefinition)){
+            throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
+        }
+        ClassDefinition cdef = (ClassDefinition)tdef;
+        ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
+
+        if(!(edef instanceof FieldDefinition)){
+            if(edef instanceof MethodDefinition)
+                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " is a method", getLocation());
+            else
+                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+        }
+
+        FieldDefinition fdef = (FieldDefinition)edef;
+        this.fieldName.setType(fdef.getType());
+        if(cdef.getMembers().get(fieldName.getName()) != null){
+            this.setType(this.fieldName.getType());
+            this.fieldName.setType(fdef.getType());
+            this.fieldName.setDefinition(fdef);
+            return this.getType();
+        }
+        return getType();
+    }
+
+    @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        if(this.operand instanceof Identifier){
+            DVal addr = ((Identifier)this.operand).getVariableDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addr, GPRegister.R1));
+        }
+        else{
+            this.operand.codeGenPrint(compiler);
+        }
+        
+        this.fieldName.codeGenPrint(compiler);
+    }
+
+    @Override
+    protected void codeGenExp(DecacCompiler compiler, int n) {
+        if(this.operand instanceof Identifier){
+            DVal addr = ((Identifier)this.operand).getVariableDefinition().getOperand();
+            compiler.addInstruction(new LOAD(addr, GPRegister.getR(n)));
+        }
+        else{
+            this.operand.codeGenExp(compiler, n);
+        }
+        
+        this.fieldName.codeGenExp(compiler, n);
+    }
 
 
     @Override

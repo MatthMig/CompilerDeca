@@ -12,8 +12,7 @@ public abstract class AbstractMethodBody extends Tree{
      * @param currentClass
      */
     protected void verifyMethodBody(DecacCompiler compiler,
-        EnvironmentExp localEnv, ClassDefinition currentClass)
-        throws ContextualError {
+        EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

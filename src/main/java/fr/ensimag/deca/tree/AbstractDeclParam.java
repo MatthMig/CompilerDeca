@@ -21,4 +21,6 @@ public abstract class AbstractDeclParam extends Tree{
     public void codeGen(DecacCompiler compiler){
         throw new UnsupportedOperationException("not yet implemented");
     }
+
+    public abstract AbstractIdentifier getType();
 }
