@@ -8,7 +8,9 @@ import fr.ensimag.deca.tree.AbstractIdentifier;
 import fr.ensimag.deca.tree.Identifier;
 import fr.ensimag.deca.tree.Location;
 
-// A FAIRE: étendre cette classe pour traiter la partie "avec objet" de Déca
+// Lors de l’allocation d’un objet, les champs sont initialisés dans l’ordre de déclaration.
+// Un champ non initialisé, ou accédé avant d’être initialisé, a la valeur par défaut 0 pour entier,
+// 0.0 pour un flottant, false pour un booléen, ou null pour un objet.
 /**
  * Environment containing types. Initially contains predefined identifiers, more
  * classes can be added with declareClass().
