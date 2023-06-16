@@ -80,19 +80,23 @@ public class Selection extends AbstractExpr {
         ClassDefinition cdef = (ClassDefinition)tdef;
         ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
 
-        if(!(edef instanceof FieldDefinition)){
-            if(edef instanceof MethodDefinition)
-                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " is a method", getLocation());
-            else
-                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+        if(edef instanceof FieldDefinition){
+            edef = (FieldDefinition)edef;
         }
 
-        FieldDefinition fdef = (FieldDefinition)edef;
-        this.fieldName.setType(fdef.getType());
+        else if (edef instanceof MethodDefinition && this.params != null){
+            edef = (MethodDefinition)edef;
+        }
+
+        else {
+            throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+        }
+
+        this.fieldName.setType(edef.getType());
         if(cdef.getMembers().get(fieldName.getName()) != null){
             this.setType(this.fieldName.getType());
-            this.fieldName.setType(fdef.getType());
-            this.fieldName.setDefinition(fdef);
+            this.fieldName.setType(edef.getType());
+            this.fieldName.setDefinition(edef);
             return this.getType();
         }
         return getType();
@@ -120,7 +124,6 @@ public class Selection extends AbstractExpr {
         else{
             this.operand.codeGenExp(compiler, n);
         }
-        
         this.fieldName.codeGenExp(compiler, n);
     }
 

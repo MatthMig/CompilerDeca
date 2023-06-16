@@ -4,13 +4,19 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 
 import java.io.PrintStream;
 
@@ -36,7 +42,10 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.returnType.iter(f);
+        this.methodName.iter(f);
+        this.listDeclParam.iterChildren(f);
+        this.methodBody.iter(f);
     }
 
     @Override
@@ -91,6 +100,8 @@ public class DeclMethod extends AbstractDeclMethod{
 
         // Try to declare the method in the class local environment this time
         try {
+            currentClass.getMembers().declare(this.methodName.getName(), methodDef);
+            currentClass.incNumberOfMethods();
             localEnv.declare(compiler.symbolTable.create(toStringSignature), methodDef);
         } catch(DoubleDefException e) {
             String message = String.format("Method with signature '%s' already declared", toStringSignature);
@@ -101,17 +112,47 @@ public class DeclMethod extends AbstractDeclMethod{
     @Override
     protected void verifyClassBody(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass)
-            throws ContextualError {
-                // Declare the parameters in the method's local environment (and not the class' one)
-                for(AbstractDeclParam declParam : this.listDeclParam.getList()) {
-                    declParam.verifyClassBody(compiler, localEnv, currentClass);
-                }
-                // Verify the method body
-                if (this.methodBody instanceof MethodBody) {
-                    ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
-                }
-                else {
-                    // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
-                }
-            }
+    throws ContextualError {
+        // Declare the parameters in the method's local environment (and not the class' one)
+        for(AbstractDeclParam declParam : this.listDeclParam.getList()) {
+            declParam.verifyClassBody(compiler, localEnv, currentClass);
+        }
+        // Verify the method body
+        if (this.methodBody instanceof MethodBody) {
+            ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
+        }
+        else {
+            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
+        }
+    }
+
+    @Override
+    public void genMethodTableEntry(DecacCompiler compiler, ClassDefinition classDefinition) {
+        Label methodLabel = compiler.getLabelManager().createMethodLabel(this.methodName.getName().getName(), classDefinition.getType().getName().getName());
+        compiler.getMethodTable().addMethod(this.methodName.getMethodDefinition(), methodLabel);
+    }
+
+    @Override
+    public void codeGenMethodTableEntry(DecacCompiler compiler) {
+        // Load the PC address for the method
+        compiler.addInstruction(new LOAD(compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition()), GPRegister.R0));
+        
+        // Store it in the memory, at it's place in the method table
+        compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()), "store method " + this.methodName.getName() + " address");
+    }
+
+    @Override
+    public void codeGen(DecacCompiler compiler) {
+        Label methodLabel = compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition());
+        compiler.addComment("start : method " + methodLabel.toString());
+        compiler.resetLBOffset();
+        compiler.addLabel(methodLabel);
+
+        compiler.addInstruction(new ADDSP(this.methodBody.getVarCount()));
+
+        this.methodBody.codeGen(compiler);
+
+        compiler.addComment("end : method " + methodLabel.toString());
+    }
+    
 }
