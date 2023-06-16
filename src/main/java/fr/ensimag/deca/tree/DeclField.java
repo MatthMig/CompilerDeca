@@ -65,13 +65,6 @@ public class DeclField extends AbstractDeclField{
             throw new ContextualError(message, getLocation());
         }
 
-        // Try to declare the field to the class environement
-        try {
-            currentClass.getMembers().declare(this.fieldName.getName(), this.fieldName.getFieldDefinition());
-        } catch (DoubleDefException e) {
-            String message = String.format("Field %s already declared in class", fieldName.getName().getName(), currentClass.getClass().getName());
-            throw new ContextualError(message, getLocation());
-        }
         currentClass.incNumberOfFields();
     }
 
