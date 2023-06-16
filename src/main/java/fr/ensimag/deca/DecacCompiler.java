@@ -7,6 +7,7 @@ import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.LabelManager;
+import fr.ensimag.deca.tools.MethodTable;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
@@ -18,6 +19,8 @@ import fr.ensimag.ima.pseudocode.Instruction;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -52,6 +55,9 @@ public class DecacCompiler {
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null); 
+    private final MethodTable methodTable;
+    private int lbOffset = 1;
+
     /**
      * Portable newline character.
      */
@@ -61,12 +67,17 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.labelManager = new LabelManager();
+        this.methodTable = new MethodTable();
         this.source = source;
         this.stackSize = 0;
     }
 
     public LabelManager getLabelManager(){
         return this.labelManager;
+    }
+
+    public MethodTable getMethodTable(){
+        return this.methodTable;
     }
 
     public int getLabelCount(){
@@ -87,6 +98,24 @@ public class DecacCompiler {
 
     public void incrementStackSize(){
         this.stackSize += 1;
+    }
+
+    public DAddr allocate(){
+        DAddr addr = new RegisterOffset(this.lbOffset, Register.LB);
+        this.incrementLBOffset();
+        return addr;
+    }
+
+    public void incrementLBOffset(){
+        this.lbOffset += 1;
+    }
+
+    public int getLBOffset() {
+        return this.lbOffset;
+    }
+
+    public void resetLBOffset(){
+        this.lbOffset = 1;
     }
 
     public EnvironmentExp getEnvironmentExp(){
@@ -170,20 +199,6 @@ public class DecacCompiler {
      * The main program. Every instruction generated will eventually end up here.
      */
     private final IMAProgram program = new IMAProgram();
-
-    public DAddr allocate(){
-        this.varCount += 1;
-        return new RegisterOffset(this.varCount, Register.LB);
-    }
-
-    public void addVar(Symbol s, ExpDefinition def){
-        this.varList.put(s, def);
-    }
-
-    public ExpDefinition getVar(Symbol s){
-        return this.varList.get(s);
-    }
-
 
     /** The global environment for types (and the symbolTable) */
     public final SymbolTable symbolTable = new SymbolTable();
@@ -273,6 +288,8 @@ public class DecacCompiler {
             prog.verifyProgram(this);
             assert(prog.checkAllDecorations());
             prog.codeGenProgram(this);
+            this.addFirst(new ADDSP(this.getLBOffset() + this.varCount), "number of vars");
+            this.addFirst(new TSTO(this.getStackSize()), "size of stack needed");
             addComment("end main program");
             LOG.debug("Generated assembly code:" + nl + program.display());
         }

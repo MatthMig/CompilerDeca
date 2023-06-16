@@ -107,10 +107,20 @@ public class LabelManager {
     }
 
     /**
-     * Returns the ZeroDivision label
+     * Returns the fields initialization label
      * @return label
      */
     public Label createInitClassLabel(String className){
         return new Label("init." + className);
+    }
+
+    /**
+    * Returns the method label
+    * @return label
+    */
+    public Label createMethodLabel(String methodName, String className){
+        Label label = new Label("code." + className + "." + methodName + "." + this.labelCount);
+        this.labelCount += 1;
+        return label;
     }
 }
