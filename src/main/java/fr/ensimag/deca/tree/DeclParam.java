@@ -57,18 +57,27 @@ public class DeclParam extends AbstractDeclParam{
         EnvironmentExp localEnv, ClassDefinition currentClass)
         throws ContextualError {
             Type t = this.paramType.verifyType(compiler);
-            this.paramName.setType(t);
-    
-            ParamDefinition paramDef = new ParamDefinition(t, getLocation());
-            TypeDefinition typeDef = compiler.environmentType.defOfType(paramType.getName());
-            paramName.setDefinition(paramDef);
-            paramType.setDefinition(typeDef);
-    
-            try {
-                localEnv.declare(paramName.getName(), paramDef);
-            } catch(DoubleDefException e) {
-                String message = String.format("Parameter %s already declared", paramName.getName().getName());
-                throw new ContextualError(message, getLocation());
+            if (t.isVoid()) {
+                throw new ContextualError("Parameter cannot be of type void", getLocation());
             }
+            this.paramType.setType(t);
+            this.paramName.setType(t);
+            TypeDefinition typeDef = compiler.environmentType.defOfType(paramType.getName());
+            paramType.setDefinition(typeDef);
+    }
+
+    @Override
+    void verifyClassBody(DecacCompiler compiler,
+    EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
+        Type t = this.paramType.getType();
+        ParamDefinition paramDef = new ParamDefinition(t, getLocation());
+        this.paramName.setDefinition(paramDef);
+        try {
+            localEnv.declare(paramName.getName(), this.paramName.getExpDefinition());
+        } catch(DoubleDefException e) {
+            String message = String.format("Parameter %s already declared", paramName.getName().getName());
+            throw new ContextualError(message, getLocation());
+        }
     }
 }

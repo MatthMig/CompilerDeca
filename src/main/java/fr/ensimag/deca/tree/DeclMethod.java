@@ -58,11 +58,10 @@ public class DeclMethod extends AbstractDeclMethod{
             throws ContextualError {
         // Verify the return type
         Type type = this.returnType.verifyType(compiler);
-        // Create a local environment for the method
-        EnvironmentExp methodEnv = new EnvironmentExp(localEnv);
-        // Verify the List of parameters and declare them in the method's local environment (and not the object's one)
+        this.returnType.setType(type);
+        // Verify the List of parameters
         for(AbstractDeclParam declParam : this.listDeclParam.getList()){
-            declParam.verifyDeclParam(compiler, methodEnv, currentClass);
+            declParam.verifyDeclParam(compiler, localEnv, currentClass);
         }
         // Create a signature for the method
         Signature methodSignature = new Signature(type, methodName.getName());
@@ -80,29 +79,39 @@ public class DeclMethod extends AbstractDeclMethod{
         String toStringSignature = 
             methodSignature.getReturnType().toString()
             + " " + methodSignature.getMethodName().toString() + "("; // Add the return type and the method name to the signature
-        if (methodSignature.paramListSize() == 0)
+        if (methodSignature.paramListSize() == 0) {
             toStringSignature += "void";
-        else
-            for (int i = 1; i < methodSignature.paramListSize(); i++) {
-                if (i != 1) toStringSignature += ", ";
+        } else {
+            for (int i = 0; i < methodSignature.paramListSize(); i++) {
+                if (i != 0) toStringSignature += ", ";
                 toStringSignature += methodSignature.paramNumber(i).toString();
             }
+        }
         toStringSignature += ")";
 
-        // Try to declare the method in the Object local environment this time
+        // Try to declare the method in the class local environment this time
         try {
             localEnv.declare(compiler.symbolTable.create(toStringSignature), methodDef);
         } catch(DoubleDefException e) {
             String message = String.format("Method with signature '%s' already declared", toStringSignature);
             throw new ContextualError(message, getLocation());
         }
-
-        // Verify the method body
-        if (this.methodBody instanceof MethodBody) {
-            ((MethodBody) this.methodBody).verifyMethodBody(compiler, methodEnv, currentClass, type);
-        }
-        else {
-            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, methodEnv, currentClass);
-        }
     }
+
+    @Override
+    protected void verifyClassBody(DecacCompiler compiler,
+            EnvironmentExp localEnv, ClassDefinition currentClass)
+            throws ContextualError {
+                // Declare the parameters in the method's local environment (and not the class' one)
+                for(AbstractDeclParam declParam : this.listDeclParam.getList()) {
+                    declParam.verifyClassBody(compiler, localEnv, currentClass);
+                }
+                // Verify the method body
+                if (this.methodBody instanceof MethodBody) {
+                    ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
+                }
+                else {
+                    // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
+                }
+            }
 }

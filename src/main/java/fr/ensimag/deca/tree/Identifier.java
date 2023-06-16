@@ -1,7 +1,6 @@
 package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
-import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -10,6 +9,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.ExpDefinition;
+import fr.ensimag.deca.context.ParamDefinition;
 import fr.ensimag.deca.context.VariableDefinition;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
@@ -127,6 +127,28 @@ public class Identifier extends AbstractIdentifier {
 
     /**
      * Like {@link #getDefinition()}, but works only if the definition is a
+     * ParamDefinition.
+     *
+     * This method essentially performs a cast, but throws an explicit exception
+     * when the cast fails.
+     *
+     * @throws DecacInternalError
+     *             if the definition is not a field definition.
+     */
+    @Override
+    public ParamDefinition getParamDefinition() {
+        try {
+            return (ParamDefinition) definition;
+        } catch (ClassCastException e) {
+            throw new DecacInternalError(
+                    "Identifier "
+                            + getName()
+                            + " is not a param identifier, you can't call getParamDefinition on it");
+        }
+    }
+
+    /**
+     * Like {@link #getDefinition()}, but works only if the definition is a
      * VariableDefinition.
      *
      * This method essentially performs a cast, but throws an explicit exception
@@ -188,11 +210,14 @@ public class Identifier extends AbstractIdentifier {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
-
-        if(localEnv.get(this.name) != null){
-            this.setType(localEnv.get(this.name).getType());
-            this.setDefinition(localEnv.get(this.name));
-            return this.getType();
+        // Seek for the definition of the identifier in the environments (from lowest to highest environment)
+        while (localEnv != null) {
+            if(localEnv.get(this.name) != null){
+                this.setType(localEnv.get(this.name).getType());
+                this.setDefinition(localEnv.get(this.name));
+                return this.getType();
+            }
+            localEnv = localEnv.getParentEnvironment();
         }
         throw new ContextualError("undefined variable " + this.getName(),this.getLocation());
     }

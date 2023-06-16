@@ -15,6 +15,11 @@ public abstract class AbstractDeclParam extends Tree{
     protected void verifyDeclParam(DecacCompiler compiler,
         EnvironmentExp localEnv, ClassDefinition currentClass)
         throws ContextualError {
+    }
+
+    void verifyClassBody(DecacCompiler compiler,
+    EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
         throw new UnsupportedOperationException("not yet implemented");
     }
 

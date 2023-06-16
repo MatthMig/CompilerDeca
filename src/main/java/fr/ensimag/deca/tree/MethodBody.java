@@ -20,6 +20,7 @@ public class MethodBody extends AbstractMethodBody{
     public MethodBody(ListDeclVar listDeclVar, ListInst listInst, AbstractIdentifier returnType) {
         Validate.notNull(listDeclVar);
         Validate.notNull(listInst);
+        Validate.notNull(returnType);
         this.listDeclVar = listDeclVar;
         this.listInst = listInst;
         this.returnType = returnType;
