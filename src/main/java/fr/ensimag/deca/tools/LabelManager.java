@@ -7,6 +7,7 @@ public class LabelManager {
     private int labelCount;
     private Label overflowLabel = new Label("overflow_error");
     private Label zeroDivisionLabel = new Label("zeroDivision_error");
+    private Label stackOverFlowLabel = new Label("stackOverFlow_error");
     /**
      * Getter of the lowest free label integer
      * @return lowest free label int
@@ -106,11 +107,26 @@ public class LabelManager {
         return this.zeroDivisionLabel;
     }
 
+    public Label getStackOverflowLabel() {
+        return this.stackOverFlowLabel;
+    }
+
     /**
-     * Returns the ZeroDivision label
+     * Returns the fields initialization label
      * @return label
      */
     public Label createInitClassLabel(String className){
         return new Label("init." + className);
     }
+
+    /**
+    * Returns the method label
+    * @return label
+    */
+    public Label createMethodLabel(String methodName, String className){
+        Label label = createLabel("code." + className + "." + methodName);
+        this.labelCount += 1;
+        return label;
+    }
+
 }

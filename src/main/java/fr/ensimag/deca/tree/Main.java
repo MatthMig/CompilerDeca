@@ -44,8 +44,6 @@ public class Main extends AbstractMain {
         compiler.addComment("Beginning of main instructions:");
         declVariables.codeGenDeclVar(compiler);
         insts.codeGenListInst(compiler);
-        compiler.addFirst(new ADDSP(this.declVariables.getList().size()), "number of vars");
-        compiler.addFirst(new TSTO(compiler.getStackSize()), "size of stack needed");
     }
 
     @Override

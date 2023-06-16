@@ -7,13 +7,10 @@ import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DAddr;
-import fr.ensimag.ima.pseudocode.instructions.FLOAT;
-import fr.ensimag.ima.pseudocode.instructions.NEW;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.GPRegister;
 
@@ -67,7 +64,6 @@ public class DeclVar extends AbstractDeclVar {
         // Compiler now knows he has this variable
         DAddr addr = compiler.allocate();
         ((ExpDefinition)this.varName.getDefinition()).setOperand(addr);
-        compiler.addVar(this.varName.getName(), (ExpDefinition)this.varName.getDefinition());
 
         if (initialization.getClass() != NoInitialization.class ){
             this.initialization.codeGen(compiler);

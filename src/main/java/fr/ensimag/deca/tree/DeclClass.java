@@ -2,13 +2,16 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
+import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
@@ -63,12 +66,7 @@ public class DeclClass extends AbstractDeclClass {
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
         int i = 0;
-        EnvironmentExp envExp;
-        if (this.superClassName == null) {
-            envExp = new EnvironmentExp(compiler.getEnvironmentExp());
-        } else {
-            envExp = new EnvironmentExp(compiler.environmentType.defOfClass(this.superClassName.getName()).getMembers());
-        }
+        EnvironmentExp envExp = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
         for(AbstractDeclField declField : this.listDeclField.getList()){
             declField.verifyDeclField(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
         }
@@ -101,8 +99,23 @@ public class DeclClass extends AbstractDeclClass {
         compiler.addInstruction(new ADDSP(compiler.environmentType.defOfClass(this.className.getName()).getNumberOfFields()));
         this.listDeclField.codeGen(compiler);
         compiler.addInstruction(new RTS());
+        this.listDeclMethod.codeGen(compiler);
     }
 
+
+    @Override
+    public void codeGenMethodTable(DecacCompiler compiler) {
+        compiler.addComment("start : method table for class " + this.className.getName());
+
+        // Generate method table, starting on current GB offset 
+        this.className.getClassDefinition().setMethodTableAddr(compiler.allocate());
+        listDeclMethod.genMethodTable(compiler, this.className.getClassDefinition());
+
+        // Generate the code that actually generates the table
+        listDeclMethod.codeGenMethodTable(compiler, this.className.getClassDefinition());
+
+        compiler.addComment("end : method table for class " + this.className.getName());
+    }
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {

@@ -1,6 +1,8 @@
 package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.tree.Location;
+import fr.ensimag.ima.pseudocode.DAddr;
+import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.Label;
 import org.apache.commons.lang.Validate;
 
@@ -39,8 +41,17 @@ public class ClassDefinition extends TypeDefinition {
         return numberOfMethods;
     }
 
+    public void setMethodTableAddr(DVal mehtodTableAddr) {
+        this.methodTableAddr = mehtodTableAddr;
+    }
+
+    public DVal getMethodTableAddr() {
+        return methodTableAddr;
+    }
+
     private int numberOfFields = 0;
     private int numberOfMethods = 0;
+    private DVal methodTableAddr = null;
     
     @Override
     public boolean isClass() {

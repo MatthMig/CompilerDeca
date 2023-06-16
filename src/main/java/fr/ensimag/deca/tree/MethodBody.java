@@ -5,7 +5,6 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 
 import org.apache.commons.lang.Validate;
 import java.io.PrintStream;
-import fr.ensimag.deca.tools.IndentPrintStream;
 
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
@@ -25,6 +24,12 @@ public class MethodBody extends AbstractMethodBody{
         this.listInst = listInst;
         this.returnType = returnType;
     }
+
+    @Override
+    public int getVarCount() {
+        return this.listDeclVar.size(); 
+    }
+
     /**
      * @param compiler
      * @param localEnv
@@ -40,7 +45,9 @@ public class MethodBody extends AbstractMethodBody{
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.listDeclVar.iterChildren(f);
+        this.listInst.iterChildren(f);
+        this.returnType.iter(f);
     }
 
     @Override
@@ -50,11 +57,14 @@ public class MethodBody extends AbstractMethodBody{
     }
 
     @Override
+    public void codeGen(DecacCompiler compiler) {
+        this.listDeclVar.codeGenDeclVar(compiler);
+        this.listInst.codeGenListInst(compiler);
+    }
+
+    @Override
     public void decompile(IndentPrintStream s) {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
-    public void codeGen(DecacCompiler compiler){
-        throw new UnsupportedOperationException("not yet implemented");
-    }
 }

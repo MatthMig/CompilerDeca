@@ -151,7 +151,8 @@ inst returns[AbstractInst tree]
     | RETURN (expr {
                 assert($expr.tree != null);
                 $tree = new Return($expr.tree);
-            }
+                setLocation($tree, $RETURN);
+        }
         | /* Epsilon */ {
                 $tree = new Return(null);
             }) SEMI {
@@ -554,11 +555,13 @@ decl_method returns[AbstractDeclMethod tree]
 }
     : type ident OPARENT params=list_params CPARENT (block {
             body = new MethodBody($block.decls, $block.insts, $type.tree);
+            setLocation(body, $params.start);
         }
       | ASM OPARENT code=multi_line_string CPARENT SEMI {
             StringLiteral sl = new StringLiteral($code.text);
             sl.setLocation($code.location);
             body = new MethodAsmBody(sl);
+            setLocation($tree, $type.start);
         }
       ) {
             $tree =new DeclMethod($type.tree, $ident.tree, $params.tree, body );

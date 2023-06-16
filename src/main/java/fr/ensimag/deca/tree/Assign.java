@@ -45,8 +45,7 @@ public class Assign extends AbstractBinaryExpr {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        ExpDefinition varDef = compiler.getVar(((Identifier)this.getLeftOperand()).getName());
-        DAddr leftAddr = varDef.getOperand();
+        DAddr leftAddr = ((Identifier)this.getLeftOperand()).getVariableDefinition().getOperand();
         this.getRightOperand().codeGenExp(compiler, 2);
 
         if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
@@ -61,8 +60,7 @@ public class Assign extends AbstractBinaryExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        ExpDefinition varDef = compiler.getVar(((Identifier)this.getLeftOperand()).getName());
-        DAddr leftAddr = varDef.getOperand();
+        DAddr leftAddr = ((Identifier)this.getLeftOperand()).getVariableDefinition().getOperand();
         this.getRightOperand().codeGenExp(compiler, n);
 
         if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){

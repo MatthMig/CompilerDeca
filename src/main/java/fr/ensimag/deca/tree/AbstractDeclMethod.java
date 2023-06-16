@@ -30,4 +30,12 @@ public abstract class AbstractDeclMethod extends Tree{
     public void codeGen(DecacCompiler compiler){
         throw new UnsupportedOperationException("not yet implemented");
     }
+
+    public void genMethodTableEntry(DecacCompiler compiler, ClassDefinition classDefinition) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
+
+    public void codeGenMethodTableEntry(DecacCompiler compiler) {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 }
