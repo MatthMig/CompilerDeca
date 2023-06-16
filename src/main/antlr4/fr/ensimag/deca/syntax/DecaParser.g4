@@ -148,9 +148,13 @@ inst returns[AbstractInst tree]
             $tree = new While($expr.tree, $body.tree);
             setLocation($tree, $WHILE);
         }
-    | RETURN expr SEMI {
-            assert($expr.tree != null);
-            $tree = new Return($expr.tree);
+    | RETURN (expr {
+                assert($expr.tree != null);
+                $tree = new Return($expr.tree);
+            }
+        | /* Epsilon */ {
+                $tree = new Return(null);
+            }) SEMI {
         }
     ;
 

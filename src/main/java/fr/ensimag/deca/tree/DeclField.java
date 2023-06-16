@@ -73,13 +73,12 @@ public class DeclField extends AbstractDeclField{
             throw new ContextualError(message, getLocation());
         }
         currentClass.incNumberOfFields();
-
-        this.initialization.verifyInitialization(compiler, this.fieldName.getType(), localEnv, currentClass);
     }
 
     @Override
     public void verifyClassBody(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         // Passe 3 : verify the initialization expression
+        this.initialization.verifyInitialization(compiler, this.fieldName.getType(), localEnv, currentClass);
     }
 
     @Override

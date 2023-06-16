@@ -63,7 +63,12 @@ public class DeclClass extends AbstractDeclClass {
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
         int i = 0;
-        EnvironmentExp envExp = new EnvironmentExp(compiler.getEnvironmentExp());
+        EnvironmentExp envExp;
+        if (this.superClassName == null) {
+            envExp = new EnvironmentExp(compiler.getEnvironmentExp());
+        } else {
+            envExp = new EnvironmentExp(compiler.environmentType.defOfClass(this.superClassName.getName()).getMembers());
+        }
         for(AbstractDeclField declField : this.listDeclField.getList()){
             declField.verifyDeclField(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
         }
@@ -77,6 +82,16 @@ public class DeclClass extends AbstractDeclClass {
     
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
+        // Passe 3 for the fields 
+        for(AbstractDeclField declField : this.listDeclField.getList()){
+            EnvironmentExp objectEnv = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
+            declField.verifyClassBody(compiler, objectEnv, compiler.environmentType.defOfClass(this.className.getName()));
+        }
+        // Passe 3 for the methods
+        for(AbstractDeclMethod declMethod : this.listDeclMethod.getList()){
+            EnvironmentExp objectEnv = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
+            declMethod.verifyClassBody(compiler, new EnvironmentExp(objectEnv), compiler.environmentType.defOfClass(this.className.getName()));
+        }
     }
 
     @Override
