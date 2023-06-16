@@ -31,7 +31,8 @@ public class Return extends AbstractInst {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        this.returnExpr.iter(f);
+        if(this.returnExpr != null)
+            this.returnExpr.iter(f);
     }
 
     @Override
@@ -61,7 +62,8 @@ public class Return extends AbstractInst {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        this.returnExpr.codeGenExp(compiler, 2);
+        if(this.returnExpr != null)
+            this.returnExpr.codeGenExp(compiler, 2);
         compiler.addInstruction(new RTS());
     }
 

@@ -50,6 +50,7 @@ public class Program extends AbstractProgram {
         compiler.addComment("Main program");
         classes.codeGenMethodTable(compiler);
         main.codeGenMain(compiler);
+        compiler.setStackSize(compiler.getStackSize() + compiler.getLBOffset());
         compiler.addInstruction(new HALT());
         classes.codeGenClasses(compiler);
 
@@ -66,6 +67,12 @@ public class Program extends AbstractProgram {
 
             compiler.addLabel(compiler.getLabelManager().getZeroDivisionLabel());
             compiler.addInstruction(new WSTR("Error : Division by zero"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
+
+
+            compiler.addLabel(compiler.getLabelManager().getStackOverflowLabel());
+            compiler.addInstruction(new WSTR("Error : Stack overflow"));
             compiler.addInstruction(new WNL());
             compiler.addInstruction(new ERROR());
         }

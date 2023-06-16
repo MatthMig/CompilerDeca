@@ -555,7 +555,7 @@ decl_method returns[AbstractDeclMethod tree]
 }
     : type ident OPARENT params=list_params CPARENT (block {
             body = new MethodBody($block.decls, $block.insts, $type.tree);
-            setLocation(body, $OPARENT);
+            setLocation(body, $params.start);
         }
       | ASM OPARENT code=multi_line_string CPARENT SEMI {
             StringLiteral sl = new StringLiteral($code.text);

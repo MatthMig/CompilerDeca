@@ -67,6 +67,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
             compiler.addInstruction(new LOAD(GPRegister.getR(n), GPRegister.getR(1)));
             compiler.addInstruction(new POP(GPRegister.getR(n)),"restauration");
+            compiler.decrementStackSize();
 
             DVal regN = GPRegister.getR(1);
             this.codeGenMnemo(compiler, regN, GPRegister.getR(n));

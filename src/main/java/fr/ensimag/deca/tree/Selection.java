@@ -80,26 +80,20 @@ public class Selection extends AbstractExpr {
         ClassDefinition cdef = (ClassDefinition)tdef;
         ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
 
-        if(edef instanceof FieldDefinition){
-            edef = (FieldDefinition)edef;
-        }
-
-        else if (edef instanceof MethodDefinition && this.params != null){
-            edef = (MethodDefinition)edef;
+        if(edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null)){
+            this.fieldName.setType(edef.getType());
+            if(cdef.getMembers().get(fieldName.getName()) != null){
+                this.setType(this.fieldName.getType());
+                this.fieldName.setType(edef.getType());
+                this.fieldName.setDefinition(edef);
+                return this.getType();
+            }
+            return getType();
         }
 
         else {
             throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
         }
-
-        this.fieldName.setType(edef.getType());
-        if(cdef.getMembers().get(fieldName.getName()) != null){
-            this.setType(this.fieldName.getType());
-            this.fieldName.setType(edef.getType());
-            this.fieldName.setDefinition(edef);
-            return this.getType();
-        }
-        return getType();
     }
 
     @Override

@@ -143,6 +143,7 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     public void codeGen(DecacCompiler compiler) {
+        compiler.resetStackSize();
         Label methodLabel = compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition());
         compiler.addComment("start : method " + methodLabel.toString());
         compiler.resetLBOffset();

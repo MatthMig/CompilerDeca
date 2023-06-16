@@ -20,6 +20,7 @@ import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.File;
@@ -52,6 +53,7 @@ public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
     private int varCount = 0;
     private int stackSize = 0;
+    private int maxStackSize = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null); 
@@ -98,6 +100,25 @@ public class DecacCompiler {
 
     public void incrementStackSize(){
         this.stackSize += 1;
+        if(this.getMaxStackSize()  < this.getStackSize()){
+            this.setMaxStackSize(this.getStackSize());
+        }
+    }
+
+    public void decrementStackSize() {
+        this.stackSize -= 1;
+    }
+
+    public int getMaxStackSize() {
+        return maxStackSize;
+    }
+
+    public void setMaxStackSize(int maxStackSize) {
+        this.maxStackSize = maxStackSize;
+    }
+
+    public void resetStackSize() {
+        this.stackSize = 0;
     }
 
     public DAddr allocate(){
@@ -110,12 +131,17 @@ public class DecacCompiler {
         this.lbOffset += 1;
     }
 
+
     public int getLBOffset() {
         return this.lbOffset;
     }
 
     public void resetLBOffset(){
         this.lbOffset = 1;
+    }
+
+    public void setStackSize(int i) {
+        this.stackSize = i;
     }
 
     public EnvironmentExp getEnvironmentExp(){
@@ -289,6 +315,7 @@ public class DecacCompiler {
             assert(prog.checkAllDecorations());
             prog.codeGenProgram(this);
             this.addFirst(new ADDSP(this.getLBOffset() + this.varCount), "number of vars");
+            this.addFirst(new BOV(this.labelManager.getStackOverflowLabel()),"check for stack overflows");
             this.addFirst(new TSTO(this.getStackSize()), "size of stack needed");
             addComment("end main program");
             LOG.debug("Generated assembly code:" + nl + program.display());
