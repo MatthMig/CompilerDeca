@@ -62,7 +62,8 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        operand.iter(f);
+        if (operand != null)
+            operand.iter(f);
         fieldName.iter(f);
     }
 
