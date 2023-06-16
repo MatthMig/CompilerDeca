@@ -4,7 +4,7 @@
 class Math {
 
     float _pi = 3.141592653589793;
-    float _floatMinimumValue = 1.4E-45;
+    float _floatMinimumValue = 0.00000000000000000000000000000000000000000000000000014;
 
     float _abs(float f){
         if( f < 0){
