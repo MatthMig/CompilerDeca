@@ -159,6 +159,9 @@ public class DeclMethod extends AbstractDeclMethod{
         compiler.resetStackSize();
         Label methodLabel = compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition());
         compiler.addComment("start : method " + methodLabel.toString());
+
+        this.listDeclParam.setParamAddresses();
+
         compiler.resetLBOffset();
         compiler.addLabel(methodLabel);
 

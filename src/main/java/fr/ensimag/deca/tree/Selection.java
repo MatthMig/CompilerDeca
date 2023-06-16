@@ -13,6 +13,8 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
 
 import java.io.PrintStream;
 
@@ -104,7 +106,12 @@ public class Selection extends AbstractExpr {
                 this.setType(this.fieldName.getType());
                 this.fieldName.setType(edef.getType());
                 this.fieldName.setDefinition(edef);
-                return this.getType();
+            }
+
+            if(edef instanceof MethodDefinition && this.params != null){
+                for(AbstractExpr aExpr : this.params.getList()){
+                    aExpr.verifyExpr(compiler, localEnv, currentClass);
+                }
             }
             return getType();
         }
@@ -128,14 +135,19 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        if(this.operand instanceof Identifier){
-            DVal addr = ((Identifier)this.operand).getVariableDefinition().getOperand();
-            compiler.addInstruction(new LOAD(addr, GPRegister.getR(n)));
+        this.operand.codeGenExp(compiler, n);
+        if(this.params != null){
+            for(AbstractExpr aExpr : this.params.getList()){
+                aExpr.codeGenExp(compiler, n);
+                compiler.addInstruction(new PUSH(GPRegister.getR(n)));
+            }
+            this.fieldName.codeGenExp(compiler, n);
+            for(AbstractExpr aExpr : this.params.getList()){
+                compiler.addInstruction(new POP(GPRegister.R0));
+            }
         }
-        else{
-            this.operand.codeGenExp(compiler, n);
-        }
-        this.fieldName.codeGenExp(compiler, n);
+        else
+            this.fieldName.codeGenExp(compiler, n);
     }
 
 

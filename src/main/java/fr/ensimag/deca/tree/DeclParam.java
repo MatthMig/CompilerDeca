@@ -2,20 +2,16 @@ package fr.ensimag.deca.tree;
 
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
-import fr.ensimag.deca.context.VariableDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.ParamDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.DAddr;
-import fr.ensimag.ima.pseudocode.instructions.NEW;
-import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -34,7 +30,8 @@ public class DeclParam extends AbstractDeclParam{
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.paramType.iter(f);
+        this.paramName.iter(f);
     }
 
     @Override
@@ -80,4 +77,10 @@ public class DeclParam extends AbstractDeclParam{
             throw new ContextualError(message, getLocation());
         }
     }
+
+    @Override
+    public void setParamAddress(int index) {
+        this.paramName.getParamDefinition().setOperand(new RegisterOffset(index, Register.LB));
+    }
+    
 }

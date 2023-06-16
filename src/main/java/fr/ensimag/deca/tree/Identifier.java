@@ -57,6 +57,15 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     protected DVal dval(DecacCompiler compiler) {
+        if(this.getDefinition().isField())
+            return this.getFieldDefinition().getOperand();
+
+        if(this.getDefinition().isMethod())
+            return this.getMethodDefinition().getOperand();
+
+        if(this.getDefinition().isParam())
+            return this.getParamDefinition().getOperand();
+
         return this.getVariableDefinition().getOperand();
     }
 
@@ -291,8 +300,11 @@ public class Identifier extends AbstractIdentifier {
     protected void codeGenExp(DecacCompiler compiler, int n) {
         if(this.getDefinition().isField())
             compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex(), Register.getR(n)),Register.getR(n)));
-        else if (this.getDefinition().isMethod())
-                compiler.addInstruction(new BSR(new LabelOperand(compiler.getMethodTable().getMethodLabel(this.getMethodDefinition()))));
+        else if (this.getDefinition().isMethod()){
+            compiler.addInstruction(new BSR(new LabelOperand(compiler.getMethodTable().getMethodLabel(this.getMethodDefinition()))));
+        }
+        else if (this.getDefinition().isParam())
+            compiler.addInstruction(new LOAD(this.getParamDefinition().getOperand(),Register.getR(n)));
         else
             compiler.addInstruction(new LOAD(this.getVariableDefinition().getOperand(),Register.getR(n)));
     }
