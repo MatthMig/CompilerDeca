@@ -53,7 +53,7 @@ public class Initialization extends AbstractInitialization {
         }
 
         // If i assign anything that isn't same type and isn't convFloat
-        else if(t2 != t){
+        else if((t2 != t) && !(t.isClass() && t2.isClassOrNull())){
             throw new ContextualError("trying to asign a var of type " + t2 + " to a variable of type "+ t, getLocation());
         }
     }
