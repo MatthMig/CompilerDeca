@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.FieldDefinition;
+import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
@@ -56,6 +57,17 @@ public class DeclField extends AbstractDeclField{
         this.fieldName.setType(t);
         this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), null, currentClass, index));
 
+        // Check for definition in parent environment
+        if (currentClass.getSuperClass() != null) {
+            MethodDefinition potentialDef = (MethodDefinition) (currentClass.getSuperClass().getMembers().get(fieldName.getName()));
+            if (potentialDef != null) {
+                // In order to avoid masking a method with a field and vice versa
+                if (fieldName.getExpDefinition().isField() && potentialDef.isMethod()) {
+                    String message = String.format("Can't declare field '%s' in class %s because the super class %s have a method with that name", fieldName.getName().getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+                    throw new ContextualError(message, getLocation());
+                }
+            }
+        }
         // Try to declare the field to the local environment
         try{
             localEnv.declare(fieldName.getName(), fieldName.getExpDefinition());

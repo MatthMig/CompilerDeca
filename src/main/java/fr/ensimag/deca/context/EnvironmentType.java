@@ -50,6 +50,11 @@ public class EnvironmentType {
         return envTypes.get(s);
     }
 
+    /**
+     * Get the definition of a class from this environment, null if it doesn't exist.
+     * @param s : Symbol of the class
+     * @return ClassDefinition | null
+     */
     public ClassDefinition defOfClass(Symbol s){
         TypeDefinition td = envTypes.get(s);
         if(td instanceof ClassDefinition){
@@ -58,8 +63,8 @@ public class EnvironmentType {
         return null;
     }
 
-    public void declareClass(AbstractIdentifier className, ClassType classType, ClassDefinition superClassDef){
-        envTypes.put(className.getName(), new ClassDefinition(classType, className.getLocation(), superClassDef));
+    public void declareClass(AbstractIdentifier className, ClassType classType){
+        envTypes.put(className.getName(), classType.getDefinition());
     }
 
     public final VoidType    VOID;

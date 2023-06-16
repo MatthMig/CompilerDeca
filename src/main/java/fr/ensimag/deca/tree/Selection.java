@@ -45,6 +45,15 @@ public class Selection extends AbstractExpr {
         this.fieldName = fieldName;
         this.params = null;
     }
+    // If we have a method call within an object, the operand is implicitely 'this'
+    // We simulate this by creating a new Selection with operand = null
+    public Selection(AbstractIdentifier fieldName, ListExpr params) {
+        Validate.notNull(fieldName);
+        Validate.notNull(params);
+        this.operand = null;
+        this.fieldName = fieldName;
+        this.params = params;
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
@@ -59,7 +68,9 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        operand.prettyPrint(s, prefix, false);
+        if (operand != null) {
+            operand.prettyPrint(s, prefix, false);
+        }
         if (params != null) {
             fieldName.prettyPrint(s, prefix, false);
             params.prettyPrint(s, prefix, true);
@@ -71,11 +82,17 @@ public class Selection extends AbstractExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
-        operand.verifyExpr(compiler, localEnv, currentClass);
-        Type t = operand.verifyExpr(compiler, localEnv, currentClass);
-        TypeDefinition tdef = compiler.environmentType.defOfType(t.getName()); //compiler.environmentType.defOfType(((Identifier)operand).getVariableDefinition().getType().getName());
-        if(!(tdef instanceof ClassDefinition)){
-            throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
+        TypeDefinition tdef;
+        if (operand == null) {
+            // If operand is null, then we have a null operand
+            // Left type is set to the current class type
+            tdef = currentClass.getType().getDefinition();
+        } else {
+            Type t = operand.verifyExpr(compiler, localEnv, currentClass);
+            tdef = compiler.environmentType.defOfType(t.getName());
+            if(!(tdef instanceof ClassDefinition)) {
+                throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
+            }
         }
         ClassDefinition cdef = (ClassDefinition)tdef;
         ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
@@ -90,7 +107,6 @@ public class Selection extends AbstractExpr {
             }
             return getType();
         }
-
         else {
             throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
         }

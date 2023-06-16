@@ -397,6 +397,7 @@ primary_expr returns[AbstractExpr tree]
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);
             assert($m.tree != null);
+            $tree = new Selection($m.tree, $args.tree);
         }
     | OPARENT expr CPARENT {
             assert($expr.tree != null);
@@ -483,7 +484,7 @@ list_classes returns[ListDeclClass tree]
 class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
         assert($name.tree != null);
-        $tree = new DeclClass($name.tree,$superclass.tree, $class_body.declFieldList, $class_body.declMethodList);
+        $tree = new DeclClass($name.tree, $superclass.tree, $class_body.declFieldList, $class_body.declMethodList);
         setLocation($tree, $CLASS);
         }
     ;

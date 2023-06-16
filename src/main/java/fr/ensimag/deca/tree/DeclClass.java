@@ -51,13 +51,21 @@ public class DeclClass extends AbstractDeclClass {
     @Override
     protected void verifyClass(DecacCompiler compiler) throws ContextualError {
         if(compiler.environmentType.defOfType(this.className.getName()) == null){
-            if(this.getSuperClassName() != null){
-                // if(compiler.environmentType.defOfType(this.getSuperClassName().getName()) != null){
-                //     compiler.environmentType.declareClass(null, null, null);
-                // } 
-                } else {
-                    compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), null), null);
+            if(this.superClassName != null){
+                // Load the super class definition
+                ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
+                if(superClassDef != null){
+                    // Declare the class in the environment of the compiler
+                    compiler.environmentType.declareClass(className, new ClassType(className.getName(), getLocation(), superClassDef));
                     this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
+                } else {
+                    // Parent class doesn't exist
+                    throw new ContextualError("Super class " + this.getSuperClassName().getName() + " does not exist", this.getLocation());
+                }
+            } else {
+                // No inheritance
+                compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), null));
+                this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
             }
         }
     }

@@ -3,6 +3,7 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
+import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.Signature;
@@ -97,6 +98,18 @@ public class DeclMethod extends AbstractDeclMethod{
             }
         }
         toStringSignature += ")";
+
+        // Check for definition in parent environment
+        if (currentClass.getSuperClass() != null) {
+            FieldDefinition potentialDef = (FieldDefinition) (currentClass.getSuperClass().getMembers().get(methodName.getName()));
+            if (potentialDef != null) {
+                // In order to avoid masking a method with a field and vice versa
+                if (methodName.getExpDefinition().isMethod() && potentialDef.isField()) {
+                    String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", toStringSignature, currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+                    throw new ContextualError(message, getLocation());
+                }
+            }
+        }
 
         // Try to declare the method in the class local environment this time
         try {
