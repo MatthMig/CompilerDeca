@@ -30,7 +30,7 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
         // Si types differents ET que aucun des deux n'est un INT alors on n'est pas dans le cas de 'int CMP float'
         if(t1 != t2) {
             if (
-                !( (t1.isInt() && t2.isFloat()) || (t1.isFloat() && t2.isInt()) )
+                !( (t1.isInt() && t2.isFloat()) || (t1.isFloat() && t2.isInt()) || (t1.isClassOrNull() && t2.isClassOrNull()))
             )
                 // Types incomparables
                 throw new ContextualError(
