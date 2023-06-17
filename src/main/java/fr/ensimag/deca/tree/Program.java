@@ -50,7 +50,9 @@ public class Program extends AbstractProgram {
         compiler.addComment("Main program");
         classes.codeGenMethodTable(compiler);
         main.codeGenMain(compiler);
-        compiler.setStackSize(compiler.getStackSize() + compiler.getLBOffset());
+        compiler.addFirst(new ADDSP(compiler.getLBOffset()), "number of vars + size of the VTable");
+        compiler.addFirst(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+        compiler.addFirst(new TSTO(compiler.getMaxStackSize() + compiler.getLBOffset()), "size of stack needed");
         compiler.addInstruction(new HALT());
         classes.codeGenClasses(compiler);
 

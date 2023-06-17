@@ -15,6 +15,7 @@ import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
+import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 
 import java.io.PrintStream;
 
@@ -129,7 +130,7 @@ public class Selection extends AbstractExpr {
         else{
             this.operand.codeGenPrint(compiler);
         }
-        
+
         this.fieldName.codeGenPrint(compiler);
     }
 
@@ -140,10 +141,12 @@ public class Selection extends AbstractExpr {
             for(AbstractExpr aExpr : this.params.getList()){
                 aExpr.codeGenExp(compiler, n);
                 compiler.addInstruction(new PUSH(GPRegister.getR(n)));
+                compiler.incrementStackSize();
             }
             this.fieldName.codeGenExp(compiler, n);
             for(AbstractExpr aExpr : this.params.getList()){
-                compiler.addInstruction(new POP(GPRegister.R0));
+                compiler.addInstruction(new SUBSP(1));
+                compiler.decrementStackSize();
             }
         }
         else

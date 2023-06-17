@@ -10,18 +10,22 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.IMAProgram;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
 
 /**
  * Declaration of a class (<code>class name extends superClass {members}<code>).
- * 
+ *
  * @author gl03
  * @date 21/04/2023
  */
@@ -85,10 +89,10 @@ public class DeclClass extends AbstractDeclClass {
         }
 
     }
-    
+
     @Override
     protected void verifyClassBody(DecacCompiler compiler) throws ContextualError {
-        // Passe 3 for the fields 
+        // Passe 3 for the fields
         for(AbstractDeclField declField : this.listDeclField.getList()){
             EnvironmentExp objectEnv = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
             declField.verifyClassBody(compiler, objectEnv, compiler.environmentType.defOfClass(this.className.getName()));
@@ -102,11 +106,32 @@ public class DeclClass extends AbstractDeclClass {
 
     @Override
     public void codeGenClass(DecacCompiler compiler){
+        // Storing Class field count
+        int fieldCount = this.className.getClassDefinition().getNumberOfFields();
+
+        // Generating the initialization code under a sub compiler
+        DecacCompiler initializationCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+        this.listDeclField.codeGen(initializationCompiler);
+
+        // Start the init subprogram with an adapted label
         Label initLabel = compiler.getLabelManager().createInitClassLabel(className.getName().getName());
         compiler.addLabel(initLabel);
-        compiler.addInstruction(new ADDSP(compiler.environmentType.defOfClass(this.className.getName()).getNumberOfFields()));
-        this.listDeclField.codeGen(compiler);
+
+        // Now that the subcompiler generated the code, I can get informations I need to check for the stack
+        compiler.addInstruction(new TSTO(fieldCount + initializationCompiler.getMaxStackSize()));
+        compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+        compiler.addInstruction(new ADDSP(fieldCount));
+
+        // Now append the subCompiler generated program
+        compiler.append(initializationCompiler.getProgram());
+
+        // Return
         compiler.addInstruction(new RTS());
+
+        // Reset Stack Pointer
+        compiler.addInstruction(new SUBSP(fieldCount));
+
+        // Generate code for methods
         this.listDeclMethod.codeGen(compiler);
     }
 
@@ -115,7 +140,7 @@ public class DeclClass extends AbstractDeclClass {
     public void codeGenMethodTable(DecacCompiler compiler) {
         compiler.addComment("start : method table for class " + this.className.getName());
 
-        // Generate method table, starting on current GB offset 
+        // Generate method table, starting on current GB offset
         this.className.getClassDefinition().setMethodTableAddr(compiler.allocate());
         listDeclMethod.genMethodTable(compiler, this.className.getClassDefinition());
 

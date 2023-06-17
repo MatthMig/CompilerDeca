@@ -56,7 +56,7 @@ public class DecacCompiler {
     private int maxStackSize = 0;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
-    private final EnvironmentExp environmentExp = new EnvironmentExp(null); 
+    private final EnvironmentExp environmentExp = new EnvironmentExp(null);
     private final MethodTable methodTable;
     private int lbOffset = 1;
 
@@ -219,6 +219,19 @@ public class DecacCompiler {
         return program.display();
     }
 
+    /**
+     * @see
+     * fr.ensimag.ima.pseudocode.IMAProgram#append(IMAPgrogram p)
+     *
+     */
+    public void append(IMAProgram p) {
+        program.append(p);
+    }
+
+    public IMAProgram getProgram(){
+        return program;
+    }
+
     private final CompilerOptions compilerOptions;
     private final File source;
     /**
@@ -314,9 +327,6 @@ public class DecacCompiler {
             prog.verifyProgram(this);
             assert(prog.checkAllDecorations());
             prog.codeGenProgram(this);
-            this.addFirst(new ADDSP(this.getLBOffset() + this.varCount), "number of vars");
-            this.addFirst(new BOV(this.labelManager.getStackOverflowLabel()),"check for stack overflows");
-            this.addFirst(new TSTO(this.getStackSize()), "size of stack needed");
             addComment("end main program");
             LOG.debug("Generated assembly code:" + nl + program.display());
         }

@@ -16,8 +16,11 @@ import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.PrintStream;
 
@@ -29,7 +32,7 @@ public class DeclMethod extends AbstractDeclMethod{
     final private AbstractIdentifier methodName;
     final private ListDeclParam listDeclParam;
     final private AbstractMethodBody methodBody;
-    
+
     public DeclMethod(AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
         Validate.notNull(returnType);
         Validate.notNull(methodName);
@@ -86,7 +89,7 @@ public class DeclMethod extends AbstractDeclMethod{
         returnType.setDefinition(typeDef);
 
         // Formatting the signature of the method
-        String toStringSignature = 
+        String toStringSignature =
             methodSignature.getReturnType().toString()
             + " " + methodSignature.getMethodName().toString() + "("; // Add the return type and the method name to the signature
         if (methodSignature.paramListSize() == 0) {
@@ -149,27 +152,46 @@ public class DeclMethod extends AbstractDeclMethod{
     public void codeGenMethodTableEntry(DecacCompiler compiler) {
         // Load the PC address for the method
         compiler.addInstruction(new LOAD(compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition()), GPRegister.R0));
-        
+
         // Store it in the memory, at it's place in the method table
         compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()), "store method " + this.methodName.getName() + " address");
     }
 
     @Override
     public void codeGen(DecacCompiler compiler) {
-        compiler.resetStackSize();
+        // Get method label
         Label methodLabel = compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition());
+
+        // Comment for the start of the method code
         compiler.addComment("start : method " + methodLabel.toString());
 
-        this.listDeclParam.setParamAddresses();
-
-        compiler.resetLBOffset();
+        // Set method label
         compiler.addLabel(methodLabel);
 
-        compiler.addInstruction(new ADDSP(this.methodBody.getVarCount()));
+        // Storing Class field count
+        int localVariableCount = this.methodBody.getVarCount();
 
-        this.methodBody.codeGen(compiler);
+        // Set params operand (address) in their definition
+        this.listDeclParam.setParamAddresses();
 
+
+        // Generating the method code under a sub compiler
+        DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+        this.methodBody.codeGen(methodCompiler);
+
+        // Set method stack overflow test and stack pointer
+        compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize()));
+        compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+        compiler.addInstruction(new ADDSP(localVariableCount));
+
+        // Then append the generated code
+        compiler.append(methodCompiler.getProgram());
+
+        // Reset Stack Pointer
+        compiler.addInstruction(new SUBSP(localVariableCount));
+
+        // Comment for the end of the method code
         compiler.addComment("end : method " + methodLabel.toString());
     }
-    
+
 }
