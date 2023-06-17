@@ -4,8 +4,11 @@ import fr.ensimag.deca.context.Type;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.FLOAT;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -47,8 +50,11 @@ public class Assign extends AbstractBinaryExpr {
     protected void codeGenInst(DecacCompiler compiler) {
         Identifier leftOperand  = (Identifier)this.getLeftOperand();
         DAddr leftAddr;
+        this.getRightOperand().codeGenExp(compiler, 2);
+
         if(leftOperand.getDefinition().isField()){
-            leftAddr = leftOperand.getFieldDefinition().getOperand();
+            compiler.addInstruction(new LOAD(new RegisterOffset(-2, Register.LB),Register.getR(1)));
+            leftAddr = new RegisterOffset(leftOperand.getFieldDefinition().getIndex(), Register.getR(1));
         }
 
         else if(leftOperand.getDefinition().isParam()){
@@ -58,8 +64,6 @@ public class Assign extends AbstractBinaryExpr {
         else{
             leftAddr = leftOperand.getVariableDefinition().getOperand();
         }
-
-        this.getRightOperand().codeGenExp(compiler, 2);
 
         if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
             compiler.addInstruction(new FLOAT(GPRegister.getR(2), GPRegister.getR(2)));

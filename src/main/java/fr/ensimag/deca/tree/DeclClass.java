@@ -133,11 +133,11 @@ public class DeclClass extends AbstractDeclClass {
         // Now append the subCompiler generated program
         compiler.append(initializationCompiler.getProgram());
 
-        // Return
-        compiler.addInstruction(new RTS());
-
         // Reset Stack Pointer
         compiler.addInstruction(new SUBSP(fieldCount));
+
+        // Return
+        compiler.addInstruction(new RTS());
 
         // Generate code for methods
         this.listDeclMethod.codeGen(compiler);

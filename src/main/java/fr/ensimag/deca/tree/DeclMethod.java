@@ -23,6 +23,8 @@ import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
+import fr.ensimag.ima.pseudocode.instructions.RTS;
+
 
 import java.io.PrintStream;
 
@@ -201,6 +203,9 @@ public class DeclMethod extends AbstractDeclMethod{
         }
         // Reset Stack Pointer
         compiler.addInstruction(new SUBSP(localVariableCount));
+
+        // Return to old context
+        compiler.addInstruction(new RTS());
 
         // Comment for the end of the method code
         compiler.addComment("end : method " + methodLabel.toString());
