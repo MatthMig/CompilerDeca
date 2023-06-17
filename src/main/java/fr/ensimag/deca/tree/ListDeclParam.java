@@ -13,7 +13,7 @@ public class ListDeclParam extends TreeList<AbstractDeclParam> {
     }
 
     public void setParamAddresses(){
-        int index = -2;
+        int index = -3;
 
         // Reading reverse sense the list to push parameters correctly
         for(int i = this.getList().size() -1 ; i >= 0 ; i--){

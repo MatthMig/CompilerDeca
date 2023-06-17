@@ -136,27 +136,27 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        this.operand.codeGenExp(compiler, n);
-        if(this.params != null){
-            for(AbstractExpr aExpr : this.params.getList()){
-                aExpr.codeGenExp(compiler, n);
-                compiler.addInstruction(new PUSH(GPRegister.getR(n)));
-                compiler.incrementStackSize();
-            }
-            this.fieldName.codeGenExp(compiler, n);
-            for(AbstractExpr aExpr : this.params.getList()){
-                compiler.decrementStackSize();
-            }
-            compiler.addInstruction(new SUBSP(this.params.getList().size()));
+        for(AbstractExpr aExpr : this.params.getList()){
+            aExpr.codeGenExp(compiler, n);
+            compiler.incrementStackSize();
+            compiler.addInstruction(new PUSH(GPRegister.getR(n)));
         }
-        else
-            this.fieldName.codeGenExp(compiler, n);
+        this.operand.codeGenExp(compiler, n);
+        compiler.incrementStackSize();
+        compiler.addInstruction(new PUSH(GPRegister.getR(n)));;
+        compiler.decrementStackSize();
+        this.fieldName.codeGenExp(compiler, n);
+        for(AbstractExpr aExpr : this.params.getList()){
+            compiler.decrementStackSize();
+        }
+        if(this.params.getList().size() > 0)
+            compiler.addInstruction(new SUBSP(this.params.getList().size()));
     }
 
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.codeGenExp(compiler,2);
     }
 
 }
