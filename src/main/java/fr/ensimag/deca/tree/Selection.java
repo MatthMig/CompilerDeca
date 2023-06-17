@@ -145,9 +145,9 @@ public class Selection extends AbstractExpr {
             }
             this.fieldName.codeGenExp(compiler, n);
             for(AbstractExpr aExpr : this.params.getList()){
-                compiler.addInstruction(new SUBSP(1));
                 compiler.decrementStackSize();
             }
+            compiler.addInstruction(new SUBSP(this.params.getList().size()));
         }
         else
             this.fieldName.codeGenExp(compiler, n);

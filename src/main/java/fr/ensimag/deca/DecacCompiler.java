@@ -54,6 +54,8 @@ public class DecacCompiler {
     private int varCount = 0;
     private int stackSize = 0;
     private int maxStackSize = 0;
+    private int maxRegister = 2;
+    private int register = 2;
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null);
@@ -117,8 +119,23 @@ public class DecacCompiler {
         this.maxStackSize = maxStackSize;
     }
 
-    public void resetStackSize() {
-        this.stackSize = 0;
+    public void incrementMaxRegister(){
+        this.register += 1;
+        if(this.getMaxRegister()  < this.register){
+            this.setMaxRegister(register);
+        }
+    }
+
+    public void decrementMaxRegister() {
+        this.register -= 1;
+    }
+
+    public int getMaxRegister() {
+        return maxRegister;
+    }
+
+    public void setMaxRegister(int maxRegister) {
+        this.maxRegister = maxRegister;
     }
 
     public DAddr allocate(){

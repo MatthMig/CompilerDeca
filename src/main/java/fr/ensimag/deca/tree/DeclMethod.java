@@ -18,6 +18,8 @@ import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
+import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
@@ -179,14 +181,24 @@ public class DeclMethod extends AbstractDeclMethod{
         DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
         this.methodBody.codeGen(methodCompiler);
 
+        // Save registers
+        for(int i = 3 ; i <= methodCompiler.getMaxRegister() ; i++){
+            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+        }
+
         // Set method stack overflow test and stack pointer
-        compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize()));
+            // Total variables to store in the stack + total push made during operations + total push made to save registers
+            compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
         compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
         compiler.addInstruction(new ADDSP(localVariableCount));
 
         // Then append the generated code
         compiler.append(methodCompiler.getProgram());
 
+        // Restore saved registers
+        for(int i = methodCompiler.getMaxRegister() ; i >= 3 ; i--){
+            compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+        }
         // Reset Stack Pointer
         compiler.addInstruction(new SUBSP(localVariableCount));
 
