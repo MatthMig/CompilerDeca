@@ -35,7 +35,7 @@ public class ClassDefinition extends TypeDefinition {
         Validate.isTrue(n >= 0);
         numberOfMethods = n;
     }
-    
+
     public int incNumberOfMethods() {
         numberOfMethods++;
         return numberOfMethods;
@@ -52,12 +52,12 @@ public class ClassDefinition extends TypeDefinition {
     private int numberOfFields = 0;
     private int numberOfMethods = 0;
     private DVal methodTableAddr = null;
-    
+
     @Override
     public boolean isClass() {
         return true;
     }
-    
+
     @Override
     public ClassType getType() {
         // Cast succeeds by construction because the type has been correctly set
@@ -70,7 +70,7 @@ public class ClassDefinition extends TypeDefinition {
     }
 
     private final EnvironmentExp members;
-    private final ClassDefinition superClass; 
+    private final ClassDefinition superClass;
 
     public EnvironmentExp getMembers() {
         return members;
@@ -87,5 +87,15 @@ public class ClassDefinition extends TypeDefinition {
         members = new EnvironmentExp(parent);
         this.superClass = superClass;
     }
-    
+
+    public boolean isParentClassOf(ClassDefinition subClassDefinition){
+        while(subClassDefinition != null){
+            if(subClassDefinition == this){
+                return true;
+            }
+            subClassDefinition = subClassDefinition.getSuperClass();
+        }
+        return false;
+    }
+
 }

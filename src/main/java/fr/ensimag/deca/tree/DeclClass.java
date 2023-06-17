@@ -58,10 +58,12 @@ public class DeclClass extends AbstractDeclClass {
             if(this.superClassName != null){
                 // Load the super class definition
                 ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
+                this.superClassName.setDefinition(superClassDef);
                 if(superClassDef != null){
                     // Declare the class in the environment of the compiler
                     compiler.environmentType.declareClass(className, new ClassType(className.getName(), getLocation(), superClassDef));
                     this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
+                    compiler.environmentType.defOfClass(className.getName()).setNumberOfFields(superClassDef.getNumberOfFields());
                 } else {
                     // Parent class doesn't exist
                     throw new ContextualError("Super class " + this.getSuperClassName().getName() + " does not exist", this.getLocation());
@@ -77,10 +79,16 @@ public class DeclClass extends AbstractDeclClass {
     @Override
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
+        ClassDefinition classDefinition = compiler.environmentType.defOfClass(this.className.getName());
         int i = 0;
+        if(this.superClassName != null){
+            ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
+            classDefinition.setNumberOfFields(superClassDef.getNumberOfFields());
+            i = classDefinition.getNumberOfFields();
+        }
         EnvironmentExp envExp = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
         for(AbstractDeclField declField : this.listDeclField.getList()){
-            declField.verifyDeclField(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
+            declField.verifyDeclField(compiler, envExp, classDefinition, ++i);
         }
         i = 1; // The equals method is the first method of the class no matter what.
         // so we start at 2.

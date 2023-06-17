@@ -38,7 +38,7 @@ public class Initialization extends AbstractInitialization {
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
         Type t2 = this.expression.verifyExpr(compiler, localEnv, currentClass);
-
+        ClassDefinition tcd = compiler.environmentType.defOfClass(t.getName());
 
         // If i implicitly initialize a float with an int value.
         if(t2 == compiler.environmentType.INT &&
@@ -50,6 +50,14 @@ public class Initialization extends AbstractInitialization {
         else if(t2 == compiler.environmentType.FLOAT &&
             t == compiler.environmentType.INT ){
                 throw new ContextualError("impossible conversion from float to int", getLocation());
+        }
+
+        else if(tcd != null){
+            ClassDefinition cd = compiler.environmentType.defOfClass(t2.getName());
+
+            if(!tcd.isParentClassOf(cd)){
+                throw new ContextualError("trying to assign a value of type " + t2 + " to a variable of type "+ t, getLocation());
+            }
         }
 
         // If i assign anything that isn't same type and isn't convFloat

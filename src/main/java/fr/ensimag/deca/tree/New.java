@@ -70,8 +70,11 @@ public class New extends AbstractExpr {
         // HERE WE NEED TO ADD THE FUTURE ADDRESS OF THE METHOD TABLE compiler.addInstruction(new LEA());
         // compiler.addInstruction(new STORE(GPRegister.R0, new RegisterOffset(0, Register.getR(n))));
         compiler.addInstruction(new PUSH(GPRegister.getR(2)));
-
-        compiler.addInstruction(new BSR(compiler.getLabelManager().createInitClassLabel(this.className.getName().getName())));
+        ClassDefinition classDefinition = compiler.environmentType.defOfClass(this.className.getName());
+        while(classDefinition != null){
+            compiler.addInstruction(new BSR(compiler.getLabelManager().createInitClassLabel(classDefinition.getType().getName().getName())));
+            classDefinition = classDefinition.getSuperClass();
+        }
 
         compiler.addInstruction(new POP(GPRegister.getR(2)));
    }

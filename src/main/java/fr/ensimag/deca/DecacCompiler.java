@@ -305,6 +305,7 @@ public class DecacCompiler {
             LOG.fatal("Assertion failed while compiling file " + sourceFile
                     + ":", e);
             err.println("Internal compiler error while compiling file " + sourceFile + ", sorry.");
+            System.out.println(e.toString());
             return true;
         }
     }
