@@ -4,8 +4,11 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.context.ContextualError;
+import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.ParamDefinition;
 import fr.ensimag.deca.context.Type;
+import fr.ensimag.deca.context.VariableDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -18,15 +21,15 @@ import fr.ensimag.ima.pseudocode.GPRegister;
  * @author gl03
  * @date 21/04/2023
  */
-public class This extends AbstractExpr {
+public class This extends AbstractLValue {
     public This() {}
 
-    ClassDefinition def;
-    
-    ClassDefinition getClassDefinition() {
-        return def;
+    Definition def;
+
+    public ClassDefinition getClassDefinition() {
+        return (ClassDefinition)def;
     }
-    
+
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         if (currentClass == null ){
@@ -64,4 +67,9 @@ public class This extends AbstractExpr {
     protected void codeGenExp(DecacCompiler compiler, int n){
         compiler.addInstruction(new LOAD(new RegisterOffset(-2, LB), GPRegister.getR(n)));
     }
+
+    public Type verifyType(DecacCompiler compiler) throws ContextualError {
+        throw new ContextualError("Not implemented.", getLocation());
+    }
+
 }

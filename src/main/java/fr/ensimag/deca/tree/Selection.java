@@ -26,8 +26,8 @@ import org.apache.commons.lang.Validate;
  * @author gl03
  * @date 13/06/2023
  */
-public class Selection extends AbstractExpr {
-    final private AbstractExpr operand;
+public class Selection extends AbstractLValue {
+    private AbstractExpr operand;
     final private AbstractIdentifier fieldName;
     final private ListExpr params;
 
@@ -88,8 +88,11 @@ public class Selection extends AbstractExpr {
            throws ContextualError {
         TypeDefinition tdef;
         if (operand == null) {
-            // If operand is null, then we have a null operand
-            // Left type is set to the current class type
+            // If operand is null, then we have an implicit This
+            This newThis = new This();
+            newThis.setLocation(getLocation());
+            this.operand = newThis;
+            this.operand.verifyExpr(compiler, localEnv, currentClass);
             tdef = currentClass.getType().getDefinition();
         } else {
             Type t = operand.verifyExpr(compiler, localEnv, currentClass);
@@ -107,7 +110,6 @@ public class Selection extends AbstractExpr {
 
         if(edef != null && (edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null))){
             this.fieldName.setType(edef.getType());
-
 
             this.setType(this.fieldName.getType());
             this.fieldName.setType(edef.getType());
@@ -132,7 +134,7 @@ public class Selection extends AbstractExpr {
             compiler.addInstruction(new LOAD(addr, GPRegister.R1));
         }
         else{
-            this.operand.codeGenPrint(compiler);
+            this.operand.codeGenExp(compiler, 2);
         }
 
         this.fieldName.codeGenPrint(compiler);
@@ -140,21 +142,55 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        for(AbstractExpr aExpr : this.params.getList()){
-            aExpr.codeGenExp(compiler, n);
+        if(this.params != null){
+            for(AbstractExpr aExpr : this.params.getList()){
+                aExpr.codeGenExp(compiler, n);
+                compiler.incrementStackSize();
+                compiler.addInstruction(new PUSH(GPRegister.getR(n)));
+            }
+            this.operand.codeGenExp(compiler, n);
             compiler.incrementStackSize();
-            compiler.addInstruction(new PUSH(GPRegister.getR(n)));
-        }
-        this.operand.codeGenExp(compiler, n);
-        compiler.incrementStackSize();
-        compiler.addInstruction(new PUSH(GPRegister.getR(n)));;
-        compiler.decrementStackSize();
-        this.fieldName.codeGenExp(compiler, n);
-        for(AbstractExpr aExpr : this.params.getList()){
+            compiler.addInstruction(new PUSH(GPRegister.getR(n)));;
             compiler.decrementStackSize();
+            this.fieldName.codeGenExp(compiler, n);
+            for(AbstractExpr aExpr : this.params.getList()){
+                compiler.decrementStackSize();
+            }
+            if(this.params.getList().size() > 0)
+                compiler.addInstruction(new SUBSP(this.params.getList().size()));
         }
-        if(this.params.getList().size() > 0)
-            compiler.addInstruction(new SUBSP(this.params.getList().size()));
+        else{
+            this.operand.codeGenExp(compiler, n);
+            this.fieldName.codeGenExp(compiler, n);
+        }
+
+    }
+
+    public AbstractIdentifier getFieldName() {
+        return fieldName;
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        this.operand.codeGenExp(compiler, 2);
+
+        if(this.fieldName.getDefinition().isMethod()){
+            for(AbstractExpr aExpr : this.params.getList()){
+                aExpr.codeGenExp(compiler, 2);
+                compiler.incrementStackSize();
+                compiler.addInstruction(new PUSH(GPRegister.getR(2)));
+            }
+            this.operand.codeGenExp(compiler, 2);
+            compiler.incrementStackSize();
+            compiler.addInstruction(new PUSH(GPRegister.getR(2)));;
+            compiler.decrementStackSize();
+            this.fieldName.codeGenExp(compiler, 2);
+            for(AbstractExpr aExpr : this.params.getList()){
+                compiler.decrementStackSize();
+            }
+            if(this.params.getList().size() > 0)
+                compiler.addInstruction(new SUBSP(this.params.getList().size()));
+        }
     }
 
 
