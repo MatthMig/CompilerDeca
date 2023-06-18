@@ -15,7 +15,7 @@ public class Signature {
     Type returnType;
     Symbol methodName;
     List<Type> paramTypes;
-    
+
     public Type getReturnType() {
         return returnType;
     }
@@ -23,7 +23,7 @@ public class Signature {
     public Symbol getMethodName() {
         return methodName;
     }
-    
+
     public Type paramNumber(int n) {
         return paramTypes.get(n);
     }
@@ -37,9 +37,27 @@ public class Signature {
     public void addParamType(Type t) {
         paramTypes.add(t);
     }
-    
+
     public int paramListSize() {
         return paramTypes.size();
+    }
+
+    public boolean sameAs(Signature s){
+        if(!this.methodName.getName().equals(s.getMethodName().getName()))
+            return false;
+
+        if(this.paramListSize() != s.paramListSize())
+            return false;
+
+        int i =0;
+        for(Type type : paramTypes){
+            if(!type.getName().equals(s.paramNumber(i).getName())){
+                return false;
+            }
+            i++;
+        }
+
+        return true;
     }
 
 }

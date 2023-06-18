@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
@@ -70,9 +71,54 @@ public class DeclMethod extends AbstractDeclMethod{
     }
 
     @Override
+    protected void verifySuperClassMethods(DecacCompiler compiler,
+    EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
+        ExpDefinition potentialDef = currentClass.getSuperClass().getMembers().get(methodName.getName());
+        if(potentialDef != null){
+            if(!potentialDef.isField()){
+
+                MethodDefinition superMethodDefinition = (MethodDefinition)currentClass.getSuperClass().getMembers().get(this.methodName.getName());
+
+                // Verifying super method and method have the same type
+                Type superMethodType = superMethodDefinition.getType();
+                Type methodType = this.methodName.getType();
+                // Case different types
+                if(superMethodDefinition.getType() != methodType){
+                    // Check if a void method is redefined as not void, and the opposite
+                    if( ! ((methodType == null && superMethodType != null ) || (methodType != null && superMethodType == null)) ){
+                        // If not, supermethod must be a of a super type of method type
+                        if(methodType.isClass()){
+                            ClassDefinition superTypeClass = compiler.environmentType.defOfClass(superMethodType.getName());
+                            ClassDefinition typeClass = compiler.environmentType.defOfClass(methodType.getName());
+                            if(!superTypeClass.isParentClassOf(typeClass)){
+                                throw new ContextualError("trying to redefine a method with a type which isn't of the original type or isn't a subclass of original type", getLocation());
+                            }
+                        }
+                    }
+
+                    else{
+                        throw new ContextualError("redefinition of method " + this.methodName.getName() + " but new method is of type " + methodType + " when original is " + superMethodType, getLocation());
+                    }
+                }
+                // Case unmatching signatures
+                if(!superMethodDefinition.getSignature().sameAs(this.methodName.getMethodDefinition().getSignature())){
+                    throw new ContextualError("trying to redefine a method but signature redefinition doesn't match", getLocation());
+                }
+            }
+            else {
+                // Case the method name is associated to a field in super class
+                String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+                throw new ContextualError(message, getLocation());
+            }
+        }
+    }
+
+    @Override
     protected void verifyDeclMethod(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, int index)
             throws ContextualError {
+
         // Verify the return type
         Type type = this.returnType.verifyType(compiler);
         this.returnType.setType(type);
@@ -106,18 +152,6 @@ public class DeclMethod extends AbstractDeclMethod{
         }
         toStringSignature += ")";
 
-        // Check for definition in parent environment
-        if (currentClass.getSuperClass() != null) {
-            FieldDefinition potentialDef = (FieldDefinition) (currentClass.getSuperClass().getMembers().get(methodName.getName()));
-            if (potentialDef != null) {
-                // In order to avoid masking a method with a field and vice versa
-                if (methodName.getExpDefinition().isMethod() && potentialDef.isField()) {
-                    String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", toStringSignature, currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
-                    throw new ContextualError(message, getLocation());
-                }
-            }
-        }
-
         // Try to declare the method in the class local environment this time
         try {
             currentClass.getMembers().declare(this.methodName.getName(), methodDef);
@@ -149,13 +183,14 @@ public class DeclMethod extends AbstractDeclMethod{
     @Override
     public void genMethodTableEntry(DecacCompiler compiler, ClassDefinition classDefinition) {
         Label methodLabel = compiler.getLabelManager().createMethodLabel(this.methodName.getName().getName(), classDefinition.getType().getName().getName());
-        compiler.getMethodTable().addMethod(this.methodName.getMethodDefinition(), methodLabel);
+        classDefinition.getMethodTable().addMethod(this.methodName.getMethodDefinition(), methodLabel);
+        this.methodName.getMethodDefinition().setLabel(methodLabel);
     }
 
     @Override
     public void codeGenMethodTableEntry(DecacCompiler compiler) {
         // Load the PC address for the method
-        compiler.addInstruction(new LOAD(compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition()), GPRegister.R0));
+        compiler.addInstruction(new LOAD(this.methodName.getMethodDefinition().getLabel(), GPRegister.R0));
 
         // Store it in the memory, at it's place in the method table
         compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()), "store method " + this.methodName.getName() + " address");
@@ -164,7 +199,7 @@ public class DeclMethod extends AbstractDeclMethod{
     @Override
     public void codeGen(DecacCompiler compiler) {
         // Get method label
-        Label methodLabel = compiler.getMethodTable().getMethodLabel(this.methodName.getMethodDefinition());
+        Label methodLabel = this.methodName.getMethodDefinition().getLabel();
 
         // Comment for the start of the method code
         compiler.addComment("start : method " + methodLabel.toString());

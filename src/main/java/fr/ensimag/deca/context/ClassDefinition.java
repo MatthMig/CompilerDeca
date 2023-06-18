@@ -1,9 +1,9 @@
 package fr.ensimag.deca.context;
 
+import fr.ensimag.deca.tools.MethodTable;
 import fr.ensimag.deca.tree.Location;
 import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.DVal;
-import fr.ensimag.ima.pseudocode.Label;
 import org.apache.commons.lang.Validate;
 
 /**
@@ -13,7 +13,6 @@ import org.apache.commons.lang.Validate;
  * @date 21/04/2023
  */
 public class ClassDefinition extends TypeDefinition {
-
 
     public void setNumberOfFields(int numberOfFields) {
         this.numberOfFields = numberOfFields;
@@ -41,17 +40,22 @@ public class ClassDefinition extends TypeDefinition {
         return numberOfMethods;
     }
 
-    public void setMethodTableAddr(DVal mehtodTableAddr) {
+    public void setMethodTableAddr(DAddr mehtodTableAddr) {
         this.methodTableAddr = mehtodTableAddr;
     }
 
-    public DVal getMethodTableAddr() {
+    public DAddr getMethodTableAddr() {
         return methodTableAddr;
+    }
+
+    public MethodTable getMethodTable(){
+        return this.methodTable;
     }
 
     private int numberOfFields = 0;
     private int numberOfMethods = 0;
-    private DVal methodTableAddr = null;
+    private DAddr methodTableAddr = null;
+    private final MethodTable methodTable;
 
     @Override
     public boolean isClass() {
@@ -79,6 +83,7 @@ public class ClassDefinition extends TypeDefinition {
     public ClassDefinition(ClassType type, Location location, ClassDefinition superClass) {
         super(type, location);
         EnvironmentExp parent;
+        this.methodTable = new MethodTable();
         if (superClass != null) {
             parent = superClass.getMembers();
         } else {

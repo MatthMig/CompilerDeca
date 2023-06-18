@@ -8,17 +8,26 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
+import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.IMAProgram;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Line;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
 import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.LEA;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -64,6 +73,7 @@ public class DeclClass extends AbstractDeclClass {
                     compiler.environmentType.declareClass(className, new ClassType(className.getName(), getLocation(), superClassDef));
                     this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
                     compiler.environmentType.defOfClass(className.getName()).setNumberOfFields(superClassDef.getNumberOfFields());
+                    compiler.environmentType.defOfClass(className.getName()).setNumberOfMethods(superClassDef.getNumberOfMethods());
                 } else {
                     // Parent class doesn't exist
                     throw new ContextualError("Super class " + this.getSuperClassName().getName() + " does not exist", this.getLocation());
@@ -79,21 +89,26 @@ public class DeclClass extends AbstractDeclClass {
     @Override
     protected void verifyClassMembers(DecacCompiler compiler)
             throws ContextualError {
+        int i;
+        EnvironmentExp envExp = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
         ClassDefinition classDefinition = compiler.environmentType.defOfClass(this.className.getName());
-        int i = 0;
+
         if(this.superClassName != null){
             ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
             classDefinition.setNumberOfFields(superClassDef.getNumberOfFields());
-            i = classDefinition.getNumberOfFields();
+            classDefinition.setNumberOfMethods(superClassDef.getNumberOfMethods());
         }
-        EnvironmentExp envExp = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
+        i = classDefinition.getNumberOfFields();
         for(AbstractDeclField declField : this.listDeclField.getList()){
             declField.verifyDeclField(compiler, envExp, classDefinition, ++i);
         }
-        i = 1; // The equals method is the first method of the class no matter what.
-        // so we start at 2.
+
+        i = classDefinition.getNumberOfMethods();
         for(AbstractDeclMethod declMethod : this.listDeclMethod.getList()){
             declMethod.verifyDeclMethod(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
+            if(this.superClassName != null){
+                declMethod.verifySuperClassMethods(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()));
+            }
         }
 
     }
@@ -147,13 +162,28 @@ public class DeclClass extends AbstractDeclClass {
     @Override
     public void codeGenMethodTable(DecacCompiler compiler) {
         compiler.addComment("start : method table for class " + this.className.getName());
-
         // Generate method table, starting on current GB offset
+
         this.className.getClassDefinition().setMethodTableAddr(compiler.allocate());
+
+        if(this.superClassName != null){
+            compiler.addInstruction(new LEA(this.superClassName.getClassDefinition().getMethodTableAddr(), Register.R0));
+            compiler.addInstruction(new STORE(Register.R0, this.className.getClassDefinition().getMethodTableAddr()));
+            this.className.getClassDefinition().getMethodTable().addAll(this.superClassName.getClassDefinition().getMethodTable());
+        }
         listDeclMethod.genMethodTable(compiler, this.className.getClassDefinition());
 
+        for(int i = 1 ; i <= this.className.getClassDefinition().getNumberOfMethods() ; i++){
+            Label label = this.className.getClassDefinition().getMethodTable().getLabelByIndex(i);
+            // Load the PC address for the method
+            compiler.addInstruction(new LOAD(label, GPRegister.R0));
+
+            // Store it in the memory, at it's place in the method table
+            compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()));
+        }
+
         // Generate the code that actually generates the table
-        listDeclMethod.codeGenMethodTable(compiler, this.className.getClassDefinition());
+        // listDeclMethod.codeGenMethodTable(compiler, this.className.getClassDefinition());
 
         compiler.addComment("end : method table for class " + this.className.getName());
     }

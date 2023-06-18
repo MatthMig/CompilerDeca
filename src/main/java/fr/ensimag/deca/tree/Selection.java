@@ -101,13 +101,17 @@ public class Selection extends AbstractExpr {
         ClassDefinition cdef = (ClassDefinition)tdef;
         ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
 
-        if(edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null)){
+        if(edef == null){
+            edef = cdef.getSuperClass().getMembers().get(fieldName.getName());
+        }
+
+        if(edef != null && (edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null))){
             this.fieldName.setType(edef.getType());
-            if(cdef.getMembers().get(fieldName.getName()) != null){
-                this.setType(this.fieldName.getType());
-                this.fieldName.setType(edef.getType());
-                this.fieldName.setDefinition(edef);
-            }
+
+
+            this.setType(this.fieldName.getType());
+            this.fieldName.setType(edef.getType());
+            this.fieldName.setDefinition(edef);
 
             if(edef instanceof MethodDefinition && this.params != null){
                 for(AbstractExpr aExpr : this.params.getList()){

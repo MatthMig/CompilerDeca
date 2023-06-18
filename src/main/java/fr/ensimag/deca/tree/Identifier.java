@@ -264,7 +264,7 @@ public class Identifier extends AbstractIdentifier {
             compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex() ,GPRegister.R1), GPRegister.R1));
         }
         else if (this.getDefinition().isMethod()){
-            compiler.addInstruction(new BSR(new LabelOperand(compiler.getMethodTable().getMethodLabel(this.getMethodDefinition()))));
+            compiler.addInstruction(new BSR(new LabelOperand(this.getMethodDefinition().getLabel())));
             compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
         }
         else{
@@ -301,7 +301,7 @@ public class Identifier extends AbstractIdentifier {
         if(this.getDefinition().isField())
             compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex(), Register.getR(n)),Register.getR(n)));
         else if (this.getDefinition().isMethod()){
-            compiler.addInstruction(new BSR(new LabelOperand(compiler.getMethodTable().getMethodLabel(this.getMethodDefinition()))));
+            compiler.addInstruction(new BSR(new LabelOperand(this.getMethodDefinition().getLabel())));
         }
         else if (this.getDefinition().isParam())
             compiler.addInstruction(new LOAD(this.getParamDefinition().getOperand(),Register.getR(n)));

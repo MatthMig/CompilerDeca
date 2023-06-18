@@ -7,7 +7,6 @@ import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.LabelManager;
-import fr.ensimag.deca.tools.MethodTable;
 import fr.ensimag.deca.tools.SymbolTable;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractProgram;
@@ -59,7 +58,6 @@ public class DecacCompiler {
     private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null);
-    private final MethodTable methodTable;
     private int lbOffset = 1;
 
     /**
@@ -71,17 +69,12 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.labelManager = new LabelManager();
-        this.methodTable = new MethodTable();
         this.source = source;
         this.stackSize = 0;
     }
 
     public LabelManager getLabelManager(){
         return this.labelManager;
-    }
-
-    public MethodTable getMethodTable(){
-        return this.methodTable;
     }
 
     public int getLabelCount(){
