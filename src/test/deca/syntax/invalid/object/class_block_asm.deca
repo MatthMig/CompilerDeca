@@ -1,0 +1,17 @@
+//  Description :
+// 
+//      Test syntaxiquement incorrect de la déclaration d'une classe avec un block et un asm
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class nameClasse {
+    int methode1Class(){
+
+    }
+    asm ("");
+}
