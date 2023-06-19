@@ -1,0 +1,16 @@
+// Description :
+//
+//      Test de programme correct qui reconnait le null.
+//      
+// 
+// Résultats : 
+// 
+//      N/A 
+//
+// Historique :
+// 
+//    Créé le 06/06/2023 par gl03
+
+{
+    null;
+}
