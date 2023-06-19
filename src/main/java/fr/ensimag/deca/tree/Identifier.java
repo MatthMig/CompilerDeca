@@ -270,24 +270,6 @@ public class Identifier extends AbstractIdentifier {
         else{
             compiler.addInstruction(new LOAD(this.getVariableDefinition().getOperand(),Register.R1));
         }
-        if(this.getType() == compiler.environmentType.INT){
-            compiler.addInstruction(new WINT());
-        }
-        if(this.getType() == compiler.environmentType.FLOAT){
-            compiler.addInstruction(new WFLOAT());
-        }
-        if(this.getType() == compiler.environmentType.BOOLEAN){
-            Label[] labels = compiler.getLabelManager().createBooleanVarPrintLabel();
-
-            compiler.addInstruction(new CMP(1, GPRegister.getR(1)));
-            compiler.addInstruction(new BEQ(labels[0]));
-            compiler.addInstruction(new WSTR("false"));
-            compiler.addInstruction(new BRA(labels[1]));
-            compiler.addLabel(labels[0]);
-            compiler.addInstruction(new WSTR("true"));
-            compiler.addLabel(labels[1]);
-
-        }
     }
 
     @Override

@@ -3,10 +3,9 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
-import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.ExpDefinition;
+import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
@@ -14,8 +13,6 @@ import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -69,51 +66,7 @@ public class DeclMethod extends AbstractDeclMethod{
     public void decompile(IndentPrintStream s) {
         throw new UnsupportedOperationException("not yet implemented");
     }
-
-    @Override
-    protected void verifySuperClassMethods(DecacCompiler compiler,
-    EnvironmentExp localEnv, ClassDefinition currentClass)
-    throws ContextualError {
-        ExpDefinition potentialDef = currentClass.getSuperClass().getMembers().get(methodName.getName());
-        if(potentialDef != null){
-            if(!potentialDef.isField()){
-
-                MethodDefinition superMethodDefinition = (MethodDefinition)currentClass.getSuperClass().getMembers().get(this.methodName.getName());
-
-                // Verifying super method and method have the same type
-                Type superMethodType = superMethodDefinition.getType();
-                Type methodType = this.methodName.getType();
-                // Case different types
-                if(superMethodDefinition.getType() != methodType){
-                    // Check if a void method is redefined as not void, and the opposite
-                    if( ! ((methodType == null && superMethodType != null ) || (methodType != null && superMethodType == null)) ){
-                        // If not, supermethod must be a of a super type of method type
-                        if(methodType.isClass()){
-                            ClassDefinition superTypeClass = compiler.environmentType.defOfClass(superMethodType.getName());
-                            ClassDefinition typeClass = compiler.environmentType.defOfClass(methodType.getName());
-                            if(!superTypeClass.isParentClassOf(typeClass)){
-                                throw new ContextualError("trying to redefine a method with a type which isn't of the original type or isn't a subclass of original type", getLocation());
-                            }
-                        }
-                    }
-
-                    else{
-                        throw new ContextualError("redefinition of method " + this.methodName.getName() + " but new method is of type " + methodType + " when original is " + superMethodType, getLocation());
-                    }
-                }
-                // Case unmatching signatures
-                if(!superMethodDefinition.getSignature().sameAs(this.methodName.getMethodDefinition().getSignature())){
-                    throw new ContextualError("trying to redefine a method but signature redefinition doesn't match", getLocation());
-                }
-            }
-            else {
-                // Case the method name is associated to a field in super class
-                String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
-                throw new ContextualError(message, getLocation());
-            }
-        }
-    }
-
+    
     @Override
     protected void verifyDeclMethod(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, int index)
@@ -127,36 +80,54 @@ public class DeclMethod extends AbstractDeclMethod{
             declParam.verifyDeclParam(compiler, localEnv, currentClass);
         }
         // Create a signature for the method
-        Signature methodSignature = new Signature(type, methodName.getName());
+        Signature methodSignature = new Signature(methodName.getName());
         // Add each parameter's type to the signature
         for (AbstractDeclParam param : this.listDeclParam.getList()) {
             methodSignature.addParamType(param.getType().verifyType(compiler));
         }
         this.methodName.setType(type);
-        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, index);
+        
+        FieldDefinition potentialDef = null;
+        if (currentClass.getSuperClass() != null) {
+            // This cannot be something else than a field if found,
+            // since the methods are declared with their whole signatures
+            if (currentClass.getSuperClass().getMembers().get(methodName.getName()) != null)
+            // that's why we can serenely cast to FieldDefinition
+            potentialDef = (FieldDefinition) currentClass.getSuperClass().getMembers().get(methodName.getName());
+        }
+        if (potentialDef != null) {
+                
+            // In order to avoid masking a field with a method
+            String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+            throw new ContextualError(message, getLocation());
+        }
+        
         TypeDefinition typeDef = compiler.environmentType.defOfType(returnType.getName());
-        methodName.setDefinition(methodDef);
         returnType.setDefinition(typeDef);
 
         // Formatting the signature of the method
-        String toStringSignature =
-            methodSignature.getReturnType().toString()
-            + " " + methodSignature.getMethodName().toString() + "("; // Add the return type and the method name to the signature
-        if (methodSignature.paramListSize() == 0) {
-            toStringSignature += "void";
-        } else {
-            for (int i = 0; i < methodSignature.paramListSize(); i++) {
-                if (i != 0) toStringSignature += ", ";
-                toStringSignature += methodSignature.paramNumber(i).toString();
-            }
+        String toStringSignature = methodSignature.toString();
+        
+        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, index);
+        methodName.setDefinition(methodDef);
+
+        // By default, we increase the method count
+        currentClass.incNumberOfMethods();
+        MethodDefinition potentialMethodDef = null;
+        if (currentClass.getSuperClass() != null) {
+            // Check for the same method signature in the super class
+            potentialMethodDef = (MethodDefinition) (currentClass.getSuperClass().getMembers().get(compiler.createSymbol(toStringSignature)));
         }
-        toStringSignature += ")";
+        // If it exists, then the super class method is not in the current class scope
+        // The new method overrides the parent one
+        if (potentialMethodDef != null) {
+            // So this method does not increase the method count of the class, so we revert the default increment
+            currentClass.setNumberOfMethods(currentClass.getNumberOfMethods() - 1);
+        }
 
         // Try to declare the method in the class local environment this time
         try {
-            currentClass.getMembers().declare(this.methodName.getName(), methodDef);
-            currentClass.incNumberOfMethods();
-            localEnv.declare(compiler.symbolTable.create(toStringSignature), methodDef);
+            localEnv.declare(compiler.createSymbol(toStringSignature), methodDef);
         } catch(DoubleDefException e) {
             String message = String.format("Method with signature '%s' already declared", toStringSignature);
             throw new ContextualError(message, getLocation());
@@ -182,7 +153,7 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     public void genMethodTableEntry(DecacCompiler compiler, ClassDefinition classDefinition) {
-        Label methodLabel = compiler.getLabelManager().createMethodLabel(this.methodName.getName().getName(), classDefinition.getType().getName().getName());
+        Label methodLabel = compiler.getLabelManager().createMethodLabel(classDefinition.getType().getName().getName(), ((MethodDefinition)(this.methodName.getDefinition())).getSignature().toLabelString());
         classDefinition.getMethodTable().addMethod(this.methodName.getMethodDefinition(), methodLabel);
         this.methodName.getMethodDefinition().setLabel(methodLabel);
     }
@@ -224,8 +195,8 @@ public class DeclMethod extends AbstractDeclMethod{
         }
 
         // Set method stack overflow test and stack pointer
-            // Total variables to store in the stack + total push made during operations + total push made to save registers
-            compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
+        // Total variables to store in the stack + total push made during operations + total push made to save registers
+        compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
         compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
         compiler.addInstruction(new ADDSP(localVariableCount));
 

@@ -12,13 +12,8 @@ import fr.ensimag.deca.tools.SymbolTable.Symbol;
  * @date 14/06/2023
  */
 public class Signature {
-    Type returnType;
     Symbol methodName;
     List<Type> paramTypes;
-
-    public Type getReturnType() {
-        return returnType;
-    }
 
     public Symbol getMethodName() {
         return methodName;
@@ -28,8 +23,7 @@ public class Signature {
         return paramTypes.get(n);
     }
 
-    public Signature(Type returnType, Symbol methodName) {
-        this.returnType = returnType;
+    public Signature(Symbol methodName) {
         this.methodName = methodName;
         this.paramTypes = new ArrayList<Type>();
     }
@@ -42,7 +36,7 @@ public class Signature {
         return paramTypes.size();
     }
 
-    public boolean sameAs(Signature s){
+    public boolean equals(Signature s){
         if(!this.methodName.getName().equals(s.getMethodName().getName()))
             return false;
 
@@ -60,4 +54,38 @@ public class Signature {
         return true;
     }
 
+    /**
+     * Builds the formatted string of the method signature
+     * @return String formatted signature
+     */
+    public String toString() {
+        String sig = this.methodName.getName() + "(";
+        // if no params we show void
+        if (this.paramListSize() == 0) {
+            sig += "void";
+        } else {
+            for (int i = 0; i < this.paramListSize(); i++) {
+                if (i != 0) sig += ", ";
+                sig += this.paramTypes.get(i).getName();
+            }
+        }
+        return sig + ")";
+    }
+
+    /**
+     * Builds the formatted label string of the params type
+     * @return String with label format
+     */
+    public String toLabelString() {
+        String sig = this.methodName.getName();
+        // if no params we show void
+        if (this.paramListSize() == 0) {
+            sig += ".void";
+        } else {
+            for (int i = 0; i < this.paramListSize(); i++) {
+                sig += "." + this.paramTypes.get(i).getName();
+            }
+        }
+        return sig;
+    }
 }

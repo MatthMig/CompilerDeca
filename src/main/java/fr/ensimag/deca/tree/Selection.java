@@ -9,11 +9,10 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
+import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 
@@ -82,40 +81,61 @@ public class Selection extends AbstractLValue {
             fieldName.prettyPrint(s, prefix, true);
         }
     }
-
+    
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
-        TypeDefinition tdef;
+        TypeDefinition typeDef;
         if (operand == null) {
             // If operand is null, then we have an implicit This
             This newThis = new This();
             newThis.setLocation(getLocation());
             this.operand = newThis;
             this.operand.verifyExpr(compiler, localEnv, currentClass);
-            tdef = currentClass.getType().getDefinition();
+            typeDef = currentClass.getType().getDefinition();
         } else {
             Type t = operand.verifyExpr(compiler, localEnv, currentClass);
-            tdef = compiler.environmentType.defOfType(t.getName());
-            if(!(tdef instanceof ClassDefinition)) {
+            typeDef = compiler.environmentType.defOfType(t.getName());
+            if(!(typeDef instanceof ClassDefinition)) {
                 throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
             }
         }
-        ClassDefinition cdef = (ClassDefinition)tdef;
-        ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
+        ClassDefinition classDef = (ClassDefinition)typeDef;
+        ExpDefinition expDef = null;
+        Signature sig = new Signature(fieldName.getName());
 
-        if(edef == null){
-            edef = cdef.getSuperClass().getMembers().get(fieldName.getName());
+        // Check for definition in the current class
+        if (params == null) {
+            // If this is a field
+            expDef = classDef.getMembers().get(fieldName.getName());
+        } else {
+            // Else if it is a method
+            for (AbstractExpr param : this.params.getList()) {
+                sig.addParamType(param.verifyExpr(compiler, localEnv, currentClass));
+            }
+            expDef = classDef.getMembers().get(compiler.createSymbol(sig.toString()));
         }
 
-        if(edef != null && (edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null))){
-            this.fieldName.setType(edef.getType());
+        // Check for definition in super class if none was found
+        if(expDef == null && classDef.getSuperClass() != null){
+            // if this is a field
+            if (params == null) {
+                expDef = classDef.getSuperClass().getMembers().get(fieldName.getName());
+            }
+            // Else if it is a method
+            else {
+                expDef = classDef.getSuperClass().getMembers().get(compiler.createSymbol(sig.toString()));
+            }
+        }
+        // If we found a definition
+        if(expDef != null && ( (expDef instanceof FieldDefinition && this.params == null) || (expDef instanceof MethodDefinition && this.params != null))){
+            this.fieldName.setType(expDef.getType());
 
             this.setType(this.fieldName.getType());
-            this.fieldName.setType(edef.getType());
-            this.fieldName.setDefinition(edef);
+            this.fieldName.setType(expDef.getType());
+            this.fieldName.setDefinition(expDef);
 
-            if(edef instanceof MethodDefinition && this.params != null){
+            if(expDef instanceof MethodDefinition && this.params != null){
                 for(AbstractExpr aExpr : this.params.getList()){
                     aExpr.verifyExpr(compiler, localEnv, currentClass);
                 }
@@ -123,21 +143,22 @@ public class Selection extends AbstractLValue {
             return getType();
         }
         else {
-            throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+            String message;
+            // If we tried to call an object method
+            if (this.params != null) {
+                message = String.format("No visible method %s.%s exists in this context", this.operand.getType().getName().getName(), sig.toString());
+            } else {
+                // else we wanted to access a field
+                message = String.format("No visible field %s.%s exists in this context", this.operand.getType().getName().getName(), fieldName.getName().getName());
+            }
+            throw new ContextualError(message, getLocation());
         }
     }
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
-        if(this.operand instanceof Identifier){
-            DVal addr = ((Identifier)this.operand).getVariableDefinition().getOperand();
-            compiler.addInstruction(new LOAD(addr, GPRegister.R1));
-        }
-        else{
-            this.operand.codeGenExp(compiler, 2);
-        }
-
-        this.fieldName.codeGenPrint(compiler);
+        this.codeGenExp(compiler, 2);
+        compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
     }
 
     @Override
@@ -150,14 +171,14 @@ public class Selection extends AbstractLValue {
             }
             this.operand.codeGenExp(compiler, n);
             compiler.incrementStackSize();
-            compiler.addInstruction(new PUSH(GPRegister.getR(n)));;
+            compiler.addInstruction(new PUSH(GPRegister.getR(n)));
             compiler.decrementStackSize();
             this.fieldName.codeGenExp(compiler, n);
-            for(AbstractExpr aExpr : this.params.getList()){
-                compiler.decrementStackSize();
-            }
-            if(this.params.getList().size() > 0)
+            // foreach param we decrement the stack size
+            this.params.getList().forEach(param -> compiler.decrementStackSize());
+            if(this.params.getList().size() > 0) {
                 compiler.addInstruction(new SUBSP(this.params.getList().size()));
+            }
         }
         else{
             this.operand.codeGenExp(compiler, n);
@@ -172,31 +193,6 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        this.operand.codeGenExp(compiler, 2);
-
-        if(this.fieldName.getDefinition().isMethod()){
-            for(AbstractExpr aExpr : this.params.getList()){
-                aExpr.codeGenExp(compiler, 2);
-                compiler.incrementStackSize();
-                compiler.addInstruction(new PUSH(GPRegister.getR(2)));
-            }
-            this.operand.codeGenExp(compiler, 2);
-            compiler.incrementStackSize();
-            compiler.addInstruction(new PUSH(GPRegister.getR(2)));;
-            compiler.decrementStackSize();
-            this.fieldName.codeGenExp(compiler, 2);
-            for(AbstractExpr aExpr : this.params.getList()){
-                compiler.decrementStackSize();
-            }
-            if(this.params.getList().size() > 0)
-                compiler.addInstruction(new SUBSP(this.params.getList().size()));
-        }
+        this.codeGenExp(compiler, 2);
     }
-
-
-    @Override
-    protected void codeGenInst(DecacCompiler compiler) {
-        this.codeGenExp(compiler,2);
-    }
-
 }
