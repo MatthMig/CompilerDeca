@@ -1,0 +1,25 @@
+//  Description : 
+// 
+//      Test correct qui utilise attribue un instanceof a une variable boolean
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+
+}
+
+class B {
+
+}
+
+{
+    A oA = new A();
+    boolean b = oA instanceof B;
+    print(b);
+}

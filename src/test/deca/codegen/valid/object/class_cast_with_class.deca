@@ -1,0 +1,33 @@
+//  Description : 
+// 
+//      Test correct qui utilise deux classes en castant l'une d'entre elles avec l'autre
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int x =3;
+    int methodePlusOne(){
+        x=x+1;
+        return x;
+    }
+}
+
+class B extends A {
+    int methodeMinusOne(){
+        x=x-1;
+        return x; 
+    }
+}
+
+{
+    A oA = new A();
+    B oB = new B();
+    B oC = (B)oA;
+    println(oC.methodePlusOne());
+}

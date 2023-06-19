@@ -1,0 +1,18 @@
+// Description :
+// 
+//      Test correct du lexing d'une classe avec une declaration de variable
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 19/06/2023 par gl03
+
+class A {
+    int x;
+}
+{
+    println("La variable x est déclarée");
+}
