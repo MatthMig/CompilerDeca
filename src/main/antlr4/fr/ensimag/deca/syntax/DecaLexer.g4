@@ -38,6 +38,7 @@ READINT: 'readInt';
 READFLOAT: 'readFloat';
 TRUE: 'true';
 FALSE: 'false';
+INSTANCEOF: 'instanceof';
 
 // Conditions
 NEQ: '!=';
