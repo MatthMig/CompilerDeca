@@ -13,6 +13,9 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
+import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 
 import java.io.PrintStream;
 
@@ -23,8 +26,8 @@ import org.apache.commons.lang.Validate;
  * @author gl03
  * @date 13/06/2023
  */
-public class Selection extends AbstractExpr {
-    final private AbstractExpr operand;
+public class Selection extends AbstractLValue {
+    private AbstractExpr operand;
     final private AbstractIdentifier fieldName;
     final private ListExpr params;
 
@@ -45,6 +48,15 @@ public class Selection extends AbstractExpr {
         this.fieldName = fieldName;
         this.params = null;
     }
+    // If we have a method call within an object, the operand is implicitely 'this'
+    // We simulate this by creating a new Selection with operand = null
+    public Selection(AbstractIdentifier fieldName, ListExpr params) {
+        Validate.notNull(fieldName);
+        Validate.notNull(params);
+        this.operand = null;
+        this.fieldName = fieldName;
+        this.params = params;
+    }
 
     @Override
     public void decompile(IndentPrintStream s) {
@@ -53,13 +65,16 @@ public class Selection extends AbstractExpr {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        operand.iter(f);
+        if (operand != null)
+            operand.iter(f);
         fieldName.iter(f);
     }
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        operand.prettyPrint(s, prefix, false);
+        if (operand != null) {
+            operand.prettyPrint(s, prefix, false);
+        }
         if (params != null) {
             fieldName.prettyPrint(s, prefix, false);
             params.prettyPrint(s, prefix, true);
@@ -71,31 +86,45 @@ public class Selection extends AbstractExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
-        operand.verifyExpr(compiler, localEnv, currentClass);
-        Type t = operand.verifyExpr(compiler, localEnv, currentClass);
-        TypeDefinition tdef = compiler.environmentType.defOfType(t.getName()); //compiler.environmentType.defOfType(((Identifier)operand).getVariableDefinition().getType().getName());
-        if(!(tdef instanceof ClassDefinition)){
-            throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
+        TypeDefinition tdef;
+        if (operand == null) {
+            // If operand is null, then we have an implicit This
+            This newThis = new This();
+            newThis.setLocation(getLocation());
+            this.operand = newThis;
+            this.operand.verifyExpr(compiler, localEnv, currentClass);
+            tdef = currentClass.getType().getDefinition();
+        } else {
+            Type t = operand.verifyExpr(compiler, localEnv, currentClass);
+            tdef = compiler.environmentType.defOfType(t.getName());
+            if(!(tdef instanceof ClassDefinition)) {
+                throw new ContextualError("trying to access a parameter on a non object variable", getLocation());
+            }
         }
         ClassDefinition cdef = (ClassDefinition)tdef;
         ExpDefinition edef = cdef.getMembers().get(fieldName.getName());
 
-        if(!(edef instanceof FieldDefinition)){
-            if(edef instanceof MethodDefinition)
-                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " is a method", getLocation());
-            else
-                throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+        if(edef == null){
+            edef = cdef.getSuperClass().getMembers().get(fieldName.getName());
         }
 
-        FieldDefinition fdef = (FieldDefinition)edef;
-        this.fieldName.setType(fdef.getType());
-        if(cdef.getMembers().get(fieldName.getName()) != null){
+        if(edef != null && (edef instanceof FieldDefinition || (edef instanceof MethodDefinition && this.params != null))){
+            this.fieldName.setType(edef.getType());
+
             this.setType(this.fieldName.getType());
-            this.fieldName.setType(fdef.getType());
-            this.fieldName.setDefinition(fdef);
-            return this.getType();
+            this.fieldName.setType(edef.getType());
+            this.fieldName.setDefinition(edef);
+
+            if(edef instanceof MethodDefinition && this.params != null){
+                for(AbstractExpr aExpr : this.params.getList()){
+                    aExpr.verifyExpr(compiler, localEnv, currentClass);
+                }
+            }
+            return getType();
         }
-        return getType();
+        else {
+            throw new ContextualError("trying to access a field but " + fieldName.getName().getName() + " doesn't exists", getLocation());
+        }
     }
 
     @Override
@@ -105,29 +134,69 @@ public class Selection extends AbstractExpr {
             compiler.addInstruction(new LOAD(addr, GPRegister.R1));
         }
         else{
-            this.operand.codeGenPrint(compiler);
+            this.operand.codeGenExp(compiler, 2);
         }
-        
+
         this.fieldName.codeGenPrint(compiler);
     }
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        if(this.operand instanceof Identifier){
-            DVal addr = ((Identifier)this.operand).getVariableDefinition().getOperand();
-            compiler.addInstruction(new LOAD(addr, GPRegister.getR(n)));
+        if(this.params != null){
+            for(AbstractExpr aExpr : this.params.getList()){
+                aExpr.codeGenExp(compiler, n);
+                compiler.incrementStackSize();
+                compiler.addInstruction(new PUSH(GPRegister.getR(n)));
+            }
+            this.operand.codeGenExp(compiler, n);
+            compiler.incrementStackSize();
+            compiler.addInstruction(new PUSH(GPRegister.getR(n)));;
+            compiler.decrementStackSize();
+            this.fieldName.codeGenExp(compiler, n);
+            for(AbstractExpr aExpr : this.params.getList()){
+                compiler.decrementStackSize();
+            }
+            if(this.params.getList().size() > 0)
+                compiler.addInstruction(new SUBSP(this.params.getList().size()));
         }
         else{
             this.operand.codeGenExp(compiler, n);
+            this.fieldName.codeGenExp(compiler, n);
         }
-        
-        this.fieldName.codeGenExp(compiler, n);
+
+    }
+
+    public AbstractIdentifier getFieldName() {
+        return fieldName;
+    }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        this.operand.codeGenExp(compiler, 2);
+
+        if(this.fieldName.getDefinition().isMethod()){
+            for(AbstractExpr aExpr : this.params.getList()){
+                aExpr.codeGenExp(compiler, 2);
+                compiler.incrementStackSize();
+                compiler.addInstruction(new PUSH(GPRegister.getR(2)));
+            }
+            this.operand.codeGenExp(compiler, 2);
+            compiler.incrementStackSize();
+            compiler.addInstruction(new PUSH(GPRegister.getR(2)));;
+            compiler.decrementStackSize();
+            this.fieldName.codeGenExp(compiler, 2);
+            for(AbstractExpr aExpr : this.params.getList()){
+                compiler.decrementStackSize();
+            }
+            if(this.params.getList().size() > 0)
+                compiler.addInstruction(new SUBSP(this.params.getList().size()));
+        }
     }
 
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.codeGenExp(compiler,2);
     }
 
 }

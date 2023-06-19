@@ -3,14 +3,29 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.MethodDefinition;
+import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
+import fr.ensimag.ima.pseudocode.instructions.ADDSP;
+import fr.ensimag.ima.pseudocode.instructions.SUBSP;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.PUSH;
+import fr.ensimag.ima.pseudocode.instructions.POP;
+import fr.ensimag.ima.pseudocode.instructions.STORE;
+import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.TSTO;
+import fr.ensimag.ima.pseudocode.instructions.RTS;
+
 
 import java.io.PrintStream;
 
@@ -22,7 +37,7 @@ public class DeclMethod extends AbstractDeclMethod{
     final private AbstractIdentifier methodName;
     final private ListDeclParam listDeclParam;
     final private AbstractMethodBody methodBody;
-    
+
     public DeclMethod(AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
         Validate.notNull(returnType);
         Validate.notNull(methodName);
@@ -36,7 +51,10 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.returnType.iter(f);
+        this.methodName.iter(f);
+        this.listDeclParam.iterChildren(f);
+        this.methodBody.iter(f);
     }
 
     @Override
@@ -53,16 +71,60 @@ public class DeclMethod extends AbstractDeclMethod{
     }
 
     @Override
+    protected void verifySuperClassMethods(DecacCompiler compiler,
+    EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
+        ExpDefinition potentialDef = currentClass.getSuperClass().getMembers().get(methodName.getName());
+        if(potentialDef != null){
+            if(!potentialDef.isField()){
+
+                MethodDefinition superMethodDefinition = (MethodDefinition)currentClass.getSuperClass().getMembers().get(this.methodName.getName());
+
+                // Verifying super method and method have the same type
+                Type superMethodType = superMethodDefinition.getType();
+                Type methodType = this.methodName.getType();
+                // Case different types
+                if(superMethodDefinition.getType() != methodType){
+                    // Check if a void method is redefined as not void, and the opposite
+                    if( ! ((methodType == null && superMethodType != null ) || (methodType != null && superMethodType == null)) ){
+                        // If not, supermethod must be a of a super type of method type
+                        if(methodType.isClass()){
+                            ClassDefinition superTypeClass = compiler.environmentType.defOfClass(superMethodType.getName());
+                            ClassDefinition typeClass = compiler.environmentType.defOfClass(methodType.getName());
+                            if(!superTypeClass.isParentClassOf(typeClass)){
+                                throw new ContextualError("trying to redefine a method with a type which isn't of the original type or isn't a subclass of original type", getLocation());
+                            }
+                        }
+                    }
+
+                    else{
+                        throw new ContextualError("redefinition of method " + this.methodName.getName() + " but new method is of type " + methodType + " when original is " + superMethodType, getLocation());
+                    }
+                }
+                // Case unmatching signatures
+                if(!superMethodDefinition.getSignature().sameAs(this.methodName.getMethodDefinition().getSignature())){
+                    throw new ContextualError("trying to redefine a method but signature redefinition doesn't match", getLocation());
+                }
+            }
+            else {
+                // Case the method name is associated to a field in super class
+                String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+                throw new ContextualError(message, getLocation());
+            }
+        }
+    }
+
+    @Override
     protected void verifyDeclMethod(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, int index)
             throws ContextualError {
+
         // Verify the return type
         Type type = this.returnType.verifyType(compiler);
-        // Create a local environment for the method
-        EnvironmentExp methodEnv = new EnvironmentExp(localEnv);
-        // Verify the List of parameters and declare them in the method's local environment (and not the object's one)
+        this.returnType.setType(type);
+        // Verify the List of parameters
         for(AbstractDeclParam declParam : this.listDeclParam.getList()){
-            declParam.verifyDeclParam(compiler, methodEnv, currentClass);
+            declParam.verifyDeclParam(compiler, localEnv, currentClass);
         }
         // Create a signature for the method
         Signature methodSignature = new Signature(type, methodName.getName());
@@ -77,32 +139,111 @@ public class DeclMethod extends AbstractDeclMethod{
         returnType.setDefinition(typeDef);
 
         // Formatting the signature of the method
-        String toStringSignature = 
+        String toStringSignature =
             methodSignature.getReturnType().toString()
             + " " + methodSignature.getMethodName().toString() + "("; // Add the return type and the method name to the signature
-        if (methodSignature.paramListSize() == 0)
+        if (methodSignature.paramListSize() == 0) {
             toStringSignature += "void";
-        else
-            for (int i = 1; i < methodSignature.paramListSize(); i++) {
-                if (i != 1) toStringSignature += ", ";
+        } else {
+            for (int i = 0; i < methodSignature.paramListSize(); i++) {
+                if (i != 0) toStringSignature += ", ";
                 toStringSignature += methodSignature.paramNumber(i).toString();
             }
+        }
         toStringSignature += ")";
 
-        // Try to declare the method in the Object local environment this time
+        // Try to declare the method in the class local environment this time
         try {
+            currentClass.getMembers().declare(this.methodName.getName(), methodDef);
+            currentClass.incNumberOfMethods();
             localEnv.declare(compiler.symbolTable.create(toStringSignature), methodDef);
         } catch(DoubleDefException e) {
             String message = String.format("Method with signature '%s' already declared", toStringSignature);
             throw new ContextualError(message, getLocation());
         }
+    }
 
+    @Override
+    protected void verifyClassBody(DecacCompiler compiler,
+            EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
+        // Declare the parameters in the method's local environment (and not the class' one)
+        for(AbstractDeclParam declParam : this.listDeclParam.getList()) {
+            declParam.verifyClassBody(compiler, localEnv, currentClass);
+        }
         // Verify the method body
         if (this.methodBody instanceof MethodBody) {
-            ((MethodBody) this.methodBody).verifyMethodBody(compiler, methodEnv, currentClass, type);
+            ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
         }
         else {
-            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, methodEnv, currentClass);
+            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
         }
     }
+
+    @Override
+    public void genMethodTableEntry(DecacCompiler compiler, ClassDefinition classDefinition) {
+        Label methodLabel = compiler.getLabelManager().createMethodLabel(this.methodName.getName().getName(), classDefinition.getType().getName().getName());
+        classDefinition.getMethodTable().addMethod(this.methodName.getMethodDefinition(), methodLabel);
+        this.methodName.getMethodDefinition().setLabel(methodLabel);
+    }
+
+    @Override
+    public void codeGenMethodTableEntry(DecacCompiler compiler) {
+        // Load the PC address for the method
+        compiler.addInstruction(new LOAD(this.methodName.getMethodDefinition().getLabel(), GPRegister.R0));
+
+        // Store it in the memory, at it's place in the method table
+        compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()), "store method " + this.methodName.getName() + " address");
+    }
+
+    @Override
+    public void codeGen(DecacCompiler compiler) {
+        // Get method label
+        Label methodLabel = this.methodName.getMethodDefinition().getLabel();
+
+        // Comment for the start of the method code
+        compiler.addComment("start : method " + methodLabel.toString());
+
+        // Set method label
+        compiler.addLabel(methodLabel);
+
+        // Storing Class field count
+        int localVariableCount = this.methodBody.getVarCount();
+
+        // Set params operand (address) in their definition
+        this.listDeclParam.setParamAddresses();
+
+
+        // Generating the method code under a sub compiler
+        DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+        this.methodBody.codeGen(methodCompiler);
+
+        // Save registers
+        for(int i = 3 ; i <= methodCompiler.getMaxRegister() ; i++){
+            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+        }
+
+        // Set method stack overflow test and stack pointer
+            // Total variables to store in the stack + total push made during operations + total push made to save registers
+            compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
+        compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+        compiler.addInstruction(new ADDSP(localVariableCount));
+
+        // Then append the generated code
+        compiler.append(methodCompiler.getProgram());
+
+        // Restore saved registers
+        for(int i = methodCompiler.getMaxRegister() ; i >= 3 ; i--){
+            compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+        }
+        // Reset Stack Pointer
+        compiler.addInstruction(new SUBSP(localVariableCount));
+
+        // Return to old context
+        compiler.addInstruction(new RTS());
+
+        // Comment for the end of the method code
+        compiler.addComment("end : method " + methodLabel.toString());
+    }
+
 }

@@ -148,9 +148,14 @@ inst returns[AbstractInst tree]
             $tree = new While($expr.tree, $body.tree);
             setLocation($tree, $WHILE);
         }
-    | RETURN expr SEMI {
-            assert($expr.tree != null);
-            $tree = new Return($expr.tree);
+    | RETURN (expr {
+                assert($expr.tree != null);
+                $tree = new Return($expr.tree);
+                setLocation($tree, $RETURN);
+        }
+        | /* Epsilon */ {
+                $tree = new Return(null);
+            }) SEMI {
         }
     ;
 
@@ -392,6 +397,8 @@ primary_expr returns[AbstractExpr tree]
     | m=ident OPARENT args=list_expr CPARENT {
             assert($args.tree != null);
             assert($m.tree != null);
+            $tree = new Selection($m.tree, $args.tree);
+            setLocation($tree, $m.start);
         }
     | OPARENT expr CPARENT {
             assert($expr.tree != null);
@@ -450,6 +457,8 @@ literal returns[AbstractExpr tree]
             setLocation($tree, $FALSE);
         }
     | THIS {
+            $tree = new This();
+            setLocation($tree, $THIS);
         }
     | NULL {
             $tree = new NullLiteral();
@@ -480,7 +489,7 @@ list_classes returns[ListDeclClass tree]
 class_decl returns[AbstractDeclClass tree]
     : CLASS name=ident superclass=class_extension OBRACE class_body CBRACE {
         assert($name.tree != null);
-        $tree = new DeclClass($name.tree,$superclass.tree, $class_body.declFieldList, $class_body.declMethodList);
+        $tree = new DeclClass($name.tree, $superclass.tree, $class_body.declFieldList, $class_body.declMethodList);
         setLocation($tree, $CLASS);
         }
     ;
@@ -552,11 +561,13 @@ decl_method returns[AbstractDeclMethod tree]
 }
     : type ident OPARENT params=list_params CPARENT (block {
             body = new MethodBody($block.decls, $block.insts, $type.tree);
+            setLocation(body, $params.start);
         }
       | ASM OPARENT code=multi_line_string CPARENT SEMI {
             StringLiteral sl = new StringLiteral($code.text);
             sl.setLocation($code.location);
             body = new MethodAsmBody(sl);
+            setLocation($tree, $type.start);
         }
       ) {
             $tree =new DeclMethod($type.tree, $ident.tree, $params.tree, body );

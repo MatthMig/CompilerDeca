@@ -79,6 +79,7 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
         // On the right there is only a variable or a literal or an arithmetic expression
         this.getRightOperand().codeGenExp(compiler, 2);
         compiler.addInstruction(new POP(GPRegister.getR(3)), "restauration");
+        compiler.decrementStackSize();
         // then compare
         compiler.addInstruction(new CMP(GPRegister.getR(2), GPRegister.getR(3)));
     }

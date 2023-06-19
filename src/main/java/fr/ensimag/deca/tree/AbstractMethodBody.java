@@ -19,4 +19,8 @@ public abstract class AbstractMethodBody extends Tree{
     public void codeGen(DecacCompiler compiler){
         throw new UnsupportedOperationException("not yet implemented");
     }
+    
+    public int getVarCount() {
+        throw new UnsupportedOperationException("not yet implemented");
+    }
 }

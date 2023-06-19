@@ -6,6 +6,7 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.FieldDefinition;
+import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
@@ -56,6 +57,17 @@ public class DeclField extends AbstractDeclField{
         this.fieldName.setType(t);
         this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), null, currentClass, index));
 
+        // Check for definition in parent environment
+        if (currentClass.getSuperClass() != null) {
+            MethodDefinition potentialDef = (MethodDefinition) (currentClass.getSuperClass().getMembers().get(fieldName.getName()));
+            if (potentialDef != null) {
+                // In order to avoid masking a method with a field and vice versa
+                if (fieldName.getExpDefinition().isField() && potentialDef.isMethod()) {
+                    String message = String.format("Can't declare field '%s' in class %s because the super class %s have a method with that name", fieldName.getName().getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
+                    throw new ContextualError(message, getLocation());
+                }
+            }
+        }
         // Try to declare the field to the local environment
         try{
             localEnv.declare(fieldName.getName(), fieldName.getExpDefinition());
@@ -65,21 +77,13 @@ public class DeclField extends AbstractDeclField{
             throw new ContextualError(message, getLocation());
         }
 
-        // Try to declare the field to the class environement
-        try {
-            currentClass.getMembers().declare(this.fieldName.getName(), this.fieldName.getFieldDefinition());
-        } catch (DoubleDefException e) {
-            String message = String.format("Field %s already declared in class", fieldName.getName().getName(), currentClass.getClass().getName());
-            throw new ContextualError(message, getLocation());
-        }
         currentClass.incNumberOfFields();
-
-        this.initialization.verifyInitialization(compiler, this.fieldName.getType(), localEnv, currentClass);
     }
 
     @Override
     public void verifyClassBody(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass) throws ContextualError {
         // Passe 3 : verify the initialization expression
+        this.initialization.verifyInitialization(compiler, this.fieldName.getType(), localEnv, currentClass);
     }
 
     @Override

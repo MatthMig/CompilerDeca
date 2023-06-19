@@ -20,9 +20,9 @@ import fr.ensimag.deca.tree.Location;
  */
 public class EnvironmentType {
     public EnvironmentType(DecacCompiler compiler) {
-        
+
         envTypes = new HashMap<Symbol, TypeDefinition>();
-        
+
         Symbol intSymb = compiler.createSymbol("int");
         INT = new IntType(intSymb);
         envTypes.put(intSymb, new TypeDefinition(INT, Location.BUILTIN));
@@ -47,7 +47,7 @@ public class EnvironmentType {
         STRING = new StringType(stringSymb);
         //envTypes.put(stringSymb, new TypeDefinition(STRING, Location.BUILTIN));
         // not added to envTypes, it's not visible for the user.
-        
+
     }
 
     private final Map<Symbol, TypeDefinition> envTypes;
@@ -56,6 +56,11 @@ public class EnvironmentType {
         return envTypes.get(s);
     }
 
+    /**
+     * Get the definition of a class from this environment, null if it doesn't exist.
+     * @param s : Symbol of the class
+     * @return ClassDefinition | null
+     */
     public ClassDefinition defOfClass(Symbol s){
         TypeDefinition td = envTypes.get(s);
         if(td instanceof ClassDefinition){
@@ -64,8 +69,8 @@ public class EnvironmentType {
         return null;
     }
 
-    public void declareClass(AbstractIdentifier className, ClassType classType, ClassDefinition superClassDef){
-        envTypes.put(className.getName(), new ClassDefinition(classType, className.getLocation(), superClassDef));
+    public void declareClass(AbstractIdentifier className, ClassType classType){
+        envTypes.put(className.getName(), classType.getDefinition());
     }
 
     public final VoidType    VOID;

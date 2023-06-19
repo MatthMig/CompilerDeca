@@ -7,9 +7,9 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.instructions.RTS;
 
 import java.io.PrintStream;
-import org.apache.commons.lang.Validate;
 
 /**
  *
@@ -17,10 +17,10 @@ import org.apache.commons.lang.Validate;
  * @date 13/06/2023
  */
 public class Return extends AbstractInst {
-    final private AbstractExpr returnExpr;
+    private AbstractExpr returnExpr;
 
     public Return(AbstractExpr returnExpr) {
-        Validate.notNull(returnExpr);
+        // No null verification, null is allowed to return void.
         this.returnExpr = returnExpr;
     }
 
@@ -31,27 +31,48 @@ public class Return extends AbstractInst {
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(this.returnExpr != null)
+            this.returnExpr.iter(f);
     }
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        returnExpr.prettyPrint(s, prefix, true);
+        if (returnExpr != null) {
+            returnExpr.prettyPrint(s, prefix, true);
+        }
     }
 
    @Override
    protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass,
            Type returnType) throws ContextualError {
-        Type t = this.returnExpr.verifyExpr(compiler, localEnv, currentClass);
+        Type t;
+        if (this.returnExpr == null) {
+            // If there is no return expression, then the returned type is void.
+            t = compiler.environmentType.VOID;
+        } else {
+            t = this.returnExpr.verifyExpr(compiler, localEnv, currentClass);
+            if(this.returnExpr instanceof Identifier){
+                if(((Identifier)returnExpr).getDefinition().isField()){
+                    This newThis = new This();
+                    newThis.setLocation(getLocation());
+                    this.returnExpr = new Selection(newThis, (Identifier)returnExpr);
+                    this.returnExpr.setLocation(getLocation());
+                    this.returnExpr.verifyInst(compiler, localEnv, currentClass, t);
+                }
+            }
+            this.returnExpr.setType(t);
+        }
+
+        // If the returned type is not the same as the method's return type, then there is a contextual error.
         if (!t.sameType(returnType))
             throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
-        this.returnExpr.setType(t);
-   } 
+   }
 
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(this.returnExpr != null)
+            this.returnExpr.codeGenExp(compiler, 2);
     }
 
 }

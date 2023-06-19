@@ -1,6 +1,5 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -15,6 +14,11 @@ public abstract class AbstractDeclParam extends Tree{
     protected void verifyDeclParam(DecacCompiler compiler,
         EnvironmentExp localEnv, ClassDefinition currentClass)
         throws ContextualError {
+    }
+
+    void verifyClassBody(DecacCompiler compiler,
+    EnvironmentExp localEnv, ClassDefinition currentClass)
+    throws ContextualError {
         throw new UnsupportedOperationException("not yet implemented");
     }
 
@@ -23,4 +27,7 @@ public abstract class AbstractDeclParam extends Tree{
     }
 
     public abstract AbstractIdentifier getType();
+
+    public abstract void setParamAddress(int index);
+
 }
