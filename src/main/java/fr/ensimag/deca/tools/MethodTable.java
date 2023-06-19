@@ -1,7 +1,6 @@
 package fr.ensimag.deca.tools;
 
 import java.util.HashMap;
-import java.util.Set;
 
 import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.ima.pseudocode.Label;
@@ -9,6 +8,11 @@ import fr.ensimag.ima.pseudocode.Label;
 public class MethodTable {
     HashMap<MethodDefinition, Label> methodTable = new HashMap<MethodDefinition, Label>();
 
+    /**
+     * Add a method to the methodTable
+     * @param methodDefinition the method to be added
+     * @param methodLabel the label to be added
+     */
     public void addMethod(MethodDefinition methodDefinition, Label methodLabel){
         methodTable.put(methodDefinition, methodLabel);
     }
@@ -17,16 +21,9 @@ public class MethodTable {
         return methodTable.get(methodDefinition);
     }
 
-    public void addAll(MethodTable methodTable){
-        this.methodTable.putAll(methodTable.getMethodsMap());
-    }
-
-    public Label getLabelByIndex(int index){
-        Set<MethodDefinition> mdefset = this.getMethodsMap().keySet();
-        for(MethodDefinition mdef : mdefset){
-            String[] splittedLabel = mdef.getLabel().toString().split("[.]");
-            if(splittedLabel[splittedLabel.length-1].contains(Integer.toString(index)))
-                return mdef.getLabel();
+    public Label getLabelByDef(MethodDefinition key) {
+        if (methodTable.containsKey(key)) {
+            return methodTable.get(key);
         }
         return null;
     }

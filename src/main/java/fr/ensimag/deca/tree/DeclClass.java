@@ -1,21 +1,15 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.Type;
-import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.IMAProgram;
 import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.Register;
-import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
@@ -25,11 +19,9 @@ import fr.ensimag.ima.pseudocode.instructions.TSTO;
 import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.LEA;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Set;
-
 import java.io.PrintStream;
+import java.util.Map.Entry;
+
 import org.apache.commons.lang.Validate;
 
 /**
@@ -75,14 +67,18 @@ public class DeclClass extends AbstractDeclClass {
                     compiler.environmentType.defOfClass(className.getName()).setNumberOfFields(superClassDef.getNumberOfFields());
                     compiler.environmentType.defOfClass(className.getName()).setNumberOfMethods(superClassDef.getNumberOfMethods());
                 } else {
-                    // Parent class doesn't exist
-                    throw new ContextualError("Super class " + this.getSuperClassName().getName() + " does not exist", this.getLocation());
+                    // Parent class doesn't exist 
+                    String message = String.format("Trying to extend undefined class %s at %s", this.getSuperClassName().getName(), superClassName.getLocation() );
+                    throw new ContextualError(message, this.getLocation());
                 }
             } else {
                 // No inheritance
                 compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), null));
                 this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
             }
+        } else {
+            String message = String.format("Class %s already defined at %s", this.className.getName().getName(), ((ClassDefinition) (compiler.environmentType.defOfType(this.className.getName()))).getLocation() );
+            throw new ContextualError(message, getLocation());
         }
     }
 
@@ -100,15 +96,13 @@ public class DeclClass extends AbstractDeclClass {
         }
         i = classDefinition.getNumberOfFields();
         for(AbstractDeclField declField : this.listDeclField.getList()){
+            // ++i : increment i before going into the method
             declField.verifyDeclField(compiler, envExp, classDefinition, ++i);
         }
 
         i = classDefinition.getNumberOfMethods();
         for(AbstractDeclMethod declMethod : this.listDeclMethod.getList()){
             declMethod.verifyDeclMethod(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()), ++i);
-            if(this.superClassName != null){
-                declMethod.verifySuperClassMethods(compiler, envExp, compiler.environmentType.defOfClass(this.className.getName()));
-            }
         }
 
     }
@@ -163,29 +157,34 @@ public class DeclClass extends AbstractDeclClass {
     @Override
     public void codeGenMethodTable(DecacCompiler compiler) {
         compiler.addComment("start : method table for class " + this.className.getName());
-        // Generate method table, starting on current GB offset
 
+        // Generate method table, starting on current GB offset
         this.className.getClassDefinition().setMethodTableAddr(compiler.allocate());
 
         if(this.superClassName != null){
             compiler.addInstruction(new LEA(this.superClassName.getClassDefinition().getMethodTableAddr(), Register.R0));
             compiler.addInstruction(new STORE(Register.R0, this.className.getClassDefinition().getMethodTableAddr()));
-            this.className.getClassDefinition().getMethodTable().addAll(this.superClassName.getClassDefinition().getMethodTable());
+            // for each method of the super class
+            for (Entry<MethodDefinition, Label> entry : this.superClassName.getClassDefinition().getMethodTable().getMethodsMap().entrySet()) {
+                // if method doesn't exists in curent class
+                if (this.className.getClassDefinition().getMembers().get(compiler.createSymbol(entry.getKey().getSignature().toString())) == null) {
+                    // we add the super method to the table
+                    this.className.getClassDefinition().getMethodTable().addMethod(entry.getKey(), entry.getValue());
+                }
+            }
         }
+        // Generate the method Table
         listDeclMethod.genMethodTable(compiler, this.className.getClassDefinition());
 
-        for(int i = 1 ; i <= this.className.getClassDefinition().getNumberOfMethods() ; i++){
-            Label label = this.className.getClassDefinition().getMethodTable().getLabelByIndex(i);
+        // For each method of the table that was just generated
+        for (MethodDefinition methodDef : this.className.getClassDefinition().getMethodTable().getMethodsMap().keySet()) {
+            Label label = this.className.getClassDefinition().getMethodTable().getLabelByDef(methodDef);
             // Load the PC address for the method
             compiler.addInstruction(new LOAD(label, GPRegister.R0));
 
             // Store it in the memory, at it's place in the method table
             compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()));
         }
-
-        // Generate the code that actually generates the table
-        // listDeclMethod.codeGenMethodTable(compiler, this.className.getClassDefinition());
-
         compiler.addComment("end : method table for class " + this.className.getName());
     }
 

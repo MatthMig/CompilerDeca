@@ -1,5 +1,7 @@
 package fr.ensimag.deca.tools;
 
+import fr.ensimag.deca.context.MethodDefinition;
+import fr.ensimag.deca.context.Signature;
 import fr.ensimag.ima.pseudocode.Label;
 
 public class LabelManager {
@@ -21,9 +23,9 @@ public class LabelManager {
     }
 
     /**
-     * Creates 2 labels with the given prefix, a dot and the label count as a suffix
+     * Creates a label with : the given prefix, a dot and the index as a suffix
      * @param prefix The prefix of the label
-     * @return An array of 2 labels
+     * @return The formatted label
      */
     private Label createLabel(String prefix) {
         return new Label(prefix + "." + labelCount);
@@ -82,7 +84,7 @@ public class LabelManager {
      * Returns 2 labels for Boolean variable print
      * @return labels
      */
-    public Label [] createBooleanVarPrintLabel() {
+    public Label [] createBooleanPrintLabel() {
         Label[] labels = new Label[]{
             createLabel("truePrint"),
             createLabel("endPrint")
@@ -123,10 +125,8 @@ public class LabelManager {
     * Returns the method label
     * @return label
     */
-    public Label createMethodLabel(String methodName, String className){
-        Label label = createLabel("code." + className + "." + methodName);
-        this.labelCount += 1;
-        return label;
+    public Label createMethodLabel(String className, String methodSignature) {
+        return new Label("code." + className + "." + methodSignature);
     }
 
 }

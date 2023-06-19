@@ -7,12 +7,6 @@ import fr.ensimag.deca.context.EnvironmentExp;
 
 public abstract class AbstractDeclMethod extends Tree{
 
-    protected void verifySuperClassMethods(DecacCompiler compiler,
-        EnvironmentExp localEnv, ClassDefinition currentClass)
-        throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
-    }
-
     /**
      * @param compiler
      * @param localEnv

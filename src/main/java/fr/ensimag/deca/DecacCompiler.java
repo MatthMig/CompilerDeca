@@ -2,9 +2,9 @@ package fr.ensimag.deca;
 
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
-import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
+import fr.ensimag.deca.tools.BooleanPrintHelper;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.LabelManager;
 import fr.ensimag.deca.tools.SymbolTable;
@@ -18,16 +18,12 @@ import fr.ensimag.ima.pseudocode.Instruction;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.ADDSP;
-import fr.ensimag.ima.pseudocode.instructions.BOV;
-import fr.ensimag.ima.pseudocode.instructions.TSTO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -50,13 +46,12 @@ import org.apache.log4j.Logger;
  */
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
-    private int varCount = 0;
     private int stackSize = 0;
     private int maxStackSize = 0;
     private int maxRegister = 2;
     private int register = 2;
-    private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
     private final LabelManager labelManager;
+    private final BooleanPrintHelper booleanPrintHelper;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null);
     private int lbOffset = 1;
 
@@ -69,12 +64,17 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.labelManager = new LabelManager();
+        this.booleanPrintHelper = new BooleanPrintHelper(this);
         this.source = source;
         this.stackSize = 0;
     }
 
     public LabelManager getLabelManager(){
         return this.labelManager;
+    }
+
+    public BooleanPrintHelper getBooleanPrintHelper(){
+        return this.booleanPrintHelper;
     }
 
     public int getLabelCount(){
