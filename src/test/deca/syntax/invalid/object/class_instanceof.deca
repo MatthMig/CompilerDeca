@@ -1,0 +1,15 @@
+// Description :
+// 
+//      Test correct du lexing d'une classe avec un instanceof
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 19/06/2023 par gl03
+
+{
+    instanceof;
+}
