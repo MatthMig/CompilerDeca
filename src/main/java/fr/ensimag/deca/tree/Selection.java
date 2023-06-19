@@ -169,11 +169,19 @@ public class Selection extends AbstractLValue {
                 compiler.incrementStackSize();
                 compiler.addInstruction(new PUSH(GPRegister.getR(n)));
             }
+            // Generate left selection
             this.operand.codeGenExp(compiler, n);
+            
+            // Stack "this"
             compiler.incrementStackSize();
             compiler.addInstruction(new PUSH(GPRegister.getR(n)));
-            compiler.decrementStackSize();
             this.fieldName.codeGenExp(compiler, n);
+            compiler.addInstruction(new SUBSP(1));
+            compiler.decrementStackSize();
+            
+            // Load result from sub method
+            compiler.addInstruction(new LOAD(GPRegister.R0, GPRegister.getR(n)));
+
             // foreach param we decrement the stack size
             this.params.getList().forEach(param -> compiler.decrementStackSize());
             if(this.params.getList().size() > 0) {
@@ -193,6 +201,11 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        this.codeGenExp(compiler, 2);
+        if(this.params != null){
+            this.codeGenExp(compiler, 2);
+        }
+        else{
+            this.operand.codeGenExp(compiler, 2);
+        }
     }
 }

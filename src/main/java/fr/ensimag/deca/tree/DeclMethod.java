@@ -189,22 +189,21 @@ public class DeclMethod extends AbstractDeclMethod{
         DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
         this.methodBody.codeGen(methodCompiler);
 
-        // Save registers
-        for(int i = 3 ; i <= methodCompiler.getMaxRegister() ; i++){
-            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
-        }
-
         // Set method stack overflow test and stack pointer
         // Total variables to store in the stack + total push made during operations + total push made to save registers
         compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
         compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
         compiler.addInstruction(new ADDSP(localVariableCount));
+        // Save registers
+        for(int i = 2 ; i <= methodCompiler.getMaxRegister() ; i++){
+            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+        }
 
         // Then append the generated code
         compiler.append(methodCompiler.getProgram());
 
         // Restore saved registers
-        for(int i = methodCompiler.getMaxRegister() ; i >= 3 ; i--){
+        for(int i = methodCompiler.getMaxRegister() ; i >= 2 ; i--){
             compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
         }
         // Reset Stack Pointer
