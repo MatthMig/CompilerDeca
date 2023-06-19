@@ -1,0 +1,25 @@
+//  Description :
+// 
+//      Test correct qui return une methode de la classe
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int y=3;
+    int x (){
+        return y ;
+    }
+    int methodeRet(){
+        return x();
+    }
+}
+
+{
+    A oA = new A();
+    println(oA.methodeRet());
+}

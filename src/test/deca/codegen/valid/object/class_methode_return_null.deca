@@ -1,0 +1,22 @@
+//  Description : 
+// 
+//      Test incorrect qui utilise une methode qui renvoie null
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    A methodeRetNull(){
+        return null;
+    }
+}
+
+{
+    A oA = new A ();
+    println(oA.methodeRetNull());
+}

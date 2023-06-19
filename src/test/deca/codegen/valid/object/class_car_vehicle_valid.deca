@@ -1,0 +1,81 @@
+//  Description : 
+// 
+//      Test correct qui utilise deux classes, vehicule et voiture. La classe voiture hérite de la classe véhicule.
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class Vehicule {
+
+    protected int nbRoues, nbPortes , chevaux , km;
+    boolean reglementaire;
+    int consommation;
+    boolean vendu;
+    void casse {
+        println("Le vehicule", this ,"est à la casse");
+        this=null;
+    }
+    void seDeplacer(int distance) {
+    if(this.reglementaire==true){
+            this.km=this.km+distance;
+            println("arrivée à destination");
+    }
+    else {
+        println("voyage impossible");
+    }
+    
+}
+
+}
+
+class voiture { 
+
+
+    void casseVoiture(int finDeVie){
+        if(this.km<=finDeVie){
+            this.reglementaire=true;
+            println("la voiture est en état de rouler");
+        }
+        else {
+            this.reglementaire=false;
+            println("la voiture est bonne pour la casse");
+            this.casse;
+        }
+    }
+
+    void venduVoiture(){
+        this.vendu=true;
+    }
+}
+
+{
+    voiture rs6SlineBreakBiTurbo = new voiture();
+    rs6SlineBreakBiTurbo.nbRoues=4;
+    rs6SlineBreakBiTurbo.nbPortes=5;
+    rs6SlineBreakBiTurbo.chevaux=630;
+    rs6SlineBreakBiTurbo.km=10000;
+    rs6SlineBreakBiTurbo.reglementaiclass_car_vehiclere=true;
+    rs6SlineBreakBiTurbo.vendu=false;
+
+    vehicule trotinetteNulle = new vehicule();
+    trotinetteNulle.nbRoues=2;
+    trotinetteNulle.nbPortes=0;
+    trotinetteNulle.chevaux=1;
+    trotinetteNulle.km=50;
+    trotinetteNulle.reglementaire=true;
+    trotinetteNulle.vendu=false;
+
+    rs6SlineBreakBiTurbo.seDeplacer(1000);
+    rs6SlineBreakBiTurbo.casseVoiture(15000);
+    trotinetteNulle.seDeplacer(3);
+    trotinetteNulle.casse();
+    
+
+
+}
+
