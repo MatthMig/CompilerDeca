@@ -15,6 +15,8 @@ import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
+import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
+import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 import java.io.PrintStream;
 
@@ -81,7 +83,7 @@ public class Selection extends AbstractLValue {
             fieldName.prettyPrint(s, prefix, true);
         }
     }
-    
+
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
@@ -113,18 +115,22 @@ public class Selection extends AbstractLValue {
             for (AbstractExpr param : this.params.getList()) {
                 sig.addParamType(param.verifyExpr(compiler, localEnv, currentClass));
             }
-            expDef = classDef.getMembers().get(compiler.createSymbol(sig.toString()));
+            expDef = Signature.checkSignatureInheritance(compiler, classDef, this.fieldName.getName(), params);
         }
 
         // Check for definition in super class if none was found
         if(expDef == null && classDef.getSuperClass() != null){
-            // if this is a field
-            if (params == null) {
-                expDef = classDef.getSuperClass().getMembers().get(fieldName.getName());
-            }
-            // Else if it is a method
-            else {
-                expDef = classDef.getSuperClass().getMembers().get(compiler.createSymbol(sig.toString()));
+            ClassDefinition superClassDefinition = classDef.getSuperClass();
+            while(expDef == null && superClassDefinition != null ){
+                // if this is a field
+                if (params == null) {
+                    expDef = superClassDefinition.getMembers().get(fieldName.getName());
+                }
+                // Else if it is a method
+                else {
+                    expDef = Signature.checkSignatureInheritance(compiler, superClassDefinition, this.fieldName.getName(), params);
+                }
+                superClassDefinition = superClassDefinition.getSuperClass();
             }
         }
         // If we found a definition
@@ -157,8 +163,9 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
-        this.codeGenExp(compiler, 2);
+        this.operand.codeGenExp(compiler, 2);
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
+        this.fieldName.codeGenPrint(compiler);
     }
 
     @Override
@@ -171,14 +178,14 @@ public class Selection extends AbstractLValue {
             }
             // Generate left selection
             this.operand.codeGenExp(compiler, n);
-            
+
             // Stack "this"
             compiler.incrementStackSize();
             compiler.addInstruction(new PUSH(GPRegister.getR(n)));
             this.fieldName.codeGenExp(compiler, n);
             compiler.addInstruction(new SUBSP(1));
             compiler.decrementStackSize();
-            
+
             // Load result from sub method
             compiler.addInstruction(new LOAD(GPRegister.R0, GPRegister.getR(n)));
 

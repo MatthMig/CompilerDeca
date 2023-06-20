@@ -1,5 +1,6 @@
 package fr.ensimag.deca.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
@@ -69,6 +70,25 @@ public class EnvironmentExp {
             throw new DoubleDefException();
         }
         definitions.put(name, def);
+    }
+
+    public ArrayList<MethodDefinition> getMethodsWithSignatureLike(Symbol methodName, int size) {
+        ArrayList<MethodDefinition> methodDefs = new ArrayList<>();
+
+        // Looking for every definitions in the environment
+        for(Symbol symb : definitions.keySet()){
+
+            // Aiming for methods
+            if(definitions.get(symb).isMethod()){
+
+                // Checking the method has a similar signature
+                if(((MethodDefinition)definitions.get(symb)).getSignature().paramTypes.size() == size && ((MethodDefinition)definitions.get(symb)).getSignature().getMethodName().equals(methodName) ){
+                    // System.out.println("found -> " + definitions.get(symb));
+                    methodDefs.add((MethodDefinition)definitions.get(symb));
+                }
+            }
+        }
+        return methodDefs;
     }
 
 }
