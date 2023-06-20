@@ -49,7 +49,7 @@ public class Cast extends AbstractExpr {
 
     @Override
     protected void prettyPrintChildren(PrintStream s, String prefix) {
-        castType.prettyPrint(s, prefix, true);
+        castType.prettyPrint(s, prefix, false);
         expression.prettyPrint(s, prefix, true);
     }
 
@@ -64,7 +64,7 @@ public class Cast extends AbstractExpr {
                 ClassDefinition classDef =compiler.environmentType.defOfClass(expressionType.getName());
                 ClassDefinition castClass =compiler.environmentType.defOfClass(t.getName());
                 castType.setDefinition(castClass);
-                
+
                 if(castClass.isParentClassOf(classDef) || classDef.isParentClassOf(castClass) ){
                     castType.setType(t);
                     expression.setType(expressionType);
@@ -78,7 +78,7 @@ public class Cast extends AbstractExpr {
                     if(t.isInt() || t.isFloat()){
                         castType.setType(t);
                         expression.setType(expressionType);
-                        this.setType(t);   
+                        this.setType(t);
                     } else {
                         throw new ContextualError("Cannot cast object of type " + expressionType + " to type " + t , getLocation());
                     }
@@ -87,7 +87,7 @@ public class Cast extends AbstractExpr {
                     if(t.isInt() || t.isFloat()){
                         castType.setType(t);
                         expression.setType(expressionType);
-                        this.setType(t);   
+                        this.setType(t);
                     } else {
                         throw new ContextualError("Cannot cast object of type " + expressionType + " to type " + t , getLocation());
                     }
@@ -95,15 +95,15 @@ public class Cast extends AbstractExpr {
                 castType.setDefinition(typeDef);
             }
 
-            
+
 
             return t;
-            
+
     }
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        
+
         expression.codeGenExp(compiler, n);
 
 
@@ -113,7 +113,7 @@ public class Cast extends AbstractExpr {
         if(expressionType.isClass()){
             ClassDefinition classDef =compiler.environmentType.defOfClass(expressionType.getName());
             ClassDefinition castClass =compiler.environmentType.defOfClass(t.getName());
-            
+
             //Downcast case
             if(classDef.isParentClassOf(castClass) ){
                 InstanceOf iOf = new InstanceOf(expression, castType);
@@ -121,7 +121,7 @@ public class Cast extends AbstractExpr {
                 //compare 1 with R2
                 compiler.addInstruction(new CMP(1,GPRegister.getR(2)));
                 //BNE on error
-                compiler.addInstruction(new BNE(compiler.getLabelManager().getImpossibleDownCastLabel()));          
+                compiler.addInstruction(new BNE(compiler.getLabelManager().getImpossibleDownCastLabel()));
             }
 
         } else {
@@ -135,7 +135,7 @@ public class Cast extends AbstractExpr {
                 compiler.addInstruction(new INT(GPRegister.getR(n),GPRegister.getR(n)));
                 }
             }
-        }    
+        }
 
     }
 
