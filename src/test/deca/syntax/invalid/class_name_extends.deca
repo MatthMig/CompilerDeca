@@ -13,7 +13,3 @@
 class extends {
 
 }
-
-{
-    extends A = new extends;
-}

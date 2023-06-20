@@ -1,6 +1,6 @@
 // Description :
 // 
-//      Test incorrect d'une classe nommée null
+//      Test correct du lexing d'une classe avec un instanceof
 // 
 // Résultats : 
 // 
@@ -10,6 +10,6 @@
 // 
 //      Créé le 19/06/2023 par gl03
 
-class null {
-    
+class instanceof {
+
 }

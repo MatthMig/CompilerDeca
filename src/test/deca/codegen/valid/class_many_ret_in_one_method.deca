@@ -1,0 +1,32 @@
+//  Description : 
+// 
+//      Test correct d'une methode avec plusieurs return
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int x=4;
+    int methodeManyRet(){
+        
+        if (x<0){
+            return 1;
+        }
+        else if (x<6){
+            return 2;
+        }
+        else {
+            return 3;
+        }
+    }
+}
+
+{
+    A oA = new A();
+    print(oA.methodeManyRet());
+}

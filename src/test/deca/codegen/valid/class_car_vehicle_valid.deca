@@ -10,7 +10,7 @@
 // 
 //      Créé le 13/06 par gl03
 
-class Vehicule {
+class vehicule {
 
     protected int nbRoues, nbPortes , chevaux , km;
     boolean reglementaire;
@@ -21,19 +21,19 @@ class Vehicule {
         this=null;
     }
     void seDeplacer(int distance) {
-        if(this.reglementaire==true){
-                this.km=this.km+distance;
-                println("arrivée à destination");
-        }
-        else {
-            println("voyage impossible");
-        }
+    if(this.reglementaire==true){
+            this.km=this.km+distance;
+            println("arrivée à destination");
+    }
+    else {
+        println("voyage impossible");
+    }
     
 }
 
 }
 
-class voiture { 
+class voiture extends vehicule { 
 
 
     void casseVoiture(int finDeVie){
@@ -44,7 +44,7 @@ class voiture {
         else {
             this.reglementaire=false;
             println("la voiture est bonne pour la casse");
-            this.casse;
+            this.casse();
         }
     }
 
@@ -55,14 +55,15 @@ class voiture {
 
 {
     voiture rs6SlineBreakBiTurbo = new voiture();
+    vehicule trotinetteNulle = new vehicule();
     rs6SlineBreakBiTurbo.nbRoues=4;
     rs6SlineBreakBiTurbo.nbPortes=5;
     rs6SlineBreakBiTurbo.chevaux=630;
     rs6SlineBreakBiTurbo.km=10000;
-    rs6SlineBreakBiTurbo.reglementaiclass_car_vehiclere=true;
+    rs6SlineBreakBiTurbo.reglementaire=true;
     rs6SlineBreakBiTurbo.vendu=false;
 
-    vehicule trotinetteNulle = new vehicule();
+    
     trotinetteNulle.nbRoues=2;
     trotinetteNulle.nbPortes=0;
     trotinetteNulle.chevaux=1;

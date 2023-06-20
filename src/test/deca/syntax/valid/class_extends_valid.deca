@@ -12,9 +12,7 @@
 class A {
 
 }
-
-{
-    A oA = new A();
-    println("oA est instancié");
+class B extends A{
 
 }
+

@@ -20,4 +20,5 @@ class A {
 {
     A a = new A();
     int y = a.getX();
+    print(y);
 }

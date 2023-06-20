@@ -13,3 +13,7 @@
 class null {
     
 }
+
+{
+    null A = new null;
+}
