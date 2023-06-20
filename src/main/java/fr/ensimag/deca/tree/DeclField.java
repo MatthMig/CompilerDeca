@@ -23,17 +23,19 @@ import org.apache.commons.lang.Validate;
 
 public class DeclField extends AbstractDeclField{
 
+    public Visibility visib;
     final private AbstractIdentifier fieldType;
     final private AbstractIdentifier fieldName;
     final private AbstractInitialization initialization;
 
-    public DeclField(AbstractIdentifier fieldType, AbstractIdentifier fieldName, AbstractInitialization initialization){
+    public DeclField(Visibility visib, AbstractIdentifier fieldType, AbstractIdentifier fieldName, AbstractInitialization initialization){
         Validate.notNull(fieldType);
         Validate.notNull(fieldName);
         Validate.notNull(initialization);
         this.fieldType = fieldType;
         this.fieldName = fieldName;
         this.initialization = initialization;
+        this.visib = visib;
     }
 
 
@@ -54,7 +56,7 @@ public class DeclField extends AbstractDeclField{
         
         // Type is ok, then tag this field as of this type and create a definition for this field
         this.fieldName.setType(t);
-        this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), null, currentClass, index));
+        this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), visib, currentClass, index));
 
         // Try to declare the field to the local environment
         try{
@@ -111,6 +113,13 @@ public class DeclField extends AbstractDeclField{
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if (visib.equals(Visibility.PROTECTED)) {
+            s.print("protected ");
+        }
+        fieldType.decompile(s);
+        s.print(" ");
+        fieldName.decompile(s);
+        initialization.decompile(s);
+        s.print(";");
     }
 }

@@ -34,8 +34,9 @@ public class DeclMethod extends AbstractDeclMethod{
     final private AbstractIdentifier methodName;
     final private ListDeclParam listDeclParam;
     final private AbstractMethodBody methodBody;
+    public Visibility visib;
 
-    public DeclMethod(AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
+    public DeclMethod(Visibility visib, AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
         Validate.notNull(returnType);
         Validate.notNull(methodName);
         Validate.notNull(listDeclParam);
@@ -44,6 +45,7 @@ public class DeclMethod extends AbstractDeclMethod{
         this.methodName = methodName;
         this.listDeclParam = listDeclParam;
         this.methodBody = methodBody;
+        this.visib = visib;
     }
 
     @Override
@@ -108,7 +110,7 @@ public class DeclMethod extends AbstractDeclMethod{
         // Formatting the signature of the method
         String toStringSignature = methodSignature.toString();
         
-        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, index);
+        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, visib, index);
         methodName.setDefinition(methodDef);
 
         // By default, we increase the method count
