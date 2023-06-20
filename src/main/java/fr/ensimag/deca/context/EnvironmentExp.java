@@ -48,14 +48,7 @@ public class EnvironmentExp {
      * symbol is undefined.
      */
     public ExpDefinition get(Symbol key) {
-        ExpDefinition expDef = (ExpDefinition)this.definitions.get(key);
-        if (expDef instanceof FieldDefinition && ((FieldDefinition)expDef).getVisibility() == Visibility.PROTECTED) {
-            return null;
-        }
-        if (expDef instanceof MethodDefinition && ((MethodDefinition)expDef).getVisibility() == Visibility.PROTECTED) {
-            return null;
-        }
-        return expDef;
+        return (ExpDefinition)this.definitions.get(key);
     }
 
     /**

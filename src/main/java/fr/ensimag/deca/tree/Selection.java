@@ -12,11 +12,12 @@ import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.NullOperand;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 import java.io.PrintStream;
 
@@ -95,7 +96,21 @@ public class Selection extends AbstractLValue {
             this.operand = newThis;
             this.operand.verifyExpr(compiler, localEnv, currentClass);
             typeDef = currentClass.getType().getDefinition();
-        } else {
+        }
+        else {
+            // If operand is a field, then we create a new Selection with This as the left operand
+            // In the Main, this does not apply
+            if (operand instanceof Identifier
+                && currentClass != null
+                && currentClass.getMembers().get(((Identifier)operand).getName()) != null
+                && currentClass.getMembers().get(((Identifier)operand).getName()).isField()
+            ) {
+                // Creation of a new This
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                // Creation of a new Selection to the left of the current
+                this.operand = new Selection(newThis, (Identifier)operand);
+            }
             Type t = operand.verifyExpr(compiler, localEnv, currentClass);
             typeDef = compiler.environmentType.defOfType(t.getName());
             if(!(typeDef instanceof ClassDefinition)) {
@@ -133,7 +148,26 @@ public class Selection extends AbstractLValue {
                 superClassDefinition = superClassDefinition.getSuperClass();
             }
         }
-        // If we found a definition
+
+        // if neither nothing nor 'this' as left operand
+        // then we check if it is protected and if so, we deny access to the field/method
+        if (expDef != null && !(operand instanceof This)) {
+            // it is a field
+            if (params == null) {
+                if (((FieldDefinition) expDef).getVisibility() == Visibility.PROTECTED) {
+                    // We act like if we didn't find anything
+                    expDef = null;
+                }
+            // it is a method
+            } else {
+                if (((MethodDefinition) expDef).getVisibility() == Visibility.PROTECTED) {
+                    // We act like if we didn't find anything
+                    expDef = null;                    
+                }
+
+            }
+        }
+        // If we finally found a definition
         if(expDef != null && ( (expDef instanceof FieldDefinition && this.params == null) || (expDef instanceof MethodDefinition && this.params != null))){
             this.fieldName.setType(expDef.getType());
 
@@ -170,6 +204,7 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
+        // case of a method call
         if(this.params != null){
             for(AbstractExpr aExpr : this.params.getList()){
                 aExpr.codeGenExp(compiler, n);
@@ -178,6 +213,11 @@ public class Selection extends AbstractLValue {
             }
             // Generate left selection
             this.operand.codeGenExp(compiler, n);
+            // Check for null pointer
+            if(!compiler.getNoCheck()) {
+                compiler.addInstruction(new CMP(new NullOperand(), GPRegister.getR(n)), "check for null pointer");
+                compiler.addInstruction(new BEQ(compiler.getLabelManager().createNullPointerLabel()));
+            }
 
             // Stack "this"
             compiler.incrementStackSize();
@@ -195,11 +235,16 @@ public class Selection extends AbstractLValue {
                 compiler.addInstruction(new SUBSP(this.params.getList().size()));
             }
         }
+        // case of a field access
         else{
             this.operand.codeGenExp(compiler, n);
+            // Check for null pointer
+            if(!compiler.getNoCheck()) {
+                compiler.addInstruction(new CMP(new NullOperand(), GPRegister.getR(n)), "check for null pointer");
+                compiler.addInstruction(new BEQ(compiler.getLabelManager().createNullPointerLabel()));
+            }
             this.fieldName.codeGenExp(compiler, n);
         }
-
     }
 
     public AbstractIdentifier getFieldName() {

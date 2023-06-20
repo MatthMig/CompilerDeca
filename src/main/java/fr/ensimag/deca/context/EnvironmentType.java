@@ -3,14 +3,12 @@ package fr.ensimag.deca.context;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 
-import static org.mockito.ArgumentMatchers.eq;
-
 import java.util.HashMap;
 import java.util.Map;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractIdentifier;
-import fr.ensimag.deca.tree.Identifier;
 import fr.ensimag.deca.tree.Location;
+import fr.ensimag.deca.tree.Visibility;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 
@@ -61,7 +59,7 @@ public class EnvironmentType {
         Symbol equals = compiler.createSymbol("equals");
         Signature equalsSignature = new Signature(equals);
         equalsSignature.addParamType(OBJECT);
-        MethodDefinition objectEqualsDef = new MethodDefinition(BOOLEAN, Location.BUILTIN, equalsSignature, 1);
+        MethodDefinition objectEqualsDef = new MethodDefinition(BOOLEAN, Location.BUILTIN, equalsSignature, Visibility.PUBLIC, 1);
         objectEqualsDef.setLabel(compiler.getLabelManager().getObjectEqualsLabel());
         try {
             objectClassDefinition.getMembers().declare(compiler.createSymbol(equalsSignature.toString()), objectEqualsDef);

@@ -67,11 +67,15 @@ public class Program extends AbstractProgram {
             compiler.addInstruction(new WNL());
             compiler.addInstruction(new ERROR());
 
+            compiler.addLabel(compiler.getLabelManager().createNullPointerLabel());
+            compiler.addInstruction(new WSTR("Error : Null pointer error"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
+
             compiler.addLabel(compiler.getLabelManager().getZeroDivisionLabel());
             compiler.addInstruction(new WSTR("Error : Division by zero"));
             compiler.addInstruction(new WNL());
             compiler.addInstruction(new ERROR());
-
 
             compiler.addLabel(compiler.getLabelManager().getStackOverflowLabel());
             compiler.addInstruction(new WSTR("Error : Stack overflow"));

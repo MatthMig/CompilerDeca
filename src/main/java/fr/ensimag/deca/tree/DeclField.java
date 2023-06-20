@@ -4,13 +4,13 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.context.FieldDefinition;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.NullOperand;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -88,6 +88,9 @@ public class DeclField extends AbstractDeclField{
             }
             else if(this.fieldType.getType().isBoolean()){
                 compiler.addInstruction(new LOAD(0,GPRegister.getR(2)));
+            }
+            else if(this.fieldType.getType().isClass()){
+                compiler.addInstruction(new LOAD(new NullOperand(),GPRegister.getR(2)));
             }
         }
         else{

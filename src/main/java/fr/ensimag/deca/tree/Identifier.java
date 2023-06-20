@@ -262,7 +262,7 @@ public class Identifier extends AbstractIdentifier {
         }
         else if (this.getDefinition().isMethod()){
             compiler.addInstruction(new BSR(new LabelOperand(this.getMethodDefinition().getLabel())));
-            compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
+            compiler.addInstruction(new LOAD(GPRegister.getR(0), GPRegister.getR(1)));
         }
         else{
             compiler.addInstruction(new LOAD(this.getVariableDefinition().getOperand(),Register.R1));
