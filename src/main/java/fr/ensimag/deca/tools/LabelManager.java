@@ -1,7 +1,5 @@
 package fr.ensimag.deca.tools;
 
-import fr.ensimag.deca.context.MethodDefinition;
-import fr.ensimag.deca.context.Signature;
 import fr.ensimag.ima.pseudocode.Label;
 
 public class LabelManager {
@@ -10,6 +8,9 @@ public class LabelManager {
     private Label overflowLabel = new Label("overflow_error");
     private Label zeroDivisionLabel = new Label("zeroDivision_error");
     private Label stackOverFlowLabel = new Label("stackOverFlow_error");
+    private Label objetcEqualsLabel = new Label("code.Object.equals");
+    private Label objectInitLabel = new Label("init.Object");
+
     /**
      * Getter of the lowest free label integer
      * @return lowest free label int
@@ -140,5 +141,16 @@ public class LabelManager {
         };
         this.labelCount += 1;
         return labels;
+    }
+    /**
+    * Returns the ObjectEquals label
+    * @return label
+    */
+    public Label getObjectEqualsLabel() {
+        return objetcEqualsLabel;
+    }
+
+    public Label getObjectInitLabel(){
+        return objectInitLabel;
     }
 }

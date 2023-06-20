@@ -54,6 +54,7 @@ public class Program extends AbstractProgram {
         compiler.addFirst(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
         compiler.addFirst(new TSTO(compiler.getMaxStackSize() + compiler.getLBOffset()), "size of stack needed");
         compiler.addInstruction(new HALT());
+        classes.codeGenEqualsMethod(compiler);
         classes.codeGenClasses(compiler);
 
         compiler.addLabel(new Label("io_error"));

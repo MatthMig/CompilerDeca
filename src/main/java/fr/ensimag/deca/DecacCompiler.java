@@ -49,7 +49,7 @@ public class DecacCompiler {
     private int maxStackSize = 0;
     private int maxRegister = 2;
     private int register = 2;
-    private final LabelManager labelManager;
+    private LabelManager labelManager = new LabelManager();
     private final EnvironmentExp environmentExp = new EnvironmentExp(null);
     private int lbOffset = 1;
 

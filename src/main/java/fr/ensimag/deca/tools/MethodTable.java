@@ -27,6 +27,15 @@ public class MethodTable {
         }
         return null;
     }
+    
+    public Label getLabelByIndex(int index){
+        for(MethodDefinition mdef : this.getMethodsMap().keySet()){
+            if(mdef.getIndex() == index){
+                return mdef.getLabel();
+            }
+        }
+        return null;
+    }
 
     public HashMap<MethodDefinition, Label> getMethodsMap(){
         return this.methodTable;
