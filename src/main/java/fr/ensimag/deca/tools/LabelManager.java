@@ -153,4 +153,19 @@ public class LabelManager {
     public Label getObjectInitLabel(){
         return objectInitLabel;
     }
+
+    /**
+     * Returns an array of labels for instanceof
+     * @return labels
+     */
+    public Label[] createInstanceOfLabels() {
+        Label[] labels = new Label[]{
+            createLabel("while.instanceof"),
+            createLabel("true.instanceof"),
+            createLabel("false.instanceof"),
+            createLabel("end.instanceof"),
+        };
+        this.labelCount += 1;
+        return labels;
+    }
 }

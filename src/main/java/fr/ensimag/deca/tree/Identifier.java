@@ -14,17 +14,15 @@ import fr.ensimag.deca.context.VariableDefinition;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.ima.pseudocode.DAddr;
 import fr.ensimag.ima.pseudocode.DVal;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
-import fr.ensimag.ima.pseudocode.instructions.WSTR;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.BRA;
 import fr.ensimag.ima.pseudocode.instructions.BSR;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.LEA;
 import fr.ensimag.ima.pseudocode.instructions.BEQ;
 import fr.ensimag.ima.pseudocode.instructions.BNE;
 import fr.ensimag.ima.pseudocode.ImmediateInteger;
@@ -33,7 +31,6 @@ import fr.ensimag.ima.pseudocode.LabelOperand;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
-import org.apache.log4j.Logger;
 
 /**
  * Deca Identifier
@@ -279,12 +276,19 @@ public class Identifier extends AbstractIdentifier {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        if(this.getDefinition().isField())
+        if(this.getDefinition().isField()) {
             compiler.addInstruction(new LOAD(new RegisterOffset(this.getFieldDefinition().getIndex(), Register.getR(n)),Register.getR(n)));
-        else if (this.getDefinition().isMethod())
+        }
+        else if (this.getDefinition().isMethod()) {
             compiler.addInstruction(new BSR(new LabelOperand(this.getMethodDefinition().getLabel())));
-        else if (this.getDefinition().isParam())
+        }
+        else if (this.getDefinition().isParam()) {
             compiler.addInstruction(new LOAD(this.getParamDefinition().getOperand(),Register.getR(n)));
+        }
+        else if (this.getDefinition().isClass()) {
+            DAddr classAddr = ((ClassDefinition)this.getDefinition()).getMethodTableAddr();
+            compiler.addInstruction(new LEA(classAddr, Register.getR(n)));
+        }
         else
             compiler.addInstruction(new LOAD(this.getVariableDefinition().getOperand(),Register.getR(n)));
     }

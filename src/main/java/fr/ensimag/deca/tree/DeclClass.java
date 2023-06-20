@@ -4,10 +4,8 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ClassType;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
-import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.MethodDefinition;
-import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
@@ -167,7 +165,8 @@ public class DeclClass extends AbstractDeclClass {
         compiler.addComment("start : method table for class " + this.className.getName());
 
         // Generate method table, starting on current GB offset
-        this.className.getClassDefinition().setMethodTableAddr(new RegisterOffset(compiler.getLBOffset(), Register.LB));
+        this.className.getClassDefinition().setMethodTableAddr(new RegisterOffset(compiler.getLBOffset(), Register.GB));
+        compiler.allocate();
 
         compiler.addInstruction(new LEA(this.superClassName.getClassDefinition().getMethodTableAddr(), Register.R0));
         compiler.addInstruction(new STORE(Register.R0, this.className.getClassDefinition().getMethodTableAddr()));
