@@ -3,6 +3,7 @@ package fr.ensimag.deca.context;
 import java.util.HashMap;
 
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
+import fr.ensimag.deca.tree.Visibility;
 
 /**
  * Dictionary associating identifier's ExpDefinition to their names.
@@ -46,7 +47,14 @@ public class EnvironmentExp {
      * symbol is undefined.
      */
     public ExpDefinition get(Symbol key) {
-        return (ExpDefinition)this.definitions.get(key);
+        ExpDefinition expDef = (ExpDefinition)this.definitions.get(key);
+        if (expDef instanceof FieldDefinition && ((FieldDefinition)expDef).getVisibility() == Visibility.PROTECTED) {
+            return null;
+        }
+        if (expDef instanceof MethodDefinition && ((MethodDefinition)expDef).getVisibility() == Visibility.PROTECTED) {
+            return null;
+        }
+        return expDef;
     }
 
     /**
