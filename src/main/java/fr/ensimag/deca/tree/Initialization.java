@@ -42,7 +42,7 @@ public class Initialization extends AbstractInitialization {
         // If we implicitly initialize a float with an int value.
         if(t2 == compiler.environmentType.INT &&
             t == compiler.environmentType.FLOAT ){
-            this.setExpression(new ConvFloat(this.getExpr()));
+            this.setExpression(new ConvFloat(this.getExpression()));
             t2 = this.getExpression().verifyExpr(compiler, localEnv, currentClass);
         }
 
@@ -96,8 +96,5 @@ public class Initialization extends AbstractInitialization {
         expression.prettyPrint(s, prefix, true);
     }
 
-    public AbstractExpr getExpr(){
-        return this.expression;
-    }
 
 }

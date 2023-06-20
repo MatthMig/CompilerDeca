@@ -3,7 +3,6 @@ package fr.ensimag.deca.tree;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.Line;
 import fr.ensimag.ima.pseudocode.instructions.*;
 import fr.ensimag.ima.pseudocode.Label;
 
@@ -76,6 +75,11 @@ public class Program extends AbstractProgram {
 
             compiler.addLabel(compiler.getLabelManager().getStackOverflowLabel());
             compiler.addInstruction(new WSTR("Error : Stack overflow"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
+
+            compiler.addLabel(compiler.getLabelManager().getImpossibleDownCastLabel());
+            compiler.addInstruction(new WSTR("Error : Impossible downcast"));
             compiler.addInstruction(new WNL());
             compiler.addInstruction(new ERROR());
         }

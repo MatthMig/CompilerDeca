@@ -52,6 +52,7 @@ public class Assign extends AbstractBinaryExpr {
                     throw new ContextualError("Trying to asign a value of type " + t2 + " to a value of type "+ t1, getLocation());
                 }
             }
+
             this.setType(t1);
             return this.getType();
         }
@@ -63,39 +64,41 @@ public class Assign extends AbstractBinaryExpr {
     protected void codeGenInst(DecacCompiler compiler) {
         this.getRightOperand().codeGenExp(compiler, 2);
 
-        if(this.getLeftOperand() instanceof Identifier){
-            Identifier leftOperand  = (Identifier)this.getLeftOperand();
+        if (this.getLeftOperand() instanceof Identifier) {
+            Identifier leftOperand = (Identifier) this.getLeftOperand();
             DAddr leftAddr;
 
-            if(leftOperand.getDefinition().isField()){
-                compiler.addInstruction(new LOAD(new RegisterOffset(-2, Register.LB),Register.getR(1)));
+            if (leftOperand.getDefinition().isField()) {
+                compiler.addInstruction(new LOAD(new RegisterOffset(-2, Register.LB), Register.getR(1)));
                 leftAddr = new RegisterOffset(leftOperand.getFieldDefinition().getIndex(), Register.getR(1));
             }
 
-            else if(leftOperand.getDefinition().isParam()){
+            else if (leftOperand.getDefinition().isParam()) {
                 leftAddr = leftOperand.getParamDefinition().getOperand();
             }
 
-            else{
+            else {
                 leftAddr = leftOperand.getVariableDefinition().getOperand();
             }
 
-            if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
+            if (this.getLeftOperand().getType() == compiler.environmentType.FLOAT
+                    && this.getRightOperand().getType() == compiler.environmentType.INT) {
                 compiler.addInstruction(new FLOAT(GPRegister.getR(2), GPRegister.getR(2)));
             }
             compiler.addInstruction(new STORE(GPRegister.getR(2), leftAddr));
-        }
-        else if (this.getLeftOperand() instanceof Selection){
-            Selection leftOperand = (Selection)this.getLeftOperand();
+        } else if (this.getLeftOperand() instanceof Selection) {
+            Selection leftOperand = (Selection) this.getLeftOperand();
             compiler.incrementStackSize();
             compiler.addInstruction(new PUSH(GPRegister.getR(2)));
             this.getLeftOperand().codeGenInst(compiler);
             compiler.addInstruction(new POP(GPRegister.getR(3)));
             compiler.decrementStackSize();
-            if(leftOperand.getFieldName().getDefinition().isField())
-                compiler.addInstruction(new STORE(GPRegister.getR(3), new RegisterOffset(leftOperand.getFieldName().getFieldDefinition().getIndex(), Register.getR(2))));
+            if (leftOperand.getFieldName().getDefinition().isField())
+                compiler.addInstruction(new STORE(GPRegister.getR(3), new RegisterOffset(
+                        leftOperand.getFieldName().getFieldDefinition().getIndex(), Register.getR(2))));
         }
     }
+
     @Override
     protected String getOperatorName() {
         return "=";
@@ -103,10 +106,11 @@ public class Assign extends AbstractBinaryExpr {
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
-        DAddr leftAddr = ((Identifier)this.getLeftOperand()).getVariableDefinition().getOperand();
+        DAddr leftAddr = ((Identifier) this.getLeftOperand()).getVariableDefinition().getOperand();
         this.getRightOperand().codeGenExp(compiler, n);
 
-        if( this.getLeftOperand().getType() == compiler.environmentType.FLOAT && this.getRightOperand().getType() == compiler.environmentType.INT){
+        if (this.getLeftOperand().getType() == compiler.environmentType.FLOAT
+                && this.getRightOperand().getType() == compiler.environmentType.INT) {
             compiler.addInstruction(new FLOAT(GPRegister.getR(n), GPRegister.getR(n)));
         }
         compiler.addInstruction(new STORE(GPRegister.getR(n), leftAddr));

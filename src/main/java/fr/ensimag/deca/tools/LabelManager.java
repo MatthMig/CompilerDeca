@@ -10,6 +10,7 @@ public class LabelManager {
     private Label stackOverFlowLabel = new Label("stackOverFlow_error");
     private Label objetcEqualsLabel = new Label("code.Object.equals");
     private Label objectInitLabel = new Label("init.Object");
+    private Label impossibleDownCastLabel = new Label("downcast_error");
 
     /**
      * Getter of the lowest free label integer
@@ -167,5 +168,13 @@ public class LabelManager {
         };
         this.labelCount += 1;
         return labels;
+    }
+
+     /**
+     * Returns a label for downcast error
+     * @return label
+     */
+    public Label getImpossibleDownCastLabel(){
+        return this.impossibleDownCastLabel;
     }
 }
