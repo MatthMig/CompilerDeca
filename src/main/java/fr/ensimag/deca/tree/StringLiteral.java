@@ -36,8 +36,9 @@ public class StringLiteral extends AbstractStringLiteral {
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
         this.setType(compiler.environmentType.STRING);
-        value = value.substring(1,value.length()-1); // A corriger
+        value = value.substring(1,value.length()-1);
         value = value.replace("\\\"", "\"");
+        value = value.replace("\\\\", "\\");
         return getType();
     }
 
