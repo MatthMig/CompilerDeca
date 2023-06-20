@@ -147,7 +147,7 @@ public class DeclMethod extends AbstractDeclMethod{
             ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
         }
         else {
-            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
+            ((MethodAsmBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
         }
     }
 
@@ -178,39 +178,44 @@ public class DeclMethod extends AbstractDeclMethod{
         // Set method label
         compiler.addLabel(methodLabel);
 
-        // Storing Class field count
-        int localVariableCount = this.methodBody.getVarCount();
+        if(this.methodBody instanceof MethodBody){
+            // Storing method variable count
+            int localVariableCount = this.methodBody.getVarCount();
 
-        // Set params operand (address) in their definition
-        this.listDeclParam.setParamAddresses();
+            // Set params operand (address) in their definition
+            this.listDeclParam.setParamAddresses();
 
 
-        // Generating the method code under a sub compiler
-        DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
-        this.methodBody.codeGen(methodCompiler);
+            // Generating the method code under a sub compiler
+            DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+            this.methodBody.codeGen(methodCompiler);
 
-        // Set method stack overflow test and stack pointer
-        // Total variables to store in the stack + total push made during operations + total push made to save registers
-        compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
-        compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
-        compiler.addInstruction(new ADDSP(localVariableCount));
-        // Save registers
-        for(int i = 2 ; i <= methodCompiler.getMaxRegister() ; i++){
-            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+            // Set method stack overflow test and stack pointer
+            // Total variables to store in the stack + total push made during operations + total push made to save registers
+            compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
+            compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+            compiler.addInstruction(new ADDSP(localVariableCount));
+            // Save registers
+            for(int i = 2 ; i <= methodCompiler.getMaxRegister() ; i++){
+                compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+            }
+
+            // Then append the generated code
+            compiler.append(methodCompiler.getProgram());
+
+            // Restore saved registers
+            for(int i = methodCompiler.getMaxRegister() ; i >= 2 ; i--){
+                compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+            }
+            // Reset Stack Pointer
+            compiler.addInstruction(new SUBSP(localVariableCount));
+
+            // Return to old context
+            compiler.addInstruction(new RTS());
         }
-
-        // Then append the generated code
-        compiler.append(methodCompiler.getProgram());
-
-        // Restore saved registers
-        for(int i = methodCompiler.getMaxRegister() ; i >= 2 ; i--){
-            compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+        else{            
+            this.methodBody.codeGen(compiler);
         }
-        // Reset Stack Pointer
-        compiler.addInstruction(new SUBSP(localVariableCount));
-
-        // Return to old context
-        compiler.addInstruction(new RTS());
 
         // Comment for the end of the method code
         compiler.addComment("end : method " + methodLabel.toString());

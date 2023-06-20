@@ -1,11 +1,9 @@
 package fr.ensimag.deca.tree;
 
-import fr.ensimag.deca.context.Type;
-
 import org.apache.commons.lang.Validate;
 import java.io.PrintStream;
 import fr.ensimag.deca.tools.IndentPrintStream;
-
+import fr.ensimag.ima.pseudocode.InlinePortion;
 import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
@@ -24,15 +22,15 @@ public class MethodAsmBody extends AbstractMethodBody{
      * @param localEnv
      * @param currentClass
      */
-    protected void verifyMethodBody(DecacCompiler compiler,
+    protected void verifyAsmMethodBody(DecacCompiler compiler,
         EnvironmentExp localEnv, ClassDefinition currentClass)
         throws ContextualError {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.asmCode.verifyExpr(compiler, localEnv, currentClass);
     }
 
     @Override
     protected void iterChildren(TreeFunction f) {
-        throw new UnsupportedOperationException("not yet implemented");
+        this.asmCode.iter(f);
     }
 
     @Override
@@ -45,6 +43,9 @@ public class MethodAsmBody extends AbstractMethodBody{
     }
 
     public void codeGen(DecacCompiler compiler){
-        throw new UnsupportedOperationException("not yet implemented");
+        String[] asmLines = this.asmCode.getValue().split("\n");
+        for(String asmLine : asmLines){
+            compiler.add(new InlinePortion(asmLine));
+        }
     }
 }
