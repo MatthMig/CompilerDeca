@@ -129,4 +129,16 @@ public class LabelManager {
         return new Label("code." + className + "." + methodSignature);
     }
 
+    /**
+     * Returns an array of labels for printing Null
+     * @return label
+     */
+    public Label[] createNullLabels() {
+        Label[] labels = new Label[]{
+            createLabel("nullPrint"),
+            createLabel("endNullPrint")
+        };
+        this.labelCount += 1;
+        return labels;
+    }
 }

@@ -6,8 +6,15 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.NullOperand;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.BRA;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
 import fr.ensimag.ima.pseudocode.instructions.WINT;
+import fr.ensimag.ima.pseudocode.instructions.WSTR;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -57,7 +64,27 @@ public abstract class AbstractPrint extends AbstractInst {
                 compiler.addInstruction(new WFLOAT());
             }
             else if (a.getType() == compiler.environmentType.BOOLEAN && !(a instanceof BooleanLiteral)) {
-                compiler.getBooleanPrintHelper().codeGenPrint();
+                Label[] labels = compiler.getLabelManager().createBooleanPrintLabel();
+                compiler.addInstruction(new CMP(1, GPRegister.getR(1)));
+                compiler.addInstruction(new BEQ(labels[0]));
+                compiler.addInstruction(new WSTR("false"));
+                compiler.addInstruction(new BRA(labels[1]));
+                compiler.addLabel(labels[0]);
+                compiler.addInstruction(new WSTR("true"));
+                compiler.addLabel(labels[1]);
+            }
+            else if (a.getType().isNull()) {
+                compiler.addInstruction(new WSTR("null"));
+            }
+            else if (a.getType().isClass()) {
+                compiler.addInstruction(new CMP(new NullOperand(),GPRegister.getR(1)));
+                Label labels[] = compiler.getLabelManager().createNullLabels();
+                compiler.addInstruction(new BEQ(labels[0]));
+                compiler.addInstruction(new WSTR("(" + a.getType().getName().getName() + " object)"));
+                compiler.addInstruction(new BRA(labels[1]));
+                compiler.addLabel(labels[0]);
+                compiler.addInstruction(new WSTR("null"));
+                compiler.addLabel(labels[1]);
             }
         }
     }

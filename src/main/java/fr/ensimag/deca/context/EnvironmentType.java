@@ -8,7 +8,9 @@ import fr.ensimag.deca.tree.AbstractIdentifier;
 import fr.ensimag.deca.tree.Identifier;
 import fr.ensimag.deca.tree.Location;
 
-// A FAIRE: étendre cette classe pour traiter la partie "avec objet" de Déca
+// Lors de l’allocation d’un objet, les champs sont initialisés dans l’ordre de déclaration.
+// Un champ non initialisé, ou accédé avant d’être initialisé, a la valeur par défaut 0 pour entier,
+// 0.0 pour un flottant, false pour un booléen, ou null pour un objet.
 /**
  * Environment containing types. Initially contains predefined identifiers, more
  * classes can be added with declareClass().
@@ -36,6 +38,10 @@ public class EnvironmentType {
         Symbol booleanSymb = compiler.createSymbol("boolean");
         BOOLEAN = new BooleanType(booleanSymb);
         envTypes.put(booleanSymb, new TypeDefinition(BOOLEAN, Location.BUILTIN));
+
+        Symbol nullSymb = compiler.createSymbol("null");
+        NULL = new NullType(nullSymb);
+        envTypes.put(nullSymb, new TypeDefinition(NULL, Location.BUILTIN));
 
         Symbol stringSymb = compiler.createSymbol("string");
         STRING = new StringType(stringSymb);
@@ -72,4 +78,5 @@ public class EnvironmentType {
     public final FloatType   FLOAT;
     public final StringType  STRING;
     public final BooleanType BOOLEAN;
+    public final NullType NULL;
 }
