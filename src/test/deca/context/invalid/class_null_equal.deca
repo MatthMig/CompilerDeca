@@ -9,5 +9,6 @@
 //  Historique : 
 // 
 //      Créé le 13/06 par gl03
-
-null=2;
+{
+    null=2;
+}

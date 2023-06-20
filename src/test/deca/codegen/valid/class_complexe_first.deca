@@ -23,8 +23,8 @@ class A {
     }
 
     void test ( Object o ) {
-    i f ( equals ( o )) { println ( " Eq " ); }
-    else { println ( " Diff " ); }
+        if ( equals(o)) { println (" Eq "); }
+        else { println ( " Diff " ); }
     }
 }
 

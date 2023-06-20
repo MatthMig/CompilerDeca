@@ -13,7 +13,7 @@
 
 class A {
     int x;
-    int incrémentX()
+    int incrementX()
     asm ("
     
         ");

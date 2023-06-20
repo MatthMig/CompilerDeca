@@ -12,7 +12,7 @@
 
 class A {
     int x;
-    void incrémentX(){
+    void incrementX(){
         x=x+1;
     }
 }

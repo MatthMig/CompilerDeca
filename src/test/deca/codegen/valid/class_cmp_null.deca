@@ -1,6 +1,6 @@
 //  Description : 
 // 
-//      Test incorrect qui fait une comparaison avec null
+//      Test correct qui fait une comparaison avec null
 // 
 //  Résultats :
 // 
@@ -17,16 +17,16 @@ class A {
 {
     A oA = new A();
     if (oA==null){
-        println("vous n'allez pas arrivé ici");
+        println("vous n'allez pas arriver ici");
     }
     else {
         println("Le test fonctionne pour l'instant");
     }
     oA = null; 
     if (oA!=null){
-        println("vous n'allez pas arrivé ici");
+        println("vous n'allez pas arriver ici");
     }
     else {
-        println ("Le test fonctionne jusquau bout");
+        println ("Le test fonctionne jusqu'au bout");
     }
 }

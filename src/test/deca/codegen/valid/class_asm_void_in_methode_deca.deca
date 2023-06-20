@@ -16,6 +16,7 @@ class A {
     asm ("
         LOAD #3 ,R1
         WINT
+        RTS
     ");
     void printCalcul(){
         print("4-1=");

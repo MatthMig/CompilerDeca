@@ -13,12 +13,13 @@
 class A {
     
     
-    voids methodeClassA()
+    void methodeClassA()
     asm ("
         LOAD #3,R1
         WSTR \" 4-1=\"
         WINT
         WNL
+        RTS
         
     ");
 

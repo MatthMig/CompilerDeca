@@ -12,7 +12,7 @@
 
 class A {
     int x;
-    int incrémentX(){
+    int incrementX(){
         int y = x=x+1;
         return y;
     }

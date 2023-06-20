@@ -9,7 +9,8 @@
 //  Historique : 
 // 
 //      Créé le 13/06 par gl03
-
-if(2!=null){
-    println("ok");
+{
+    if(2!=null){
+        println("ok");
+    }
 }

@@ -15,7 +15,7 @@ class A {
     int x;
     int incrementX()
     asm ("
-    
+        
         ");
 
 }
