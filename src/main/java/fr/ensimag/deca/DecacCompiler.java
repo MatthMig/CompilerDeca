@@ -4,7 +4,6 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
-import fr.ensimag.deca.tools.BooleanPrintHelper;
 import fr.ensimag.deca.tools.DecacInternalError;
 import fr.ensimag.deca.tools.LabelManager;
 import fr.ensimag.deca.tools.SymbolTable;
@@ -51,7 +50,6 @@ public class DecacCompiler {
     private int maxRegister = 2;
     private int register = 2;
     private final LabelManager labelManager;
-    private final BooleanPrintHelper booleanPrintHelper;
     private final EnvironmentExp environmentExp = new EnvironmentExp(null);
     private int lbOffset = 1;
 
@@ -64,17 +62,12 @@ public class DecacCompiler {
         super();
         this.compilerOptions = compilerOptions;
         this.labelManager = new LabelManager();
-        this.booleanPrintHelper = new BooleanPrintHelper(this);
         this.source = source;
         this.stackSize = 0;
     }
 
     public LabelManager getLabelManager(){
         return this.labelManager;
-    }
-
-    public BooleanPrintHelper getBooleanPrintHelper(){
-        return this.booleanPrintHelper;
     }
 
     public int getLabelCount(){

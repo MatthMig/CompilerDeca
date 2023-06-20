@@ -45,12 +45,20 @@ public class Assign extends AbstractBinaryExpr {
         if(this.getLeftOperand() instanceof Selection && !((Selection)this.getLeftOperand()).getFieldName().getDefinition().isField()){
             throw new ContextualError("Cannot assign a value to anything that isn't a variable or a field", getLocation());
         }
-        if((t1 == compiler.environmentType.FLOAT && t2 == compiler.environmentType.INT || t1 == t2)) {
+        if((t1 == compiler.environmentType.FLOAT && t2 == compiler.environmentType.INT) || t1 == t2 
+            || (t1.isClass() && t2.isClassOrNull())) {
+            if (t1.isClass() && t2.isClass()) {
+                ClassDefinition classDef1 = compiler.environmentType.defOfClass(t1.getName());
+                ClassDefinition classDef2 = compiler.environmentType.defOfClass(t2.getName());
+                if (!classDef1.isParentClassOf(classDef2)) {
+                    throw new ContextualError("Trying to asign a value of type " + t2 + " to a value of type "+ t1, getLocation());
+                }
+            }
             this.setType(t1);
             return this.getType();
         }
 
-        throw new ContextualError("Trying to assign value of type "+t2+" to a var of type " + t1, getLocation());
+        throw new ContextualError("Trying to assign value of type "+t2+" to a value of type " + t1, getLocation());
     }
 
     @Override
