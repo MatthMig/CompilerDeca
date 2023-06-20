@@ -1,0 +1,386 @@
+// Grenoble INP - Ensimag projet GL -*- mode java -*-
+// Library for class Math of Deca, coded in Deca
+
+// Description 
+// 
+//      Class Math contenant des methodes de Calcul
+// 
+// Historique 
+// 
+//      20/06/2023 par gl03
+
+
+class Math {
+
+    float _pi = 3.141592653589793;
+    float _floatAbsMinimumValue = 0.00000000000000000000000000000000000000000000000000014;
+
+    // Description
+    // 
+    //      Methode appelée lors d'une racine paire d'un nombre négative afin de mener à une erreur
+    // 
+    // Input 
+    //
+    //      N/A 
+    //
+    // Output 
+    // 
+    //      ERROR  racine paire d'une valeur négative. 
+    //      ERROR
+
+      void _error_racine_negative(){}
+      //asm ("
+      //      WSTR "ERROR  racine paire d'une valeur négative. "
+      //      WNL
+      //      ERROR
+            
+      //   ");
+
+
+    // Description
+    // 
+    //      methode appelée lors du message d'erreur dans asin premier if 
+    // 
+    // Inputs 
+    //
+    //      N/A 
+    //
+    // Output 
+    // 
+    //      la valeur doit être entre -1 et 1
+    //      ERROR
+
+      void _error_param_asin(){}
+      //asm ("
+      //      WSTR "la valeur doit être entre -1 et 1"
+      //      WNL
+      //      ERROR
+            
+      
+      //   ");
+
+
+    // Description 
+    // 
+    //      Methode de calcul de valeur absolue 
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      abs(f)
+
+
+    float _abs(float f){
+        if( f < 0){
+            return -f;
+        } else {
+            return f;
+        }
+    }
+
+
+    // Description 
+    // 
+    //      Methode de calcul de puissance
+    // 
+    // Input 
+    // 
+    //      float f, float pow  
+    // 
+    // Output 
+    // 
+    //      f^pow  
+    
+    float _pow(float f , float pow) {
+        float result = 1.0;
+        float abs_pow=_abs(pow);
+        if (pow==0.0){
+            return 1.0;
+        }
+        if (pow==1.0){
+            return f; 
+        }
+        if (pow==-1.0){
+            return 1/f;
+        }
+
+        // Condition d'une racine paire négative 
+
+        //if(f<0 && ((int) (1/pow))%2==0){
+        //    _error_racine_negative();
+        //}
+
+        while (abs_pow>0){
+            result = result *f;
+            abs_pow = abs_pow-1;
+        }
+        if(pow<0) {
+            return 1/result;
+        }
+        return result;
+    }
+
+    // Description 
+    // 
+    //      Methode de calcul de la racine carrée
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      racine_carrée(float f)
+
+    float _sqrt(float f){
+        _pow(f,0.5);
+    }
+
+    // Description 
+    // 
+    //      Methode de calcul de la réduction d'un angle
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      reduceAngle(f)
+
+    float reduceAngle(float f){
+
+        while(f>2*_pi){
+            f=f-(2*_pi);
+        }
+        if (f<-_pi){
+            f=f+(2*_pi);
+        }
+
+        return f;
+    }
+
+    // Description 
+    // 
+    //      Methode de calcul du sinus
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      sin(f)
+
+
+    float _sin(float f){
+        float x = reduceAngle(f);
+
+        float result =0.0;
+        float term=x;
+        float power = x;
+        float factorial =1.0;
+        int sign = 1;
+        int i =1;
+
+        while (i<=10){
+            result = result + (sign * term / factorial);
+            power = power * x *x ;
+            factorial = factorial *(i+1) * (i+2);
+            sign = sign * (-1);
+            i = i+2;
+            term = power / factorial;
+        }
+        
+        return result;
+    }
+
+    // Description 
+    // 
+    //      Methode de calcul du cosinus
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      cos(f)
+
+    float _cos(float f){
+        float init = 1.0;
+        float sum = 1.0;
+        float fact = -1.0;
+        int i;
+        while(f>2*_pi){
+            f=f-2*_pi;
+        }
+        i=1;
+        while (_abs(init)>0.0000001){
+            fact = fact * (-1.0);
+            init = init * f *f / (2 * i * (2*i-1));
+            sum = sum + fact * init;
+            i=i+1;
+        }
+
+        return sum; 
+    }
+    // Description 
+    // 
+    //      Methode de calcul de l'arcsinus
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output  
+    // 
+    //      asin(f)
+
+    float _asin(float f){
+        float precision;
+        float estimation = f;
+        float difference;
+        float derivee;
+        float correction;
+
+        if (f > 1 || f <-1){
+            _error_param_asin();
+        }
+        precision = 0.00000001;
+        difference = precision + 1;
+        while ( difference > precision){
+            derivee = 1 / _sqrt(1-_pow(estimation,2.0));
+            correction = (estimation -f) / derivee;
+            estimation = estimation - correction;
+            difference = _abs(correction);
+        }
+
+        return estimation;
+    }
+
+    // Description  
+    // 
+    //      Methode de calcul de l'arctan_approximation
+    // 
+    // Input  
+    // 
+    //      float f 
+    // 
+    // Output  
+    // 
+    //      atan_approximation(f)
+
+    float _atan_approximation(float f){
+        int iterations = 5;
+        float result = 0.0;
+        float power = f;
+        float divisor = 1.0;
+        boolean is_addition = true;
+        int i =1;
+        float term;
+
+        while (i<=iterations){
+            term= power / divisor;
+
+            if (is_addition){
+                result=result+term;
+            }
+            else {
+                result = result - term;
+            }
+
+            power = power *f *f;
+            divisor = divisor +2;
+            is_addition=!is_addition;
+            i=i+1;
+        }
+
+        return result;
+    }
+
+    // Description  
+    // 
+    //      Methode de calcul de l'arctctan ; approximation de la serie de Taylor
+    // 
+    // Input  
+    // 
+    //      float f 
+    // 
+    // Output  
+    // 
+    //      atan(f) 
+
+    float _atan(float f){
+        int sign;
+        float atan_val;
+        if (f==0){
+            return 0.0;
+        }
+        if (f>0){
+            sign = 1;
+        }
+        else {
+            sign = -1;
+        }
+
+        f=_abs(f);
+        if (f>1){
+            f=1/f;
+            atan_val = (_pi / 2) - _atan_approximation(f);
+            return sign * atan_val;
+        }
+        else {
+            atan_val=_atan_approximation(f) ; 
+            return sign * atan_val;
+        }
+    }
+
+    // Description  
+    // 
+    //      Methode de calcul de l'ulp
+    //
+    // Input 
+    // 
+    //      float f
+    // 
+    // Output 
+    // 
+    //      ulp(f)     
+
+    float _ulp(float f){
+        float signe;
+        float mantisse;
+        float exposant;
+        float ulp;
+        // Cas particulier pour zéro
+        if (f==0.0){
+            return _floatAbsMinimumValue;
+        }
+
+        // Calcul du signe 
+        signe =  1.0;
+        if (f<0.0){
+            signe = -1.0;
+        }
+
+        // Calcul de la mantisse de l'exposant
+        mantisse = f * signe;
+        exposant = 0.0;
+
+        while(mantisse<0.5){
+            mantisse = mantisse / 2.0;
+            exposant = exposant -1;
+        }
+
+        // Calcul de l'ulp
+        ulp = _pow(2.0, exposant);
+
+        // Retourne l'ulp multiplié par le signe de f
+        return ulp * signe;
+    }
+}
+
