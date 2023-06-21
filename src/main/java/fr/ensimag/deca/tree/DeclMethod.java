@@ -66,7 +66,16 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(visib == Visibility.PROTECTED)
+            s.print("protected ");
+        s.print(returnType.getName().getName() + " ");
+        s.print(methodName.getName().getName());
+        s.print("(");
+        this.listDeclParam.decompile(s);
+        s.print(")");
+        s.println();
+        methodBody.decompile(s);
+        s.println();
     }
 
     @Override

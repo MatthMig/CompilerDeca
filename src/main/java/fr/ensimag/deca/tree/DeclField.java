@@ -47,13 +47,13 @@ public class DeclField extends AbstractDeclField{
         if(!(this.fieldType.getType() != compiler.environmentType.VOID)){
             throw new ContextualError("cannot declare a void field", getLocation());
         }
-        
+
         // Verify type definition
         Type t = this.fieldType.verifyType(compiler);
         TypeDefinition tdef = compiler.environmentType.defOfType(this.fieldType.getName());
         this.fieldType.setType(t);
         this.fieldType.setDefinition(tdef);
-        
+
         // Type is ok, then tag this field as of this type and create a definition for this field
         this.fieldName.setType(t);
         this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), visib, currentClass, index));
@@ -124,5 +124,6 @@ public class DeclField extends AbstractDeclField{
         fieldName.decompile(s);
         initialization.decompile(s);
         s.print(";");
+        s.println();
     }
 }

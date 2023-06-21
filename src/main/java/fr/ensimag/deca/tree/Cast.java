@@ -39,7 +39,12 @@ public class Cast extends AbstractExpr {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        s.print("(");
+        s.print(this.castType.getName().getName());
+        s.print(")");
+        s.print("(");
+        expression.decompile();
+        s.print(")");
     }
 
     @Override
