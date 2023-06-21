@@ -115,7 +115,7 @@ SPACE:   (
    }
 ;
 
-fragment LINE_COMMENT: '//' (. | '\n')*? '\n';
+fragment LINE_COMMENT: '//' .*? ('\n' | EOF);
 fragment MULTI_COMMENT: '/*' .*? '*/';
 COMMENTS: (
       LINE_COMMENT

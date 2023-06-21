@@ -6,8 +6,8 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import fr.ensimag.ima.pseudocode.Label;
-import fr.ensimag.ima.pseudocode.instructions.RTS;
+import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.instructions.LOAD;
 
 import java.io.PrintStream;
 
@@ -26,7 +26,10 @@ public class Return extends AbstractInst {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        s.print("return ");
+        if(returnExpr != null)
+            this.returnExpr.decompile(s);
+        s.print(";");
     }
 
     @Override
@@ -64,8 +67,20 @@ public class Return extends AbstractInst {
         }
 
         // If the returned type is not the same as the method's return type, then there is a contextual error.
-        if (!t.sameType(returnType))
-            throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+        if (!t.sameType(returnType)){
+            if(t.isClassOrNull() && returnType.isClass()){
+                if(!t.isNull()){
+                    ClassDefinition tDef = compiler.environmentType.defOfClass(t.getName());
+                    ClassDefinition returnTypeDef = compiler.environmentType.defOfClass(returnType.getName());
+                    if(!returnTypeDef.isParentClassOf(tDef)){
+                        throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+                    }
+                }
+            }
+            else{
+                throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+            }
+        }
    }
 
 
@@ -73,6 +88,8 @@ public class Return extends AbstractInst {
     protected void codeGenInst(DecacCompiler compiler) {
         if(this.returnExpr != null)
             this.returnExpr.codeGenExp(compiler, 2);
+
+        compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(0)));
     }
 
 }

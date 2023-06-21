@@ -1,0 +1,21 @@
+//  Description : 
+// 
+//      Test incorrect qui utilise une classe et instancie un objet égal à un int
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int x;
+
+}
+
+{
+    A oA= new A();
+    oA.x=true;
+}

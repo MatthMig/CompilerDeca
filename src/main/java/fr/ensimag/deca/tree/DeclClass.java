@@ -10,6 +10,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.ADDSP;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
@@ -33,7 +34,7 @@ import org.apache.commons.lang.Validate;
 public class DeclClass extends AbstractDeclClass {
 
     final private AbstractIdentifier className;
-    final private AbstractIdentifier superClassName;
+    private AbstractIdentifier superClassName;
     final private ListDeclField listDeclField;
     final private ListDeclMethod listDeclMethod;
 
@@ -46,11 +47,6 @@ public class DeclClass extends AbstractDeclClass {
         this.superClassName = superClassName;
         this.listDeclField = listDeclField;
         this.listDeclMethod = listDeclMethod;
-    }
-
-    @Override
-    public void decompile(IndentPrintStream s) {
-        s.print("class { ... A FAIRE ... }");
     }
 
     @Override
@@ -67,14 +63,20 @@ public class DeclClass extends AbstractDeclClass {
                     compiler.environmentType.defOfClass(className.getName()).setNumberOfFields(superClassDef.getNumberOfFields());
                     compiler.environmentType.defOfClass(className.getName()).setNumberOfMethods(superClassDef.getNumberOfMethods());
                 } else {
-                    // Parent class doesn't exist 
+                    // Parent class doesn't exist
                     String message = String.format("Trying to extend undefined class %s at %s", this.getSuperClassName().getName(), superClassName.getLocation() );
                     throw new ContextualError(message, this.getLocation());
                 }
             } else {
                 // No inheritance
-                compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), null));
+                ClassDefinition objectClassDefinition = compiler.environmentType.defOfClass(compiler.environmentType.OBJECT.getName());
+                compiler.environmentType.declareClass(className, new ClassType(className.getName() , getLocation(), objectClassDefinition));
+                this.superClassName = new Identifier(compiler.environmentType.OBJECT.getName());
+                this.superClassName.setLocation(getLocation());
+                this.superClassName.setDefinition(objectClassDefinition);
                 this.className.setDefinition(compiler.environmentType.defOfType(className.getName()));
+                compiler.environmentType.defOfClass(className.getName()).setNumberOfFields(objectClassDefinition.getNumberOfFields());
+                compiler.environmentType.defOfClass(className.getName()).setNumberOfMethods(objectClassDefinition.getNumberOfMethods());
             }
         } else {
             String message = String.format("Class %s already defined at %s", this.className.getName().getName(), ((ClassDefinition) (compiler.environmentType.defOfType(this.className.getName()))).getLocation() );
@@ -89,11 +91,10 @@ public class DeclClass extends AbstractDeclClass {
         EnvironmentExp envExp = compiler.environmentType.defOfClass(this.className.getName()).getMembers();
         ClassDefinition classDefinition = compiler.environmentType.defOfClass(this.className.getName());
 
-        if(this.superClassName != null){
-            ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
-            classDefinition.setNumberOfFields(superClassDef.getNumberOfFields());
-            classDefinition.setNumberOfMethods(superClassDef.getNumberOfMethods());
-        }
+        ClassDefinition superClassDef = compiler.environmentType.defOfClass(this.superClassName.getName());
+        classDefinition.setNumberOfFields(superClassDef.getNumberOfFields());
+        classDefinition.setNumberOfMethods(superClassDef.getNumberOfMethods());
+
         i = classDefinition.getNumberOfFields();
         for(AbstractDeclField declField : this.listDeclField.getList()){
             // ++i : increment i before going into the method
@@ -129,6 +130,7 @@ public class DeclClass extends AbstractDeclClass {
         // Generating the initialization code under a sub compiler
         DecacCompiler initializationCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
         initializationCompiler.environmentType = compiler.environmentType;
+        initializationCompiler.setLabelManager(compiler.getLabelManager());
         this.listDeclField.codeGen(initializationCompiler);
 
         // Start the init subprogram with an adapted label
@@ -159,22 +161,23 @@ public class DeclClass extends AbstractDeclClass {
         compiler.addComment("start : method table for class " + this.className.getName());
 
         // Generate method table, starting on current GB offset
-        this.className.getClassDefinition().setMethodTableAddr(compiler.allocate());
+        this.className.getClassDefinition().setMethodTableAddr(new RegisterOffset(compiler.getLBOffset(), Register.GB));
+        compiler.allocate();
 
-        if(this.superClassName != null){
-            compiler.addInstruction(new LEA(this.superClassName.getClassDefinition().getMethodTableAddr(), Register.R0));
-            compiler.addInstruction(new STORE(Register.R0, this.className.getClassDefinition().getMethodTableAddr()));
-            // for each method of the super class
-            for (Entry<MethodDefinition, Label> entry : this.superClassName.getClassDefinition().getMethodTable().getMethodsMap().entrySet()) {
-                // if method doesn't exists in curent class
-                if (this.className.getClassDefinition().getMembers().get(compiler.createSymbol(entry.getKey().getSignature().toString())) == null) {
-                    // we add the super method to the table
-                    this.className.getClassDefinition().getMethodTable().addMethod(entry.getKey(), entry.getValue());
-                }
-            }
-        }
+        compiler.addInstruction(new LEA(this.superClassName.getClassDefinition().getMethodTableAddr(), Register.R0));
+        compiler.addInstruction(new STORE(Register.R0, this.className.getClassDefinition().getMethodTableAddr()));
+
         // Generate the method Table
         listDeclMethod.genMethodTable(compiler, this.className.getClassDefinition());
+
+        // for each method of the super class
+        for (Entry<MethodDefinition, Label> entry : this.superClassName.getClassDefinition().getMethodTable().getMethodsMap().entrySet()) {
+            // if method doesn't exists in curent class
+            if (this.className.getClassDefinition().getMembers().get(compiler.createSymbol(entry.getKey().getSignature().toString())) == null) {
+                // we add the super method to the table
+                this.className.getClassDefinition().getMethodTable().addMethod(entry.getKey(), entry.getValue());
+            }
+        }
 
         // For each method of the table that was just generated
         for (MethodDefinition methodDef : this.className.getClassDefinition().getMethodTable().getMethodsMap().keySet()) {
@@ -209,6 +212,23 @@ public class DeclClass extends AbstractDeclClass {
 
     public AbstractIdentifier getSuperClassName() {
         return superClassName;
+    }
+
+    @Override
+    public void decompile(IndentPrintStream s) {
+        s.print("class ");
+        className.decompile(s);
+        if(superClassName != null){
+            s.print(" extends");
+            s.print(className.getName().getName());
+        }
+        s.print(" {");
+        s.println();
+        s.indent();
+        listDeclField.decompile(s);
+        listDeclMethod.decompile(s);
+        s.unindent();
+        s.print("}");
     }
 
 }

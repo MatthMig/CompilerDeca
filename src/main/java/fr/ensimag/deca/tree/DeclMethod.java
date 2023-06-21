@@ -34,8 +34,9 @@ public class DeclMethod extends AbstractDeclMethod{
     final private AbstractIdentifier methodName;
     final private ListDeclParam listDeclParam;
     final private AbstractMethodBody methodBody;
+    public Visibility visib;
 
-    public DeclMethod(AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
+    public DeclMethod(Visibility visib, AbstractIdentifier returnType, AbstractIdentifier methodName, ListDeclParam listDeclParam, AbstractMethodBody methodBody){
         Validate.notNull(returnType);
         Validate.notNull(methodName);
         Validate.notNull(listDeclParam);
@@ -44,6 +45,7 @@ public class DeclMethod extends AbstractDeclMethod{
         this.methodName = methodName;
         this.listDeclParam = listDeclParam;
         this.methodBody = methodBody;
+        this.visib = visib;
     }
 
     @Override
@@ -64,9 +66,18 @@ public class DeclMethod extends AbstractDeclMethod{
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if(visib == Visibility.PROTECTED)
+            s.print("protected ");
+        s.print(returnType.getName().getName() + " ");
+        s.print(methodName.getName().getName());
+        s.print("(");
+        this.listDeclParam.decompile(s);
+        s.print(")");
+        s.println();
+        methodBody.decompile(s);
+        s.println();
     }
-    
+
     @Override
     protected void verifyDeclMethod(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, int index)
@@ -86,7 +97,7 @@ public class DeclMethod extends AbstractDeclMethod{
             methodSignature.addParamType(param.getType().verifyType(compiler));
         }
         this.methodName.setType(type);
-        
+
         FieldDefinition potentialDef = null;
         if (currentClass.getSuperClass() != null) {
             // This cannot be something else than a field if found,
@@ -96,19 +107,19 @@ public class DeclMethod extends AbstractDeclMethod{
             potentialDef = (FieldDefinition) currentClass.getSuperClass().getMembers().get(methodName.getName());
         }
         if (potentialDef != null) {
-                
+
             // In order to avoid masking a field with a method
             String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
             throw new ContextualError(message, getLocation());
         }
-        
+
         TypeDefinition typeDef = compiler.environmentType.defOfType(returnType.getName());
         returnType.setDefinition(typeDef);
 
         // Formatting the signature of the method
         String toStringSignature = methodSignature.toString();
-        
-        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, index);
+
+        MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, visib, index);
         methodName.setDefinition(methodDef);
 
         // By default, we increase the method count
@@ -147,7 +158,7 @@ public class DeclMethod extends AbstractDeclMethod{
             ((MethodBody) this.methodBody).verifyMethodBody(compiler, localEnv, currentClass, this.returnType.getType());
         }
         else {
-            // ((MethodBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
+            ((MethodAsmBody) this.methodBody).verifyAsmMethodBody(compiler, localEnv, currentClass);
         }
     }
 
@@ -178,40 +189,45 @@ public class DeclMethod extends AbstractDeclMethod{
         // Set method label
         compiler.addLabel(methodLabel);
 
-        // Storing Class field count
-        int localVariableCount = this.methodBody.getVarCount();
+        if(this.methodBody instanceof MethodBody){
+            // Storing method variable count
+            int localVariableCount = this.methodBody.getVarCount();
 
-        // Set params operand (address) in their definition
-        this.listDeclParam.setParamAddresses();
+            // Set params operand (address) in their definition
+            this.listDeclParam.setParamAddresses();
 
 
-        // Generating the method code under a sub compiler
-        DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
-        this.methodBody.codeGen(methodCompiler);
+            // Generating the method code under a sub compiler
+            DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+            methodCompiler.setLabelManager(compiler.getLabelManager());
+            this.methodBody.codeGen(methodCompiler);
 
-        // Save registers
-        for(int i = 3 ; i <= methodCompiler.getMaxRegister() ; i++){
-            compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+            // Set method stack overflow test and stack pointer
+            // Total variables to store in the stack + total push made during operations + total push made to save registers
+            compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
+            compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
+            compiler.addInstruction(new ADDSP(localVariableCount));
+            // Save registers
+            for(int i = 2 ; i <= methodCompiler.getMaxRegister() ; i++){
+                compiler.addInstruction(new PUSH(GPRegister.getR(i)),"save register R" + i);
+            }
+
+            // Then append the generated code
+            compiler.append(methodCompiler.getProgram());
+
+            // Restore saved registers
+            for(int i = methodCompiler.getMaxRegister() ; i >= 2 ; i--){
+                compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+            }
+            // Reset Stack Pointer
+            compiler.addInstruction(new SUBSP(localVariableCount));
+
+            // Return to old context
+            compiler.addInstruction(new RTS());
         }
-
-        // Set method stack overflow test and stack pointer
-        // Total variables to store in the stack + total push made during operations + total push made to save registers
-        compiler.addInstruction(new TSTO(localVariableCount + methodCompiler.getMaxStackSize() + methodCompiler.getMaxRegister() - 2));
-        compiler.addInstruction(new BOV(compiler.getLabelManager().getStackOverflowLabel()),"check for stack overflows");
-        compiler.addInstruction(new ADDSP(localVariableCount));
-
-        // Then append the generated code
-        compiler.append(methodCompiler.getProgram());
-
-        // Restore saved registers
-        for(int i = methodCompiler.getMaxRegister() ; i >= 3 ; i--){
-            compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+        else{
+            this.methodBody.codeGen(compiler);
         }
-        // Reset Stack Pointer
-        compiler.addInstruction(new SUBSP(localVariableCount));
-
-        // Return to old context
-        compiler.addInstruction(new RTS());
 
         // Comment for the end of the method code
         compiler.addComment("end : method " + methodLabel.toString());

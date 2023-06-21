@@ -1,12 +1,16 @@
 package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.DecacCompiler;
+import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
+
 import java.util.HashMap;
 import java.util.Map;
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
 import fr.ensimag.deca.tree.AbstractIdentifier;
-import fr.ensimag.deca.tree.Identifier;
 import fr.ensimag.deca.tree.Location;
+import fr.ensimag.deca.tree.Visibility;
+import fr.ensimag.ima.pseudocode.Register;
+import fr.ensimag.ima.pseudocode.RegisterOffset;
 
 // Lors de l’allocation d’un objet, les champs sont initialisés dans l’ordre de déclaration.
 // Un champ non initialisé, ou accédé avant d’être initialisé, a la valeur par défaut 0 pour entier,
@@ -48,6 +52,31 @@ public class EnvironmentType {
         //envTypes.put(stringSymb, new TypeDefinition(STRING, Location.BUILTIN));
         // not added to envTypes, it's not visible for the user.
 
+        Symbol objectSymb = compiler.createSymbol("Object");
+        OBJECT = new ClassType(objectSymb);
+        ClassDefinition objectClassDefinition = new ClassDefinition(OBJECT, Location.BUILTIN, null);
+        objectClassDefinition.setMethodTableAddr(new RegisterOffset(1, Register.GB));
+        Symbol equals = compiler.createSymbol("equals");
+        Signature equalsSignature = new Signature(equals);
+        equalsSignature.addParamType(OBJECT);
+        MethodDefinition objectEqualsDef = new MethodDefinition(BOOLEAN, Location.BUILTIN, equalsSignature, Visibility.PUBLIC, 1);
+        objectEqualsDef.setLabel(compiler.getLabelManager().getObjectEqualsLabel());
+        try {
+            objectClassDefinition.getMembers().declare(compiler.createSymbol(equalsSignature.toString()), objectEqualsDef);
+        }
+        // Cannot happen
+        catch(DoubleDefException doubleDefException){
+            System.out.println("Error when initializing Object class");
+        }
+
+
+        Signature tmpSignature = new Signature(equals);
+        tmpSignature.addParamType(OBJECT);
+
+        objectClassDefinition.incNumberOfMethods();
+        objectClassDefinition.getMethodTable().addMethod(objectEqualsDef, compiler.getLabelManager().getObjectEqualsLabel());
+        envTypes.put(objectSymb, objectClassDefinition);
+
     }
 
     private final Map<Symbol, TypeDefinition> envTypes;
@@ -78,5 +107,6 @@ public class EnvironmentType {
     public final FloatType   FLOAT;
     public final StringType  STRING;
     public final BooleanType BOOLEAN;
+    public final ClassType   OBJECT;
     public final NullType NULL;
 }

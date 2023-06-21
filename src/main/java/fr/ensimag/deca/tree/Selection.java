@@ -12,6 +12,10 @@ import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
+import fr.ensimag.ima.pseudocode.NullOperand;
+import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
@@ -59,7 +63,9 @@ public class Selection extends AbstractLValue {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        operand.decompile(s);
+        s.print(".");
+        fieldName.decompile(s);
     }
 
     @Override
@@ -81,7 +87,7 @@ public class Selection extends AbstractLValue {
             fieldName.prettyPrint(s, prefix, true);
         }
     }
-    
+
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass)
            throws ContextualError {
@@ -93,7 +99,21 @@ public class Selection extends AbstractLValue {
             this.operand = newThis;
             this.operand.verifyExpr(compiler, localEnv, currentClass);
             typeDef = currentClass.getType().getDefinition();
-        } else {
+        }
+        else {
+            // If operand is a field, then we create a new Selection with This as the left operand
+            // In the Main, this does not apply
+            if (operand instanceof Identifier
+                && currentClass != null
+                && currentClass.getMembers().get(((Identifier)operand).getName()) != null
+                && currentClass.getMembers().get(((Identifier)operand).getName()).isField()
+            ) {
+                // Creation of a new This
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                // Creation of a new Selection to the left of the current
+                this.operand = new Selection(newThis, (Identifier)operand);
+            }
             Type t = operand.verifyExpr(compiler, localEnv, currentClass);
             typeDef = compiler.environmentType.defOfType(t.getName());
             if(!(typeDef instanceof ClassDefinition)) {
@@ -113,21 +133,44 @@ public class Selection extends AbstractLValue {
             for (AbstractExpr param : this.params.getList()) {
                 sig.addParamType(param.verifyExpr(compiler, localEnv, currentClass));
             }
-            expDef = classDef.getMembers().get(compiler.createSymbol(sig.toString()));
+            expDef = Signature.checkSignatureInheritance(compiler, classDef, this.fieldName.getName(), params);
         }
 
         // Check for definition in super class if none was found
         if(expDef == null && classDef.getSuperClass() != null){
-            // if this is a field
-            if (params == null) {
-                expDef = classDef.getSuperClass().getMembers().get(fieldName.getName());
-            }
-            // Else if it is a method
-            else {
-                expDef = classDef.getSuperClass().getMembers().get(compiler.createSymbol(sig.toString()));
+            ClassDefinition superClassDefinition = classDef.getSuperClass();
+            while(expDef == null && superClassDefinition != null ){
+                // if this is a field
+                if (params == null) {
+                    expDef = superClassDefinition.getMembers().get(fieldName.getName());
+                }
+                // Else if it is a method
+                else {
+                    expDef = Signature.checkSignatureInheritance(compiler, superClassDefinition, this.fieldName.getName(), params);
+                }
+                superClassDefinition = superClassDefinition.getSuperClass();
             }
         }
-        // If we found a definition
+
+        // if neither nothing nor 'this' as left operand
+        // then we check if it is protected and if so, we deny access to the field/method
+        if (expDef != null && !(operand instanceof This)) {
+            // it is a field
+            if (params == null) {
+                if (((FieldDefinition) expDef).getVisibility() == Visibility.PROTECTED) {
+                    // We act like if we didn't find anything
+                    expDef = null;
+                }
+            // it is a method
+            } else {
+                if (((MethodDefinition) expDef).getVisibility() == Visibility.PROTECTED) {
+                    // We act like if we didn't find anything
+                    expDef = null;
+                }
+
+            }
+        }
+        // If we finally found a definition
         if(expDef != null && ( (expDef instanceof FieldDefinition && this.params == null) || (expDef instanceof MethodDefinition && this.params != null))){
             this.fieldName.setType(expDef.getType());
 
@@ -158,33 +201,59 @@ public class Selection extends AbstractLValue {
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         this.codeGenExp(compiler, 2);
+        // this.operand.codeGenExp(compiler, 2);
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
+        // this.fieldName.codeGenPrint(compiler);
     }
 
     @Override
     protected void codeGenExp(DecacCompiler compiler, int n) {
+        // case of a method call
         if(this.params != null){
             for(AbstractExpr aExpr : this.params.getList()){
                 aExpr.codeGenExp(compiler, n);
                 compiler.incrementStackSize();
                 compiler.addInstruction(new PUSH(GPRegister.getR(n)));
             }
+            // Generate left selection
             this.operand.codeGenExp(compiler, n);
+            // Check for null pointer
+            if(!compiler.getNoCheck()) {
+                compiler.addInstruction(new CMP(new NullOperand(), GPRegister.getR(n)), "check for null pointer");
+                compiler.addInstruction(new BEQ(compiler.getLabelManager().createNullPointerLabel()));
+            }
+
+            // Stack "this"
             compiler.incrementStackSize();
             compiler.addInstruction(new PUSH(GPRegister.getR(n)));
-            compiler.decrementStackSize();
             this.fieldName.codeGenExp(compiler, n);
+            compiler.addInstruction(new SUBSP(1));
+            compiler.decrementStackSize();
+
+            // Load result from sub method
+            compiler.addInstruction(new LOAD(GPRegister.R0, GPRegister.getR(n)));
+
             // foreach param we decrement the stack size
             this.params.getList().forEach(param -> compiler.decrementStackSize());
             if(this.params.getList().size() > 0) {
                 compiler.addInstruction(new SUBSP(this.params.getList().size()));
             }
         }
+        // case of a field access
         else{
             this.operand.codeGenExp(compiler, n);
+            // Check for null pointer
+            if(!compiler.getNoCheck()) {
+                compiler.addInstruction(new CMP(new NullOperand(), GPRegister.getR(n)), "check for null pointer");
+                compiler.addInstruction(new BEQ(compiler.getLabelManager().createNullPointerLabel()));
+            }
             this.fieldName.codeGenExp(compiler, n);
         }
+    }
 
+    @Override
+    public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
+        this.codeGenExp(compiler, 2);
     }
 
     public AbstractIdentifier getFieldName() {
@@ -193,6 +262,11 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
-        this.codeGenExp(compiler, 2);
+        if(this.params != null){
+            this.codeGenExp(compiler, 2);
+        }
+        else{
+            this.operand.codeGenExp(compiler, 2);
+        }
     }
 }

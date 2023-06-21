@@ -1,0 +1,22 @@
+// Description :
+// 
+//      Test correct d'un test ayant plusieurs main
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 19/06/2023 par gl03
+
+class A {
+
+}
+
+{
+    int x=2;
+}
+{
+    int y=3;
+}

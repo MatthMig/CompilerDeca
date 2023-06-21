@@ -19,7 +19,7 @@ public class DeclParam extends AbstractDeclParam{
 
     final private AbstractIdentifier paramType;
     final private AbstractIdentifier paramName;
-    
+
     public DeclParam(AbstractIdentifier paramType, AbstractIdentifier paramName){
         Validate.notNull(paramType);
         Validate.notNull(paramName);
@@ -38,10 +38,12 @@ public class DeclParam extends AbstractDeclParam{
         paramType.prettyPrint(s, prefix, false);
         paramName.prettyPrint(s, prefix, true);
     }
-    
+
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        s.print(this.getType().getName().getName());
+        s.print(" ");
+        s.print(this.paramName.getName().getName());
     }
 
     public AbstractIdentifier getType(){
@@ -81,5 +83,5 @@ public class DeclParam extends AbstractDeclParam{
     public void setParamAddress(int index) {
         this.paramName.getParamDefinition().setOperand(new RegisterOffset(index, Register.LB));
     }
-    
+
 }

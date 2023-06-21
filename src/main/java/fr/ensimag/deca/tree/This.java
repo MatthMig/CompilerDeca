@@ -59,6 +59,11 @@ public class This extends AbstractLValue {
     }
 
     @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        compiler.addInstruction(new LOAD(new RegisterOffset(-2, LB), GPRegister.getR(1)));
+    }
+
+    @Override
     protected void codeGenInst(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(new RegisterOffset(-2, LB), GPRegister.getR(1)));
     }

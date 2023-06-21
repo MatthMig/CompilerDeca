@@ -27,7 +27,7 @@ public class MethodBody extends AbstractMethodBody{
 
     @Override
     public int getVarCount() {
-        return this.listDeclVar.size(); 
+        return this.listDeclVar.size();
     }
 
     /**
@@ -36,11 +36,32 @@ public class MethodBody extends AbstractMethodBody{
      * @param currentClass
      */
     protected void verifyMethodBody(DecacCompiler compiler,
-        EnvironmentExp localEnv, ClassDefinition currentClass, 
+        EnvironmentExp localEnv, ClassDefinition currentClass,
         Type returnType)
         throws ContextualError {
             this.listDeclVar.verifyListDeclVariable(compiler, localEnv, currentClass);
             this.listInst.verifyListInst(compiler, localEnv, currentClass, returnType);
+
+            if(returnType != compiler.environmentType.VOID){
+                boolean noReturn = this.verifyReturn(compiler, localEnv, currentClass, returnType);
+                if(!noReturn){
+                    throw new ContextualError("method never returns" , getLocation());
+                }
+            }
+    }
+
+    protected boolean verifyReturn(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass, Type returnType){
+        boolean methodWillEnd = false;
+        for(AbstractInst inst : listInst.getList()){
+            if(inst instanceof Return){
+                methodWillEnd = true;
+            }
+            if(inst instanceof IfThenElse){
+                methodWillEnd = methodWillEnd || ((IfThenElse)inst).verifyReturn(compiler, localEnv, currentClass, returnType);
+            }
+        }
+
+        return methodWillEnd;
     }
 
     @Override
@@ -64,7 +85,14 @@ public class MethodBody extends AbstractMethodBody{
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        System.out.println("{");
+        s.println();
+        s.indent();
+        listDeclVar.decompile(s);
+        listInst.decompile(s);
+        s.println();
+        s.unindent();
+        System.out.println("}");
     }
 
 }

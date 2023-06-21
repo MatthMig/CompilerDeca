@@ -49,7 +49,6 @@ public class FloatLiteral extends AbstractExpr {
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(value, GPRegister.getR(1)));
-        compiler.addInstruction(new WFLOAT());
     }
 
     @Override
@@ -74,7 +73,7 @@ public class FloatLiteral extends AbstractExpr {
 
     @Override
     protected DVal dval(DecacCompiler compiler) {
-        return new ImmediateFloat(this.value);            
+        return new ImmediateFloat(this.value);
     }
 
 

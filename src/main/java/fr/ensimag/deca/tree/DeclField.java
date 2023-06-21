@@ -4,14 +4,13 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
-import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.context.FieldDefinition;
-import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Type;
 import fr.ensimag.deca.context.TypeDefinition;
 import fr.ensimag.deca.context.EnvironmentExp.DoubleDefException;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.NullOperand;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -24,17 +23,19 @@ import org.apache.commons.lang.Validate;
 
 public class DeclField extends AbstractDeclField{
 
+    public Visibility visib;
     final private AbstractIdentifier fieldType;
     final private AbstractIdentifier fieldName;
     final private AbstractInitialization initialization;
 
-    public DeclField(AbstractIdentifier fieldType, AbstractIdentifier fieldName, AbstractInitialization initialization){
+    public DeclField(Visibility visib, AbstractIdentifier fieldType, AbstractIdentifier fieldName, AbstractInitialization initialization){
         Validate.notNull(fieldType);
         Validate.notNull(fieldName);
         Validate.notNull(initialization);
         this.fieldType = fieldType;
         this.fieldName = fieldName;
         this.initialization = initialization;
+        this.visib = visib;
     }
 
 
@@ -46,28 +47,17 @@ public class DeclField extends AbstractDeclField{
         if(!(this.fieldType.getType() != compiler.environmentType.VOID)){
             throw new ContextualError("cannot declare a void field", getLocation());
         }
-        
+
         // Verify type definition
         Type t = this.fieldType.verifyType(compiler);
         TypeDefinition tdef = compiler.environmentType.defOfType(this.fieldType.getName());
         this.fieldType.setType(t);
         this.fieldType.setDefinition(tdef);
-        
+
         // Type is ok, then tag this field as of this type and create a definition for this field
         this.fieldName.setType(t);
-        this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), null, currentClass, index));
+        this.fieldName.setDefinition(new FieldDefinition(t, fieldName.getLocation(), visib, currentClass, index));
 
-        // Check for definition in parent environment
-        if (currentClass.getSuperClass() != null) {
-            MethodDefinition potentialDef = (MethodDefinition) (currentClass.getSuperClass().getMembers().get(fieldName.getName()));
-            if (potentialDef != null) {
-                // In order to avoid masking a method with a field and vice versa
-                if (fieldName.getExpDefinition().isField() && potentialDef.isMethod()) {
-                    String message = String.format("Can't declare field '%s' in class %s because the super class %s have a method with that name", fieldName.getName().getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
-                    throw new ContextualError(message, getLocation());
-                }
-            }
-        }
         // Try to declare the field to the local environment
         try{
             localEnv.declare(fieldName.getName(), fieldName.getExpDefinition());
@@ -99,6 +89,9 @@ public class DeclField extends AbstractDeclField{
             else if(this.fieldType.getType().isBoolean()){
                 compiler.addInstruction(new LOAD(0,GPRegister.getR(2)));
             }
+            else if(this.fieldType.getType().isClass()){
+                compiler.addInstruction(new LOAD(new NullOperand(),GPRegister.getR(2)));
+            }
         }
         else{
             this.initialization.codeGen(compiler);
@@ -123,6 +116,14 @@ public class DeclField extends AbstractDeclField{
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        if (visib.equals(Visibility.PROTECTED)) {
+            s.print("protected ");
+        }
+        fieldType.decompile(s);
+        s.print(" ");
+        fieldName.decompile(s);
+        initialization.decompile(s);
+        s.print(";");
+        s.println();
     }
 }

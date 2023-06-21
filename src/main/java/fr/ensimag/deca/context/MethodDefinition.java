@@ -1,7 +1,9 @@
 package fr.ensimag.deca.context;
 
 import fr.ensimag.deca.tree.Location;
+import fr.ensimag.deca.tree.Visibility;
 import fr.ensimag.ima.pseudocode.Label;
+
 import org.apache.commons.lang.Validate;
 
 /**
@@ -23,6 +25,10 @@ public class MethodDefinition extends ExpDefinition {
         return label;
     }
 
+    public Visibility getVisibility() {
+        return visibility;
+    }
+
     public void setLabel(Label label) {
         this.label = label;
     }
@@ -39,6 +45,7 @@ public class MethodDefinition extends ExpDefinition {
         return this;
     }
 
+    private Visibility visibility;
     private final Signature signature;
     private Label label;
     
@@ -49,10 +56,11 @@ public class MethodDefinition extends ExpDefinition {
      * @param signature List of arguments of the method
      * @param index Index of the method in the class. Starts from 0.
      */
-    public MethodDefinition(Type type, Location location, Signature signature, int index) {
+    public MethodDefinition(Type type, Location location, Signature signature, Visibility visibility, int index) {
         super(type, location);
         this.signature = signature;
         this.index = index;
+        this.visibility = visibility;
     }
 
     public Signature getSignature() {
@@ -68,5 +76,4 @@ public class MethodDefinition extends ExpDefinition {
     public boolean isExpression() {
         return false;
     }
-
 }

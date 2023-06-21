@@ -29,7 +29,7 @@ public abstract class AbstractPrint extends AbstractInst {
 
     private boolean printHex;
     private ListExpr arguments = new ListExpr();
-    
+
     abstract String getSuffix();
 
     public AbstractPrint(boolean printHex, ListExpr arguments) {
@@ -57,10 +57,10 @@ public abstract class AbstractPrint extends AbstractInst {
             // Do the codegen of the Expression
             a.codeGenPrint(compiler);
             // Common part for the print
-            if(a.getType() == compiler.environmentType.INT) {
+            if(a.getType().isInt()) {
                 compiler.addInstruction(new WINT());
             }
-            else if(a.getType() == compiler.environmentType.FLOAT) {
+            else if(a.getType().isFloat()) {
                 compiler.addInstruction(new WFLOAT());
             }
             else if (a.getType() == compiler.environmentType.BOOLEAN && !(a instanceof BooleanLiteral)) {

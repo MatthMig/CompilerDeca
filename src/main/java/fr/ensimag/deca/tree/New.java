@@ -7,10 +7,8 @@ import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
-import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.RegisterOffset;
-import fr.ensimag.ima.pseudocode.instructions.BOV;
 import fr.ensimag.ima.pseudocode.instructions.BSR;
 import fr.ensimag.ima.pseudocode.instructions.LEA;
 import fr.ensimag.ima.pseudocode.instructions.NEW;
@@ -36,7 +34,9 @@ public class New extends AbstractExpr {
 
     @Override
     public void decompile(IndentPrintStream s) {
-        throw new UnsupportedOperationException("not yet implemented");
+        s.print("new ");
+        s.print(this.className.getName().getName());
+        s.print("();");
     }
 
     @Override
@@ -67,8 +67,8 @@ public class New extends AbstractExpr {
         compiler.addInstruction(new NEW(this.className.getClassDefinition().getNumberOfFields() + 1, GPRegister.getR(2)));
         //compiler.addInstruction(new BOV(new Label(null)));
 
-        // HERE WE NEED TO ADD THE FUTURE ADDRESS OF THE METHOD TABLE compiler.addInstruction(new LEA());
-        // compiler.addInstruction(new STORE(GPRegister.R0, new RegisterOffset(0, Register.getR(n))));
+        compiler.addInstruction(new LEA(this.className.getClassDefinition().getMethodTableAddr(), Register.R0));
+        compiler.addInstruction(new STORE(GPRegister.R0, new RegisterOffset(0, Register.getR(n))));
         compiler.addInstruction(new PUSH(GPRegister.getR(2)));
         ClassDefinition classDefinition = compiler.environmentType.defOfClass(this.className.getName());
         while(classDefinition != null){

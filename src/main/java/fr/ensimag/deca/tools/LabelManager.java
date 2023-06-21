@@ -1,7 +1,5 @@
 package fr.ensimag.deca.tools;
 
-import fr.ensimag.deca.context.MethodDefinition;
-import fr.ensimag.deca.context.Signature;
 import fr.ensimag.ima.pseudocode.Label;
 
 public class LabelManager {
@@ -10,6 +8,11 @@ public class LabelManager {
     private Label overflowLabel = new Label("overflow_error");
     private Label zeroDivisionLabel = new Label("zeroDivision_error");
     private Label stackOverFlowLabel = new Label("stackOverFlow_error");
+    private Label nullPointerLabel = new Label("nullPointer_error");
+    private Label objetcEqualsLabel = new Label("code.Object.equals");
+    private Label objectInitLabel = new Label("init.Object");
+    private Label impossibleDownCastLabel = new Label("downcast_error");
+
     /**
      * Getter of the lowest free label integer
      * @return lowest free label int
@@ -109,8 +112,20 @@ public class LabelManager {
         return this.zeroDivisionLabel;
     }
 
+    /**
+     * Returns the StackOverflow label
+     * @return label
+     */
     public Label getStackOverflowLabel() {
         return this.stackOverFlowLabel;
+    }
+
+    /**
+     * Returns the NullPointer label
+     * @return label
+     */
+    public Label createNullPointerLabel() {
+        return this.nullPointerLabel;
     }
 
     /**
@@ -140,5 +155,39 @@ public class LabelManager {
         };
         this.labelCount += 1;
         return labels;
+    }
+    /**
+    * Returns the ObjectEquals label
+    * @return label
+    */
+    public Label getObjectEqualsLabel() {
+        return objetcEqualsLabel;
+    }
+
+    public Label getObjectInitLabel(){
+        return objectInitLabel;
+    }
+
+    /**
+     * Returns an array of labels for instanceof
+     * @return labels
+     */
+    public Label[] createInstanceOfLabels() {
+        Label[] labels = new Label[]{
+            createLabel("while.instanceof"),
+            createLabel("true.instanceof"),
+            createLabel("false.instanceof"),
+            createLabel("end.instanceof"),
+        };
+        this.labelCount += 1;
+        return labels;
+    }
+
+     /**
+     * Returns a label for downcast error
+     * @return label
+     */
+    public Label getImpossibleDownCastLabel(){
+        return this.impossibleDownCastLabel;
     }
 }
