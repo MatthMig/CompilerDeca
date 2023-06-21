@@ -12,8 +12,8 @@
 
 class Math {
 
-    float pi = 3.14159265358979224;
-    protected float _floatAbsMinimumValue = 0.00000000000000000000000000000000000000000000000000014;
+    float _pi = 3.141592653589793;
+    float _floatAbsMinimumValue = 0.00000000000000000000000000000000000000000000000000014;
 
     // Description
     // 
@@ -28,9 +28,9 @@ class Math {
     //      ERROR  racine paire d'une valeur négative. 
     //      ERROR
 
-      protected void _error_racine_negative()
+      void _error_racine_negative(){}
       asm ("
-            WSTR \"ERROR  racine paire d'une valeur négative. \"
+            WSTR "ERROR  racine paire d'une valeur négative. "
             WNL
             ERROR
             
@@ -50,42 +50,14 @@ class Math {
     //      la valeur doit être entre -1 et 1
     //      ERROR
 
-      protected void _error_param_asin()
+      void _error_param_asin(){}
       asm ("
-            WSTR \"la valeur doit être entre -1 et 1\"
+            WSTR "la valeur doit être entre -1 et 1"
             WNL
             ERROR
             
       
          ");
-
-
-
-
-
-    // Description 
-    // 
-    //      Methode de calcul de la réduction d'un angle
-    // 
-    // Input 
-    // 
-    //      float f 
-    // 
-    // Output 
-    // 
-    //      reduceAngle(f)
-
-    protected float reduceAngle(float f){
-
-        while(f>2*this.pi){
-            f=f-(2*this.pi);
-        }
-        if (f<-this.pi){
-            f=f+(2*this.pi);
-        }
-
-        return f;
-    }
 
 
     // Description 
@@ -100,7 +72,8 @@ class Math {
     // 
     //      abs(f)
 
-    float abs(float f){
+
+    float _abs(float f){
         if( f < 0){
             return -f;
         } else {
@@ -121,7 +94,7 @@ class Math {
     // 
     //      racine_carrée(float f)
 
-    float sqrt(float f){
+    float _sqrt(float f){
         float x;
         float y;
         float z;
@@ -165,9 +138,9 @@ class Math {
     // 
     //      f^pow  
     
-    float pow(float f , float pow) {
+    float _pow(float f , float pow) {
         float result = 1.0;
-        float abs_pow=abs(pow);
+        float abs_pow=_abs(pow);
         if (pow==0.0){
             return 1.0;
         }
@@ -184,7 +157,7 @@ class Math {
             _error_racine_negative();
         }
         else if(f>=0){
-            return sqrt(f);
+            return _sqrt(f);
         }
 
         while (abs_pow>0){
@@ -201,6 +174,30 @@ class Math {
 
     // Description 
     // 
+    //      Methode de calcul de la réduction d'un angle
+    // 
+    // Input 
+    // 
+    //      float f 
+    // 
+    // Output 
+    // 
+    //      reduceAngle(f)
+
+    float reduceAngle(float f){
+
+        while(f>2*_pi){
+            f=f-(2*_pi);
+        }
+        if (f<-_pi){
+            f=f+(2*_pi);
+        }
+
+        return f;
+    }
+
+    // Description 
+    // 
     //      Methode de calcul du sinus
     // 
     // Input 
@@ -212,19 +209,26 @@ class Math {
     //      sin(f)
 
 
-    float sin(float f){
-        float epsilon = 0.00000000000000001;
-        float sinus = 0.0;
+    float _sin(float f){
+        float x = reduceAngle(f);
+
+        float result =0.0;
+        float term=x;
+        float power = x;
+        float factorial =1.0;
         int sign = 1;
-        float term = f;
-        int n = 1;
-        while (term > epsilon) {
-            sinus = sinus + sign*term;
-            sign = -sign;
-            term = term * (f * f / (n+1) / (n+2));
-            n = n + 2;
+        int i =1;
+
+        while (i<=10){
+            result = result + (sign * term / factorial);
+            power = power * x *x ;
+            factorial = factorial *(i+1) * (i+2);
+            sign = sign * (-1);
+            i = i+2;
+            term = power / factorial;
         }
-        return sinus;
+        
+        return result;
     }
 
     // Description 
@@ -239,16 +243,23 @@ class Math {
     // 
     //      cos(f)
 
-    float cos(float f){
-        float r = f*f;
-        float s = 42.0;
-        int i = 10;
-        while (i >= 1) {
-            s = 4.0 * i - 2.0 + (-r) / s;
-            i = i - 1;
+    float _cos(float f){
+        float init = 1.0;
+        float sum = 1.0;
+        float fact = -1.0;
+        int i;
+        while(f>2*_pi){
+            f=f-2*_pi;
         }
-        s = s * s;
-        return (s - r) / (s + r);
+        i=1;
+        while (_abs(init)>0.0000001){
+            fact = fact * (-1.0);
+            init = init * f *f / (2 * i * (2*i-1));
+            sum = sum + fact * init;
+            i=i+1;
+        }
+
+        return sum; 
     }
     // Description 
     // 
@@ -262,15 +273,67 @@ class Math {
     // 
     //      asin(f)
 
-    float asin(float f){
-        if(abs(f)==1.0) {
-            return f * this.pi / 2.0;
-        }
-        else {
-            return atan(f / sqrt(1-f*f));
-        }
-    } 
+    float _asin(float f){
+        float precision;
+        float estimation = f;
+        float difference;
+        float derivee;
+        float correction;
 
+        if (f > 1 || f <-1){
+            _error_param_asin();
+        }
+        precision = 0.00000001;
+        difference = precision + 1;
+        while ( difference > precision){
+            derivee = 1 / _sqrt(1-_pow(estimation,2.0));
+            correction = (estimation -f) / derivee;
+            estimation = estimation - correction;
+            difference = _abs(correction);
+        }
+
+        return estimation;
+    }
+
+    // Description  
+    // 
+    //      Methode de calcul de l'arctan_approximation
+    // 
+    // Input  
+    // 
+    //      float f 
+    // 
+    // Output  
+    // 
+    //      atan_approximation(f)
+
+    float _atan_approximation(float f){
+        int iterations = 5;
+        float result = 0.0;
+        float power = f;
+        float divisor = 1.0;
+        boolean is_addition = true;
+        int i =1;
+        float term;
+
+        while (i<=iterations){
+            term= power / divisor;
+
+            if (is_addition){
+                result=result+term;
+            }
+            else {
+                result = result - term;
+            }
+
+            power = power *f *f;
+            divisor = divisor +2;
+            is_addition=!is_addition;
+            i=i+1;
+        }
+
+        return result;
+    }
 
     // Description  
     // 
@@ -284,18 +347,30 @@ class Math {
     // 
     //      atan(f) 
 
-    float atan(float f){
-        float a = 1.0 / sqrt(1.0 + (f * f));
-        float b = 1.0;
-        int n = 1;
-        while (n < 11) {
-            a = (a + b) / 2.0;
-            b = sqrt(a * b);
-            n = n + 1;
+    float _atan(float f){
+        int sign;
+        float atan_val;
+        if (f==0){
+            return 0.0;
         }
-        return f / (sqrt(1.0 + (f * f)) * a);
-    }
+        if (f>0){
+            sign = 1;
+        }
+        else {
+            sign = -1;
+        }
 
+        f=_abs(f);
+        if (f>1){
+            f=1/f;
+            atan_val = (_pi / 2) - _atan_approximation(f);
+            return sign * atan_val;
+        }
+        else {
+            atan_val=_atan_approximation(f) ; 
+            return sign * atan_val;
+        }
+    }
 
     // Description  
     // 
@@ -309,14 +384,14 @@ class Math {
     // 
     //      ulp(f)     
 
-    float ulp(float f){
+    float _ulp(float f){
         float signe;
         float mantisse;
         float exposant;
         float ulp;
         // Cas particulier pour zéro
         if (f==0.0){
-            return this._floatAbsMinimumValue;
+            return _floatAbsMinimumValue;
         }
 
         // Calcul du signe 
@@ -335,7 +410,7 @@ class Math {
         }
 
         // Calcul de l'ulp
-        ulp = pow(2.0, exposant);
+        ulp = _pow(2.0, exposant);
 
         // Retourne l'ulp multiplié par le signe de f
         return ulp * signe;
