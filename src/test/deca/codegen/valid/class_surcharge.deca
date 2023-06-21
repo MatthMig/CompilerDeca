@@ -1,0 +1,30 @@
+//  Description :
+// 
+//      Test correct qui appelle des methodes surchargées
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int methodeRet()
+    {
+        return 1;
+    }
+}
+
+class B extends A {
+    int methodeRet(){
+        return 2;
+    }
+}
+
+{
+    A oA = new A();
+    B oB = new B();
+    println(oA.methodeRet());
+    println(oB.methodeRet());
+}

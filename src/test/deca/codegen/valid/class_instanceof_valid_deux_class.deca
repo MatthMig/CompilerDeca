@@ -1,0 +1,24 @@
+//  Description :
+// 
+//      Test syntaxiquement correct d'une classe et de l'utilisation d'un instanceof
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+
+}
+class B extends A {
+
+}
+
+{
+    A oA = new B();
+    if  (oA instanceof A){
+        println("ok");
+    }
+}

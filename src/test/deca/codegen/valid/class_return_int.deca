@@ -1,0 +1,21 @@
+//  Description :
+// 
+//      Test correct qui appelle une methode qui return 1
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    int methodeRet(){
+        return 1;
+    }
+}
+
+{
+    A oA = new A();
+    println(oA.methodeRet());
+}

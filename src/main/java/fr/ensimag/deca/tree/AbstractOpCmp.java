@@ -25,8 +25,19 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
     @Override
     public Type verifyExpr(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass) throws ContextualError {
+
         Type t1 = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
         Type t2 = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+
+        if(this.getLeftOperand() instanceof Identifier){
+            if(((Identifier)this.getLeftOperand()).getDefinition().isField()){
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                this.setLeftOperand(new Selection(newThis, ((Identifier)this.getLeftOperand())));
+                t1 = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+
         // Si types differents ET que aucun des deux n'est un INT alors on n'est pas dans le cas de 'int CMP float'
         if(t1 != t2) {
             if (

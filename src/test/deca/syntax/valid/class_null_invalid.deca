@@ -1,0 +1,18 @@
+//  Description :
+// 
+//      Test syntaxiquement correct de l'utilisation d'un instanceof avec un int ou un float
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+{
+    int x=5;
+    int y = 3;
+    if (x != null){
+        
+    }
+}

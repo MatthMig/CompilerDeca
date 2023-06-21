@@ -1,0 +1,18 @@
+// Description :
+// 
+//      Test correct du lexing d'une classe avec une declaration de variable et une méthode void
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 19/06/2023 par gl03
+
+class A {
+    int x;
+    void incrementX(){
+        x=x+1;
+    }
+}

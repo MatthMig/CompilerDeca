@@ -50,11 +50,6 @@ public class DeclClass extends AbstractDeclClass {
     }
 
     @Override
-    public void decompile(IndentPrintStream s) {
-        s.print("class { ... A FAIRE ... }");
-    }
-
-    @Override
     protected void verifyClass(DecacCompiler compiler) throws ContextualError {
         if(compiler.environmentType.defOfType(this.className.getName()) == null){
             if(this.superClassName != null){
@@ -135,6 +130,7 @@ public class DeclClass extends AbstractDeclClass {
         // Generating the initialization code under a sub compiler
         DecacCompiler initializationCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
         initializationCompiler.environmentType = compiler.environmentType;
+        initializationCompiler.setLabelManager(compiler.getLabelManager());
         this.listDeclField.codeGen(initializationCompiler);
 
         // Start the init subprogram with an adapted label
@@ -216,6 +212,23 @@ public class DeclClass extends AbstractDeclClass {
 
     public AbstractIdentifier getSuperClassName() {
         return superClassName;
+    }
+
+    @Override
+    public void decompile(IndentPrintStream s) {
+        s.print("class ");
+        className.decompile(s);
+        if(superClassName != null){
+            s.print(" extends");
+            s.print(className.getName().getName());
+        }
+        s.print(" {");
+        s.println();
+        s.indent();
+        listDeclField.decompile(s);
+        listDeclMethod.decompile(s);
+        s.unindent();
+        s.print("}");
     }
 
 }

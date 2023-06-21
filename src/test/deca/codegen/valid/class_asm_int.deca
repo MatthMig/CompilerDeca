@@ -1,0 +1,27 @@
+//  Description :
+//
+//      Test correct qui utilise une classe avec une méthode asm int
+//
+//  Résultats :
+//
+//      N/A
+//
+//  Historique :
+//
+//      Créé le 13/06 par gl03
+
+class A {
+
+    int give3()
+    asm ("
+        LOAD #3 ,R0
+        RTS
+    ");
+
+}
+
+{
+    A a = new A();
+    print(a.give3());
+
+}

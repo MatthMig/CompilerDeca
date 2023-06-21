@@ -1,0 +1,24 @@
+//  Description : 
+// 
+//      Test correct qui utilise d'une classe et utilise une protected grace à une methode get
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+    protected int x=3;
+    int getX(){
+        return this.x;
+    }
+}
+
+{
+    A a = new A();
+    int y = a.getX();
+    print(y);
+}

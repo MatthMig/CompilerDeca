@@ -1,0 +1,31 @@
+//  Description :
+//
+//      Test correct qui utilise une classe avec une méthode asm void
+//
+//  Résultats :
+//
+//      N/A
+//
+//  Historique :
+//
+//      Créé le 13/06 par gl03
+
+class A {
+
+
+    void methodeClassA()
+    asm ("
+        LOAD #3,R1
+        WSTR \"4-1=\"
+        WINT
+        WNL
+        RTS
+
+    ");
+
+}
+
+{
+    A a = new A();
+    a.methodeClassA();
+}

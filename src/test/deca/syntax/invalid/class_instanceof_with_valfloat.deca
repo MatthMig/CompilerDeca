@@ -1,0 +1,17 @@
+//  Description :
+// 
+//      Test syntaxiquement incorrect de l'utilisation d'un instanceof avec un int ou un float
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+{
+    if(5.5 instanceof 3.5){
+        
+    }
+}
+
