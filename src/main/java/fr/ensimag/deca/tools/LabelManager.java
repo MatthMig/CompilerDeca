@@ -7,6 +7,12 @@ public class LabelManager {
     private int labelCount;
     private Label overflowLabel = new Label("overflow_error");
     private Label zeroDivisionLabel = new Label("zeroDivision_error");
+    private Label stackOverFlowLabel = new Label("stackOverFlow_error");
+    private Label nullPointerLabel = new Label("nullPointer_error");
+    private Label objetcEqualsLabel = new Label("code.Object.equals");
+    private Label objectInitLabel = new Label("init.Object");
+    private Label impossibleDownCastLabel = new Label("downcast_error");
+
     /**
      * Getter of the lowest free label integer
      * @return lowest free label int
@@ -20,9 +26,9 @@ public class LabelManager {
     }
 
     /**
-     * Creates 2 labels with the given prefix, a dot and the label count as a suffix
+     * Creates a label with : the given prefix, a dot and the index as a suffix
      * @param prefix The prefix of the label
-     * @return An array of 2 labels
+     * @return The formatted label
      */
     private Label createLabel(String prefix) {
         return new Label(prefix + "." + labelCount);
@@ -81,7 +87,7 @@ public class LabelManager {
      * Returns 2 labels for Boolean variable print
      * @return labels
      */
-    public Label [] createBooleanVarPrintLabel() {
+    public Label [] createBooleanPrintLabel() {
         Label[] labels = new Label[]{
             createLabel("truePrint"),
             createLabel("endPrint")
@@ -104,5 +110,84 @@ public class LabelManager {
      */
     public Label getZeroDivisionLabel(){
         return this.zeroDivisionLabel;
+    }
+
+    /**
+     * Returns the StackOverflow label
+     * @return label
+     */
+    public Label getStackOverflowLabel() {
+        return this.stackOverFlowLabel;
+    }
+
+    /**
+     * Returns the NullPointer label
+     * @return label
+     */
+    public Label createNullPointerLabel() {
+        return this.nullPointerLabel;
+    }
+
+    /**
+     * Returns the fields initialization label
+     * @return label
+     */
+    public Label createInitClassLabel(String className){
+        return new Label("init." + className);
+    }
+
+    /**
+    * Returns the method label
+    * @return label
+    */
+    public Label createMethodLabel(String className, String methodSignature) {
+        return new Label("code." + className + "." + methodSignature);
+    }
+
+    /**
+     * Returns an array of labels for printing Null
+     * @return label
+     */
+    public Label[] createNullLabels() {
+        Label[] labels = new Label[]{
+            createLabel("nullPrint"),
+            createLabel("endNullPrint")
+        };
+        this.labelCount += 1;
+        return labels;
+    }
+    /**
+    * Returns the ObjectEquals label
+    * @return label
+    */
+    public Label getObjectEqualsLabel() {
+        return objetcEqualsLabel;
+    }
+
+    public Label getObjectInitLabel(){
+        return objectInitLabel;
+    }
+
+    /**
+     * Returns an array of labels for instanceof
+     * @return labels
+     */
+    public Label[] createInstanceOfLabels() {
+        Label[] labels = new Label[]{
+            createLabel("while.instanceof"),
+            createLabel("true.instanceof"),
+            createLabel("false.instanceof"),
+            createLabel("end.instanceof"),
+        };
+        this.labelCount += 1;
+        return labels;
+    }
+
+     /**
+     * Returns a label for downcast error
+     * @return label
+     */
+    public Label getImpossibleDownCastLabel(){
+        return this.impossibleDownCastLabel;
     }
 }

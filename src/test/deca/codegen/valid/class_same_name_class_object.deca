@@ -1,0 +1,20 @@
+// Description :
+//
+//      Test correct d'une classe nommée de la meme maniere que l'object
+//
+// Résultats :
+//
+//      N/A
+//
+// Historique :
+//
+//      Créé le 19/06/2023 par gl03
+
+class A {
+    int i = 3;
+}
+
+{
+    A A = new A();
+    println(A.i);
+}

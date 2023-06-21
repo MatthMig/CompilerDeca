@@ -1,0 +1,28 @@
+//  Description : 
+// 
+//      Test correct qui utilise deux classes , une mère  une fille, avec un main appelant des méthodes de ces classes 
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+class A { int x =15;}
+
+class B extends A {float x= ((A)(this)).x*0.5;}
+{
+    A oA ; B oB; 
+    print("Votre choix (0 ou 1):")
+    if (readInt()==0){
+        oA = new A();
+        oB = null;
+
+    } else {
+        oB = new B();
+        oA = oB;
+    }
+    println(oA.x);
+    if(oA==oB){println(oB.x);}
+}

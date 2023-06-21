@@ -6,7 +6,6 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
-import net.bytebuddy.dynamic.scaffold.MethodGraph.Compiler;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -38,23 +37,39 @@ public class Initialization extends AbstractInitialization {
             EnvironmentExp localEnv, ClassDefinition currentClass)
             throws ContextualError {
         Type t2 = this.expression.verifyExpr(compiler, localEnv, currentClass);
+        ClassDefinition tcd = compiler.environmentType.defOfClass(t.getName());
 
-
-        // If i implicitly initialize a float with an int value.
+        // If we implicitly initialize a float with an int value.
         if(t2 == compiler.environmentType.INT &&
             t == compiler.environmentType.FLOAT ){
-            this.setExpression(new ConvFloat(this.getExpr()));
+            this.setExpression(new ConvFloat(this.getExpression()));
             t2 = this.getExpression().verifyExpr(compiler, localEnv, currentClass);
         }
 
+        // If we try to do the opposite
         else if(t2 == compiler.environmentType.FLOAT &&
             t == compiler.environmentType.INT ){
-                throw new ContextualError("impossible conversion from float to int", getLocation());
+                throw new ContextualError("Impossible conversion from float to int", getLocation());
         }
 
-        // If i assign anything that isn't same type and isn't convFloat
-        else if(t2 != t){
-            throw new ContextualError("trying to asign a var of type " + t2 + " to a variable of type "+ t, getLocation());
+        // else if variable type is a class
+        else if(tcd != null){
+            // If i assign anything that is a class to a class
+            if (t.isClass() && t2.isClass()) {
+                ClassDefinition cd = compiler.environmentType.defOfClass(t2.getName());
+
+                // if the variable class is not a super class of the assigned class
+                if(!tcd.isParentClassOf(cd)){
+                throw new ContextualError("Trying to assign a value of type " + t2 + " to a value of type "+ t, getLocation());
+                }
+            // If i assign anything that isn't null nor a class
+            } else if (!(t.isClass() && t2.isNull())) {
+                throw new ContextualError("Trying to asign a value of type " + t2 + " to a value of type "+ t, getLocation());
+            }
+        }
+        
+        else if (!t.sameType(t2)) {
+            throw new ContextualError("Trying to asign a value of type " + t2 + " to a value of type "+ t, getLocation());
         }
     }
 
@@ -81,8 +96,5 @@ public class Initialization extends AbstractInitialization {
         expression.prettyPrint(s, prefix, true);
     }
 
-    public AbstractExpr getExpr(){
-        return this.expression;
-    }
 
 }

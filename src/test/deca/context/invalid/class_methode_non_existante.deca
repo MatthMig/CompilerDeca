@@ -1,0 +1,19 @@
+//  Description : 
+// 
+//      Test incorrect qui utilise une methode d'une classe qui n'existe pas
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+
+}
+{
+    A oA = new A();
+    oA.methode();
+}

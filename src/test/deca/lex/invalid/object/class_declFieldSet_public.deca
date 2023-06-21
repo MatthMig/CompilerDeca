@@ -1,0 +1,15 @@
+//  Description :
+// 
+//      Test syntaxiquement incorrect de la déclaration d'une classe déclarant un public
+// 
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class nameClass {
+    public int x;
+}

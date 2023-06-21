@@ -42,7 +42,6 @@ public class IntLiteral extends AbstractExpr {
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
         compiler.addInstruction(new LOAD(this.getValue(), GPRegister.getR(1)));
-        compiler.addInstruction(new WINT());
     }
 
     @Override

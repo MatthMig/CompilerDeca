@@ -1,7 +1,7 @@
 package fr.ensimag.deca;
 
+import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.context.EnvironmentType;
-import fr.ensimag.deca.context.ExpDefinition;
 import fr.ensimag.deca.syntax.DecaLexer;
 import fr.ensimag.deca.syntax.DecaParser;
 import fr.ensimag.deca.tools.DecacInternalError;
@@ -23,7 +23,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.HashMap;
 
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -46,10 +45,14 @@ import org.apache.log4j.Logger;
  */
 public class DecacCompiler {
     private static final Logger LOG = Logger.getLogger(DecacCompiler.class);
-    private int varCount = 0;
     private int stackSize = 0;
-    private HashMap<Symbol, ExpDefinition> varList = new HashMap<>();
-    private final LabelManager labelManager;
+    private int maxStackSize = 0;
+    private int maxRegister = 2;
+    private int register = 2;
+    private LabelManager labelManager = new LabelManager();
+    private final EnvironmentExp environmentExp = new EnvironmentExp(null);
+    private int lbOffset = 1;
+
     /**
      * Portable newline character.
      */
@@ -85,6 +88,71 @@ public class DecacCompiler {
 
     public void incrementStackSize(){
         this.stackSize += 1;
+        if(this.getMaxStackSize()  < this.getStackSize()){
+            this.setMaxStackSize(this.getStackSize());
+        }
+    }
+
+    public void decrementStackSize() {
+        this.stackSize -= 1;
+    }
+
+    public int getMaxStackSize() {
+        return maxStackSize;
+    }
+
+    public void setMaxStackSize(int maxStackSize) {
+        this.maxStackSize = maxStackSize;
+    }
+
+    public void incrementMaxRegister(){
+        this.register += 1;
+        if(this.getMaxRegister()  < this.register){
+            this.setMaxRegister(register);
+        }
+    }
+
+    public void decrementMaxRegister() {
+        this.register -= 1;
+    }
+
+    public int getMaxRegister() {
+        return maxRegister;
+    }
+
+    public void setMaxRegister(int maxRegister) {
+        this.maxRegister = maxRegister;
+    }
+
+    public DAddr allocate(){
+        DAddr addr = new RegisterOffset(this.lbOffset, Register.LB);
+        this.incrementLBOffset();
+        return addr;
+    }
+
+    public void incrementLBOffset(){
+        this.lbOffset += 1;
+    }
+
+
+    public int getLBOffset() {
+        return this.lbOffset;
+    }
+
+    public void resetLBOffset(){
+        this.lbOffset = 1;
+    }
+
+    public void setStackSize(int i) {
+        this.stackSize = i;
+    }
+
+    public EnvironmentExp getEnvironmentExp(){
+        return this.environmentExp;
+    }
+
+    public void setLabelManager(LabelManager labelManager) {
+        this.labelManager = labelManager;
     }
 
     /**
@@ -158,6 +226,19 @@ public class DecacCompiler {
         return program.display();
     }
 
+    /**
+     * @see
+     * fr.ensimag.ima.pseudocode.IMAProgram#append(IMAPgrogram p)
+     *
+     */
+    public void append(IMAProgram p) {
+        program.append(p);
+    }
+
+    public IMAProgram getProgram(){
+        return program;
+    }
+
     private final CompilerOptions compilerOptions;
     private final File source;
     /**
@@ -165,23 +246,9 @@ public class DecacCompiler {
      */
     private final IMAProgram program = new IMAProgram();
 
-    public DAddr allocate(){
-        this.varCount += 1;
-        return new RegisterOffset(this.varCount, Register.LB);
-    }
-
-    public void addVar(Symbol s, ExpDefinition def){
-        this.varList.put(s, def);
-    }
-
-    public ExpDefinition getVar(Symbol s){
-        return this.varList.get(s);
-    }
-
-
     /** The global environment for types (and the symbolTable) */
     public final SymbolTable symbolTable = new SymbolTable();
-    public final EnvironmentType environmentType = new EnvironmentType(this);
+    public EnvironmentType environmentType = new EnvironmentType(this);
 
     public Symbol createSymbol(String name) {
         return symbolTable.create(name);
@@ -228,6 +295,7 @@ public class DecacCompiler {
             LOG.fatal("Assertion failed while compiling file " + sourceFile
                     + ":", e);
             err.println("Internal compiler error while compiling file " + sourceFile + ", sorry.");
+            System.out.println(e.toString());
             return true;
         }
     }

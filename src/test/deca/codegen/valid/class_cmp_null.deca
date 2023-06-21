@@ -1,0 +1,32 @@
+//  Description : 
+// 
+//      Test correct qui fait une comparaison avec null
+// 
+//  Résultats :
+// 
+//      N/A 
+// 
+//  Historique : 
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+
+}
+
+{
+    A oA = new A();
+    if (oA==null){
+        println("vous n'allez pas arriver ici");
+    }
+    else {
+        println("Le test fonctionne pour l'instant");
+    }
+    oA = null; 
+    if (oA!=null){
+        println("vous n'allez pas arriver ici");
+    }
+    else {
+        println ("Le test fonctionne jusqu'au bout");
+    }
+}
