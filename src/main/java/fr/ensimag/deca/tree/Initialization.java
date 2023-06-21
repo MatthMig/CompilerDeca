@@ -39,6 +39,18 @@ public class Initialization extends AbstractInitialization {
         Type t2 = this.expression.verifyExpr(compiler, localEnv, currentClass);
         ClassDefinition tcd = compiler.environmentType.defOfClass(t.getName());
 
+
+
+        if(this.expression instanceof Identifier){
+            if(((Identifier)this.expression).getDefinition().isField()){
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                this.expression = new Selection(newThis, ((Identifier)this.expression));
+                t2 = expression.verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+
+
         // If we implicitly initialize a float with an int value.
         if(t2 == compiler.environmentType.INT &&
             t == compiler.environmentType.FLOAT ){

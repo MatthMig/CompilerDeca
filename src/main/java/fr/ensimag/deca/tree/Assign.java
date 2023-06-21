@@ -43,6 +43,7 @@ public class Assign extends AbstractBinaryExpr {
         if(this.getLeftOperand() instanceof Selection && !((Selection)this.getLeftOperand()).getFieldName().getDefinition().isField()){
             throw new ContextualError("Cannot assign a value to anything that isn't a variable or a field", getLocation());
         }
+        
         if((t1 == compiler.environmentType.FLOAT && t2 == compiler.environmentType.INT) || t1 == t2 
             || (t1.isClass() && t2.isClassOrNull())) {
             if (t1.isClass() && t2.isClass()) {

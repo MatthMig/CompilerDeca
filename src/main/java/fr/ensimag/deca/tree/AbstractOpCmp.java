@@ -38,6 +38,15 @@ public abstract class AbstractOpCmp extends AbstractBinaryExpr {
             }
         }
 
+        if(this.getRightOperand() instanceof Identifier){
+            if(((Identifier)this.getRightOperand()).getDefinition().isField()){
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                this.setRightOperand(new Selection(newThis, ((Identifier)this.getRightOperand())));
+                t1 = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+
         // Si types differents ET que aucun des deux n'est un INT alors on n'est pas dans le cas de 'int CMP float'
         if(t1 != t2) {
             if (

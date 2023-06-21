@@ -46,8 +46,21 @@ public abstract class AbstractPrint extends AbstractInst {
     protected void verifyInst(DecacCompiler compiler, EnvironmentExp localEnv,
             ClassDefinition currentClass, Type returnType)
             throws ContextualError {
+                
+        int i = 0;
         for (AbstractExpr expr : arguments.getList()) {
             expr.verifyExpr(compiler, localEnv, currentClass);
+            if(expr instanceof Identifier){
+                if(((Identifier)expr).getDefinition().isField()){
+                    This newThis = new This();
+                    newThis.setLocation(getLocation());
+                    expr = new Selection(newThis, (Identifier)expr);
+                    expr.setLocation(getLocation());
+                    expr.verifyInst(compiler, localEnv, currentClass, returnType);
+                    this.arguments.getModifiableList().set(i, expr);
+                }
+            }
+            i++;
         }
     }
 
@@ -63,7 +76,7 @@ public abstract class AbstractPrint extends AbstractInst {
             else if(a.getType().isFloat()) {
                 compiler.addInstruction(new WFLOAT());
             }
-            else if (a.getType() == compiler.environmentType.BOOLEAN && !(a instanceof BooleanLiteral)) {
+            else if (a.getType().isBoolean() && !(a instanceof BooleanLiteral)) {
                 Label[] labels = compiler.getLabelManager().createBooleanPrintLabel();
                 compiler.addInstruction(new CMP(1, GPRegister.getR(1)));
                 compiler.addInstruction(new BEQ(labels[0]));
