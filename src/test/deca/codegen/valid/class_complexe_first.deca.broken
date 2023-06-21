@@ -1,21 +1,21 @@
-//  Description : 
-// 
-//      Test correct qui utilise deux classes , une mère  une fille, avec un main appelant des méthodes de ces classes 
-// 
+//  Description :
+//
+//      Test correct qui utilise deux classes , une mère  une fille, avec un main appelant des méthodes de ces classes
+//
 //  Résultats :
-// 
-//      N/A 
-// 
-//  Historique : 
-// 
+//
+//      N/A
+//
+//  Historique :
+//
 //      Créé le 13/06 par gl03
 
 class A {
     float x = 3.5;
 
     boolean equalsA ( A a ) {
-    print ( " A : " , x , " ; " );
-    return a != null && a . x == x ;
+        print ("A : ", x, " ; ");
+        return a != null && a.x == x ;
     }
 
     boolean equals ( Object o ) {
@@ -37,13 +37,14 @@ class B extends A {
     }
 
     boolean equals ( Object o ) {
-    return o instanceof B && equalsB (( B )( o ));
+        println(o instanceof B);
+        return o instanceof B && equalsB(( B )( o ));
     }
 }
 
 {
-    A oB =new B () , oA =new A ();
-    oA . test ( oB );
-    oB . test ( oA );
-    oB . test (new B ());
+    A oB = new B(), oA = new A();
+    oA.test(oB);
+    oB.test(oA);
+    oB.test(new B());
 }

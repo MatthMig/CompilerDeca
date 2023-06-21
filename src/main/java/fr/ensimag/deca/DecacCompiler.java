@@ -151,6 +151,10 @@ public class DecacCompiler {
         return this.environmentExp;
     }
 
+    public void setLabelManager(LabelManager labelManager) {
+        this.labelManager = labelManager;
+    }
+
     /**
      * Source file associated with this compiler instance.
      */

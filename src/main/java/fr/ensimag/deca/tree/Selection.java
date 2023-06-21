@@ -12,6 +12,7 @@ import fr.ensimag.deca.context.MethodDefinition;
 import fr.ensimag.deca.context.Signature;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
+import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.NullOperand;
 import fr.ensimag.ima.pseudocode.instructions.BEQ;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
@@ -162,7 +163,7 @@ public class Selection extends AbstractLValue {
             } else {
                 if (((MethodDefinition) expDef).getVisibility() == Visibility.PROTECTED) {
                     // We act like if we didn't find anything
-                    expDef = null;                    
+                    expDef = null;
                 }
 
             }
@@ -197,9 +198,10 @@ public class Selection extends AbstractLValue {
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
-        this.operand.codeGenExp(compiler, 2);
+        this.codeGenExp(compiler, 2);
+        // this.operand.codeGenExp(compiler, 2);
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
-        this.fieldName.codeGenPrint(compiler);
+        // this.fieldName.codeGenPrint(compiler);
     }
 
     @Override
@@ -245,6 +247,11 @@ public class Selection extends AbstractLValue {
             }
             this.fieldName.codeGenExp(compiler, n);
         }
+    }
+
+    @Override
+    public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
+        this.codeGenExp(compiler, 2);
     }
 
     public AbstractIdentifier getFieldName() {

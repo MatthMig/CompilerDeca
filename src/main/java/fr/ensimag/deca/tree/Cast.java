@@ -7,6 +7,7 @@ import fr.ensimag.deca.context.ClassDefinition;
 import fr.ensimag.deca.context.ContextualError;
 import fr.ensimag.deca.context.Definition;
 import fr.ensimag.deca.context.EnvironmentExp;
+import fr.ensimag.deca.context.EnvironmentType;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Register;
@@ -111,15 +112,22 @@ public class Cast extends AbstractExpr {
         Type expressionType = expression.getType();
 
         if(expressionType.isClass()){
-            ClassDefinition classDef =compiler.environmentType.defOfClass(expressionType.getName());
+            ClassDefinition classDef;
+            if(expressionType.getName().getName().equals("Object")){
+                classDef = ((ClassDefinition)compiler.environmentType.defOfType(compiler.environmentType.OBJECT.getName()));
+            }
+            else{
+                classDef =compiler.environmentType.defOfClass(expressionType.getName());
+            }
             ClassDefinition castClass =compiler.environmentType.defOfClass(t.getName());
+
 
             //Downcast case
             if(classDef.isParentClassOf(castClass) ){
                 InstanceOf iOf = new InstanceOf(expression, castType);
-                iOf.codeGenInst(compiler);
+                iOf.codeGenExp(compiler, n+1);
                 //compare 1 with R2
-                compiler.addInstruction(new CMP(1,GPRegister.getR(2)));
+                compiler.addInstruction(new CMP(1,GPRegister.getR(n+1)));
                 //BNE on error
                 compiler.addInstruction(new BNE(compiler.getLabelManager().getImpossibleDownCastLabel()));
             }
@@ -136,7 +144,6 @@ public class Cast extends AbstractExpr {
                 }
             }
         }
-
     }
 
 

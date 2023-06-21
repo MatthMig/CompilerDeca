@@ -155,6 +155,7 @@ inst returns[AbstractInst tree]
         }
         | /* Epsilon */ {
                 $tree = new Return(null);
+                setLocation($tree, $RETURN);
             }) SEMI {
         }
     ;
@@ -381,7 +382,7 @@ select_expr returns[AbstractExpr tree]
             // we matched "e1.i(args)"
             assert($args.tree != null);
             $tree = new Selection($e1.tree, $i.tree, $args.tree);
-            setLocation($tree, $e1.start);   
+            setLocation($tree, $e1.start);
         }
         | /* epsilon */ {
             // we matched "e.i"
@@ -514,7 +515,7 @@ class_body returns[ListDeclField declFieldList, ListDeclMethod declMethodList]
         $declFieldList=new ListDeclField();
         $declMethodList=new ListDeclMethod();
     }
-    : (m=decl_method { 
+    : (m=decl_method {
             $declMethodList.add($m.tree);
         }
       | decl_field_set[$declFieldList]
@@ -556,11 +557,11 @@ decl_field[AbstractIdentifier t, Visibility v] returns [AbstractDeclField tree]
         assert($i.tree != null);
         }
       (EQUALS e=expr {
-        assert($e.tree != null); 
+        assert($e.tree != null);
         init=true;
         initia = new Initialization($e.tree);
         setLocation(initia,$e.start);
-        $tree = new DeclField($v,$t,$i.tree,initia);          
+        $tree = new DeclField($v,$t,$i.tree,initia);
         }
       )? {
         if (!init) {

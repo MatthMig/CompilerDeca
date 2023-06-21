@@ -135,6 +135,7 @@ public class DeclClass extends AbstractDeclClass {
         // Generating the initialization code under a sub compiler
         DecacCompiler initializationCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
         initializationCompiler.environmentType = compiler.environmentType;
+        initializationCompiler.setLabelManager(compiler.getLabelManager());
         this.listDeclField.codeGen(initializationCompiler);
 
         // Start the init subprogram with an adapted label

@@ -64,8 +64,21 @@ public class Return extends AbstractInst {
         }
 
         // If the returned type is not the same as the method's return type, then there is a contextual error.
-        if (!t.sameType(returnType))
-            throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+        if (!t.sameType(returnType)){
+            if(t.isClass() && returnType.isClass() || returnType.isClass() && t.isNull()){
+                if(!t.isNull()){
+                    ClassDefinition tDef = compiler.environmentType.defOfClass(t.getName());
+                    ClassDefinition returnTypeDef = compiler.environmentType.defOfClass(returnType.getName());
+                    if(!returnTypeDef.isParentClassOf(tDef)){
+                        System.out.println("ss");
+                        throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+                    }
+                }
+            }
+            else{
+                throw new ContextualError("Return type must be " + returnType + ", currently is " + t, this.getLocation());
+            }
+        }
    }
 
 

@@ -68,7 +68,7 @@ public class DeclMethod extends AbstractDeclMethod{
     public void decompile(IndentPrintStream s) {
         throw new UnsupportedOperationException("not yet implemented");
     }
-    
+
     @Override
     protected void verifyDeclMethod(DecacCompiler compiler,
             EnvironmentExp localEnv, ClassDefinition currentClass, int index)
@@ -88,7 +88,7 @@ public class DeclMethod extends AbstractDeclMethod{
             methodSignature.addParamType(param.getType().verifyType(compiler));
         }
         this.methodName.setType(type);
-        
+
         FieldDefinition potentialDef = null;
         if (currentClass.getSuperClass() != null) {
             // This cannot be something else than a field if found,
@@ -98,18 +98,18 @@ public class DeclMethod extends AbstractDeclMethod{
             potentialDef = (FieldDefinition) currentClass.getSuperClass().getMembers().get(methodName.getName());
         }
         if (potentialDef != null) {
-                
+
             // In order to avoid masking a field with a method
             String message = String.format("Can't declare method '%s' in class %s because the super class %s have a field with that name", this.methodName.getName(), currentClass.getType().getName().getName(), currentClass.getSuperClass().getType().getName().getName());
             throw new ContextualError(message, getLocation());
         }
-        
+
         TypeDefinition typeDef = compiler.environmentType.defOfType(returnType.getName());
         returnType.setDefinition(typeDef);
 
         // Formatting the signature of the method
         String toStringSignature = methodSignature.toString();
-        
+
         MethodDefinition methodDef = new MethodDefinition(type, getLocation(), methodSignature, visib, index);
         methodName.setDefinition(methodDef);
 
@@ -190,6 +190,7 @@ public class DeclMethod extends AbstractDeclMethod{
 
             // Generating the method code under a sub compiler
             DecacCompiler methodCompiler = new DecacCompiler(compiler.getCompilerOptions(), compiler.getSource());
+            methodCompiler.setLabelManager(compiler.getLabelManager());
             this.methodBody.codeGen(methodCompiler);
 
             // Set method stack overflow test and stack pointer
@@ -215,7 +216,7 @@ public class DeclMethod extends AbstractDeclMethod{
             // Return to old context
             compiler.addInstruction(new RTS());
         }
-        else{            
+        else{
             this.methodBody.codeGen(compiler);
         }
 
