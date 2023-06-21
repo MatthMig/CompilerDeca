@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
-import fr.ensimag.deca.tree.Visibility;
 
 /**
  * Dictionary associating identifier's ExpDefinition to their names.
@@ -24,9 +23,6 @@ import fr.ensimag.deca.tree.Visibility;
  * @date 21/04/2023
  */
 public class EnvironmentExp {
-    // A FAIRE : implémenter la structure de donnée représentant un
-    // environnement (association nom -> définition, avec possibilité
-    // d'empilement).
     private HashMap<Symbol, Definition> definitions = new HashMap<>();
 
     private EnvironmentExp parentEnvironment;
@@ -84,7 +80,6 @@ public class EnvironmentExp {
 
                 // Checking the method has a similar signature
                 if(((MethodDefinition)definitions.get(symb)).getSignature().paramTypes.size() == size && ((MethodDefinition)definitions.get(symb)).getSignature().getMethodName().equals(methodName) ){
-                    // System.out.println("found -> " + definitions.get(symb));
                     methodDefs.add((MethodDefinition)definitions.get(symb));
                 }
             }
