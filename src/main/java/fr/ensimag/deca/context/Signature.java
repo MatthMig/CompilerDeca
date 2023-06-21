@@ -133,7 +133,9 @@ public class Signature {
                 else{
                     // Call the associated definition
                     paramTypeDefinition = compiler.environmentType.defOfType(params.getList().get(i).getType().getName());
-                    if(paramTypeDefinition.getType().getName() != methodDefinition.getSignature().getParamTypes().get(i).getName()){
+                    // if we passed an int while a float was expected, we do not remove the method
+                    if(paramTypeDefinition.getType().getName() != methodDefinition.getSignature().getParamTypes().get(i).getName()
+                        && !(paramTypeDefinition.getType().isInt() && methodDefinition.getSignature().getParamTypes().get(i).isFloat())){
                         found = null;
                     }
                 }

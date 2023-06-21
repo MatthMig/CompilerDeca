@@ -16,6 +16,7 @@ import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.NullOperand;
 import fr.ensimag.ima.pseudocode.instructions.BEQ;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
+import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.SUBSP;
@@ -210,10 +211,16 @@ public class Selection extends AbstractLValue {
     protected void codeGenExp(DecacCompiler compiler, int n) {
         // case of a method call
         if(this.params != null){
+            int i = 0;
             for(AbstractExpr aExpr : this.params.getList()){
                 aExpr.codeGenExp(compiler, n);
+                // if we passed an int while a float was expected, we convert it
+                if (aExpr.getType().isInt() && this.fieldName.getMethodDefinition().getSignature().getParamTypes().get(i).isFloat()) {
+                    compiler.addInstruction(new FLOAT(GPRegister.getR(n), GPRegister.getR(n)));
+                }
                 compiler.incrementStackSize();
                 compiler.addInstruction(new PUSH(GPRegister.getR(n)));
+                i++;
             }
             // Generate left selection
             this.operand.codeGenExp(compiler, n);
