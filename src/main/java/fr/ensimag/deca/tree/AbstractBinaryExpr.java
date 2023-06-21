@@ -4,8 +4,6 @@ import fr.ensimag.deca.DecacCompiler;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
-import fr.ensimag.ima.pseudocode.instructions.WFLOAT;
-import fr.ensimag.ima.pseudocode.instructions.WINT;
 
 import java.io.PrintStream;
 import org.apache.commons.lang.Validate;
@@ -74,14 +72,8 @@ public abstract class AbstractBinaryExpr extends AbstractExpr {
 
     @Override
     protected void codeGenPrint(DecacCompiler compiler) {
-        codeGenExp(compiler, 2);
+        this.codeGenExp(compiler, 2);
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(1)));
-        if(this.getType() == compiler.environmentType.FLOAT){
-            compiler.addInstruction(new WFLOAT());
-        }
-        if(this.getType() == compiler.environmentType.INT){
-            compiler.addInstruction(new WINT());
-        }
     }
 
 }

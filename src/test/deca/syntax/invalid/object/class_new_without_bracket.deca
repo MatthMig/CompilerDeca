@@ -1,0 +1,19 @@
+//  Description :
+// 
+//      Test incorrect d'un new sans '('')'
+// 
+//  Résultats : 
+// 
+//      N/A
+// 
+//  Historique :
+// 
+//      Créé le 13/06 par gl03
+
+class A {
+
+}
+
+{
+    A oA = new A;
+}

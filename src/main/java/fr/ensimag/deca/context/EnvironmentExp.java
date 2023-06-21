@@ -1,5 +1,6 @@
 package fr.ensimag.deca.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import fr.ensimag.deca.tools.SymbolTable.Symbol;
@@ -22,12 +23,13 @@ import fr.ensimag.deca.tools.SymbolTable.Symbol;
  * @date 21/04/2023
  */
 public class EnvironmentExp {
-    // A FAIRE : implémenter la structure de donnée représentant un
-    // environnement (association nom -> définition, avec possibilité
-    // d'empilement).
     private HashMap<Symbol, Definition> definitions = new HashMap<>();
 
-    EnvironmentExp parentEnvironment;
+    private EnvironmentExp parentEnvironment;
+
+    public EnvironmentExp getParentEnvironment() {
+        return parentEnvironment;
+    }
 
     public EnvironmentExp(EnvironmentExp parentEnvironment) {
         this.parentEnvironment = parentEnvironment;
@@ -65,6 +67,24 @@ public class EnvironmentExp {
             throw new DoubleDefException();
         }
         definitions.put(name, def);
+    }
+
+    public ArrayList<MethodDefinition> getMethodsWithSignatureLike(Symbol methodName, int size) {
+        ArrayList<MethodDefinition> methodDefs = new ArrayList<>();
+
+        // Looking for every definitions in the environment
+        for(Symbol symb : definitions.keySet()){
+
+            // Aiming for methods
+            if(definitions.get(symb).isMethod()){
+
+                // Checking the method has a similar signature
+                if(((MethodDefinition)definitions.get(symb)).getSignature().paramTypes.size() == size && ((MethodDefinition)definitions.get(symb)).getSignature().getMethodName().equals(methodName) ){
+                    methodDefs.add((MethodDefinition)definitions.get(symb));
+                }
+            }
+        }
+        return methodDefs;
     }
 
 }

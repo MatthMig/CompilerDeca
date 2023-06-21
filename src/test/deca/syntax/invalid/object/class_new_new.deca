@@ -1,0 +1,19 @@
+// Description :
+// 
+//      Test incorrect d'une classe nommée new
+// 
+// Résultats : 
+// 
+//      N/A 
+// 
+// Historique : 
+// 
+//      Créé le 19/06/2023 par gl03
+
+class new {
+    
+}
+
+{
+    new A = new new;
+}

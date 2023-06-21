@@ -42,6 +42,30 @@ public class IfThenElse extends AbstractInst {
             elseBranch.verifyListInst(compiler, localEnv, currentClass, returnType); // finally the 'else' branch
     }
 
+    public boolean verifyReturn(DecacCompiler compiler, EnvironmentExp localEnv, ClassDefinition currentClass,
+            Type returnType) {
+        boolean thenWillEnd = false;
+        boolean elseWillEnd = false;
+        for(AbstractInst inst : thenBranch.getList()){
+            if(inst instanceof Return){
+                thenWillEnd = true;
+            }
+            if(inst instanceof IfThenElse){
+                thenWillEnd = thenWillEnd || ((IfThenElse)inst).verifyReturn(compiler, localEnv, currentClass, returnType);
+            }
+        }
+
+        for(AbstractInst inst : elseBranch.getList()){
+            if(inst instanceof Return){
+                elseWillEnd = true;
+            }
+            if(inst instanceof IfThenElse){
+                elseWillEnd = elseWillEnd || ((IfThenElse)inst).verifyReturn(compiler, localEnv, currentClass, returnType);
+            }
+        }
+        return thenWillEnd && elseWillEnd;
+    }
+
     @Override
     protected void codeGenInst(DecacCompiler compiler) {
         Label[] ifLabels = compiler.getLabelManager().createIfLabels();            // we create 2 labels for the if statement
@@ -86,4 +110,5 @@ public class IfThenElse extends AbstractInst {
         thenBranch.prettyPrint(s, prefix, false);
         elseBranch.prettyPrint(s, prefix, true);
     }
+
 }

@@ -1,5 +1,7 @@
 package fr.ensimag.deca.tree;
 
+import fr.ensimag.deca.tools.IndentPrintStream;
+
 /**
  * Visibility of a field.
  *
@@ -9,5 +11,11 @@ package fr.ensimag.deca.tree;
 
 public enum Visibility {
     PUBLIC,
-    PROTECTED
+    PROTECTED;
+
+    public void decompile(IndentPrintStream s) {
+        if (this == Visibility.PROTECTED) {
+            s.print(Visibility.PROTECTED.toString().toLowerCase() + " ");
+        }
+    }
 }

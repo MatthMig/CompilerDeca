@@ -11,12 +11,29 @@ options {
 @members {
 }
 
+// Class related tokens
+CLASS: 'class';
+EXTENDS: 'extends';
+PROTECTED: 'protected';
+NEW: 'new';
+THIS: 'this';
+INSTANCEOF: 'instanceof';
+NULL: 'null';
+SUPER: 'super';
+ASM: 'asm';
+RETURN: 'return';
+DOT: '.';
+
+IMPORT: 'import';
+
 OBRACE: '{';
 CBRACE: '}';
 OPARENT: '(';
 CPARENT: ')';
 PRINT: 'print';
+PRINTX: 'printx';
 PRINTLN: 'println';
+PRINTLNX: 'printlnx';
 READINT: 'readInt';
 READFLOAT: 'readFloat';
 TRUE: 'true';
@@ -45,6 +62,7 @@ PERCENT: '%';
 WHILE: 'while';
 IF: 'if';
 ELSE: 'else';
+
 
 SEMI: ';';
 COMMA: ',';
@@ -81,9 +99,10 @@ fragment FLOATHEX: HEXPREF NUMHEX '.' NUMHEX ('P' | 'p') SIGN NUM FLOATSUF;
 FLOAT: FLOATHEX | FLOATDEC;
 
 // Strings
-fragment QUOTES: '"';
 fragment SINGLE_QUOTE: '\'';
-STRING: ( QUOTES .*? QUOTES ) | ( SINGLE_QUOTE .*? SINGLE_QUOTE ) ;
+fragment STRING_CAR: ~('\n' | '"' | '\\');
+STRING: '"' (STRING_CAR | '\\"' | '\\\\')* '"';
+MULTI_LINE_STRING: '"' (STRING_CAR | '\n' | '\\"' | '\\\\')* '"';
 
 // Skips
 SPACE:   ( 
@@ -96,7 +115,7 @@ SPACE:   (
    }
 ;
 
-fragment LINE_COMMENT: '//' (. | '\n')*? '\n';
+fragment LINE_COMMENT: '//' .*? ('\n' | EOF);
 fragment MULTI_COMMENT: '/*' .*? '*/';
 COMMENTS: (
       LINE_COMMENT
@@ -105,3 +124,12 @@ COMMENTS: (
       skip();
    }
 ;
+
+// the include directive invokes the doInclude method during the lexing process.
+fragment FILENAME: (LETTER | DIGIT | '.' | '-' | '_')+;
+// look AbstractDecaLexer.java to know how finding a file and circularInclude work.
+// Here we define a block of action for doInclude (look documentation of ANTLR4)
+INCLUDE: '#include' (' ')* '"' FILENAME '"' {
+   doInclude(getText());
+   skip(); 
+};

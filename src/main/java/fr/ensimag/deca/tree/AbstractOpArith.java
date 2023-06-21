@@ -56,7 +56,9 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
             this.getRightOperand().codeGenExp(compiler, n+1);
 
             DVal regN = GPRegister.getR(n+1);
+            compiler.incrementMaxRegister();
             this.codeGenMnemo(compiler, regN, GPRegister.getR(n));
+            compiler.decrementMaxRegister();
         }
 
         else{
@@ -67,6 +69,7 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
             compiler.addInstruction(new LOAD(GPRegister.getR(n), GPRegister.getR(1)));
             compiler.addInstruction(new POP(GPRegister.getR(n)),"restauration");
+            compiler.decrementStackSize();
 
             DVal regN = GPRegister.getR(1);
             this.codeGenMnemo(compiler, regN, GPRegister.getR(n));
