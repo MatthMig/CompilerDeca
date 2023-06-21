@@ -177,17 +177,21 @@ public class DeclClass extends AbstractDeclClass {
                 // we add the super method to the table
                 this.className.getClassDefinition().getMethodTable().addMethod(entry.getKey(), entry.getValue());
             }
-        }
+        }    
+        
+        this.className.getClassDefinition().getMethodTable().reindex();
 
-        // For each method of the table that was just generated
-        for (MethodDefinition methodDef : this.className.getClassDefinition().getMethodTable().getMethodsMap().keySet()) {
+        for(int i = 1 ; i < this.className.getClassDefinition().getMethodTable().getMethodsMap().size() + 1; i++){
+            MethodDefinition methodDef = this.className.getClassDefinition().getMethodTable().getMethodByIndex(i);
             Label label = this.className.getClassDefinition().getMethodTable().getLabelByDef(methodDef);
             // Load the PC address for the method
             compiler.addInstruction(new LOAD(label, GPRegister.R0));
 
             // Store it in the memory, at it's place in the method table
+            methodDef.setOperand(new RegisterOffset(compiler.getLBOffset(), Register.GB));
             compiler.addInstruction(new STORE(GPRegister.R0, compiler.allocate()));
         }
+
         compiler.addComment("end : method table for class " + this.className.getName());
     }
 

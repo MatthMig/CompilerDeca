@@ -89,6 +89,24 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
 
         //if one of the operands is not a number: problem !
 
+        if(this.getLeftOperand() instanceof Identifier){
+            if(((Identifier)this.getLeftOperand()).getDefinition().isField()){
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                this.setLeftOperand(new Selection(newThis, ((Identifier)this.getLeftOperand())));
+                t1 = getLeftOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+
+        if(this.getRightOperand() instanceof Identifier){
+            if(((Identifier)this.getRightOperand()).getDefinition().isField()){
+                This newThis = new This();
+                newThis.setLocation(getLocation());
+                this.setRightOperand(new Selection(newThis, ((Identifier)this.getRightOperand())));
+                t1 = getRightOperand().verifyExpr(compiler, localEnv, currentClass);
+            }
+        }
+
         if (!t1.isInt()&&!t1.isFloat()) {
             throw new ContextualError("left operand is not an int nor a float",this.getLocation());
 

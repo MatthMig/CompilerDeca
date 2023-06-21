@@ -27,11 +27,31 @@ public class MethodTable {
         }
         return null;
     }
+
+    public void reindex(){
+        int offset = 1;
+        for(int i = 1 ; i < this.methodTable.size() +1 ; i++){
+            if(this.getMethodByIndex(i) == null){
+                MethodDefinition mdef = this.getMethodByIndex(this.methodTable.size() + offset);
+                mdef.setIndex(i);
+                offset++;
+            }
+        }
+    }
     
     public Label getLabelByIndex(int index){
         for(MethodDefinition mdef : this.getMethodsMap().keySet()){
             if(mdef.getIndex() == index){
                 return mdef.getLabel();
+            }
+        }
+        return null;
+    }
+
+    public MethodDefinition getMethodByIndex(int index){
+        for(MethodDefinition mdef : this.getMethodsMap().keySet()){
+            if(mdef.getIndex() == index){
+                return mdef;
             }
         }
         return null;

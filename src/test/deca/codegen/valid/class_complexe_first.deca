@@ -37,7 +37,6 @@ class B extends A {
     }
 
     boolean equals ( Object o ) {
-        println(o instanceof B);
         return o instanceof B && equalsB(( B )( o ));
     }
 }

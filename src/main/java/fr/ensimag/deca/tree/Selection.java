@@ -14,7 +14,9 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.Label;
 import fr.ensimag.ima.pseudocode.NullOperand;
+import fr.ensimag.ima.pseudocode.Register;
 import fr.ensimag.ima.pseudocode.instructions.BEQ;
+import fr.ensimag.ima.pseudocode.instructions.BNE;
 import fr.ensimag.ima.pseudocode.instructions.CMP;
 import fr.ensimag.ima.pseudocode.instructions.FLOAT;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
@@ -261,6 +263,8 @@ public class Selection extends AbstractLValue {
     @Override
     public void codeGenCondition(DecacCompiler compiler, Boolean neg, Label label) {
         this.codeGenExp(compiler, 2);
+        compiler.addInstruction(new CMP(1, Register.getR(2)));
+        compiler.addInstruction(new BNE(label));
     }
 
     public AbstractIdentifier getFieldName() {
