@@ -1,0 +1,14 @@
+#include "Math.decah"
+
+{
+    Math math = new Math();
+
+    println("racine négative :");
+    println("racine(-1)=",math.sqrt(-1));
+
+    println("arcsin(x) avec x <-1 ou x>1 :");
+    println(math.asin(2));
+
+    
+
+}

@@ -125,7 +125,7 @@ class Math {
         float x;
         float y;
         float z;
-        float q;
+        float q;        
         if(f<0){
             _error_racine_negative();
             
