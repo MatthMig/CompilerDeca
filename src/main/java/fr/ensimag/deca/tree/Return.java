@@ -8,6 +8,7 @@ import fr.ensimag.deca.context.EnvironmentExp;
 import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
+import fr.ensimag.ima.pseudocode.instructions.RTS;
 
 import java.io.PrintStream;
 
@@ -90,6 +91,7 @@ public class Return extends AbstractInst {
             this.returnExpr.codeGenExp(compiler, 2);
 
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(0)));
+        compiler.addInstruction(new RTS());
     }
 
 }
