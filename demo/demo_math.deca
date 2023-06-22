@@ -1,0 +1,66 @@
+#include "Math.decah"
+
+{
+    Math math = new Math();
+    float x;
+    float y;
+    float z;
+
+    //print("Saisir un nombre : ");
+    //x = readFloat();
+    //println(x);
+    //println("Valeur absolue de ",x,"=",math.abs(x));
+    //print("Saisir une puissance :");
+    //y = readFloat();
+    //println(y);
+    //println(x,"à la puissance",y,"=",math.pow(x,y));
+
+    println("Valeur de pi : ",math.pi);
+    println("sin(pi/2)=   ",math.sin(math.pi/2));
+    println("sin(3pi/2)=  ",math.sin(3*math.pi/2));
+    println("sin(5pi/2)=  ",math.sin(5*math.pi/2));
+    println("sin(pi/3)=   ",math.sin(math.pi/3));
+    println("sin(2pi/3)=  ",math.sin(2*math.pi/3));
+    println("sin(pi/6)=   ",math.sin(math.pi/6));
+    println("sin(5pi/6)=  ",math.sin(5*math.pi/6));
+    println("sin(pi/4)=   ",math.sin(math.pi/4));
+    println("sin(3pi/4)=  ",math.sin(3*math.pi/4));
+    println("");
+    println("cos(pi/2)=   ",math.cos(math.pi/2));
+    println("cos(3pi/2)=  ",math.cos(3*math.pi/2));
+    println("cos(5pi/2)=  ",math.cos(5*math.pi/2));
+    println("cos(pi/3)=   ",math.cos(math.pi/3));
+    println("cos(2pi/3)=  ",math.cos(2*math.pi/3));
+    println("cos(-pi/3)=   ",math.cos(-1*math.pi/3));
+    println("cos(pi/6)=   ",math.cos(math.pi/6));
+    println("cos(5pi/6)=  ",math.cos(5*math.pi/6));
+    println("cos(-pi/6)=   ",math.cos(-1*math.pi/6));
+    println("cos(pi/4)=   ",math.cos(math.pi/4));
+    println("cos(3pi/4)=  ",math.cos(3*math.pi/4));
+    println("cos(-pi/4)=   ",math.cos(-1*math.pi/4));
+
+    println("asin(1) = ",math.asin(1));
+    println("asin(0) = ",math.asin(0));
+    println("asin(-1) = ",math.asin(-1));
+    println("asin(0.5) = ",math.asin(0.5));
+    println("asin(-0.5) = ",math.asin(-0.5));
+    println("asin(racine(2)/2) = ",math.asin(math.sqrt(2)/2));
+    println("asin(-racine(2)/2) = ",math.asin(-1*math.sqrt(2)/2));
+    println("asin(racine(3)/2) = ",math.asin(math.sqrt(3)/2));
+    println("asin(-racine(2)/2) = ",math.asin(-1*math.sqrt(3)/2));
+
+
+
+    println("arctan(1)=",math.atan(1));
+    println("sin(racine(2)/2)/cos(racine(2)/2)=",math.sin(math.sqrt(2)/2)/math.cos(math.sqrt(2)/2));
+
+    println("racine(4)=",math.sqrt(4));
+    println("racine(0)=",math.sqrt(0));
+    println("racine(6)=",math.sqrt(6));
+    println("racine(6561)=",math.sqrt(6561));
+    println("limite de puissance avec exposant < 1 --> 4^0.5 : ",math.pow(4.0,0.5));
+
+    println("problème d'approximation qui perd en précision rapidement --> sin (17pi/2):",math.sin(17*(math.pi/2)));
+    
+
+}
