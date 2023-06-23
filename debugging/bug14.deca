@@ -1,0 +1,7 @@
+// bugs de "decac -p"
+class A { }
+class B extends A { }
+{
+  ;
+  plante_en_etapeB_mais_pas_en_etapeA();
+}

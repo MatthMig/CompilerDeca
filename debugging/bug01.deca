@@ -1,0 +1,5 @@
+{
+  print("Jusqu'ici...");
+  "Une autre façon de commenter du code qu'on pourrait propager en commentaire dans le code assembleur ?";
+  println("tout va bien!");
+}

@@ -1,0 +1,9 @@
+{
+  boolean b = true;
+  int zero=0;
+  b || 1/zero==0; // une façon compacte de faire un "assert" en Deca ?
+  println("OK");
+  b = false;
+  b || 1/zero==0;
+  println("KO: on attend une erreur à l'exec avant ce code");
+}

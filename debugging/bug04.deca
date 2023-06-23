@@ -1,0 +1,28 @@
+// Ce programme est censé pouvoir être exécuté
+
+class M {
+
+  // integer square root of an integer
+  int int_sqrt(int y) {
+    int x=0, old;
+    boolean b=y >= 0;
+    while(b) {
+      old = x;
+      x=x+1;
+      if (x*x > y) {
+        return old;
+      }
+    }
+  }  
+  
+}
+
+{
+  M m=new M();
+  println(m.int_sqrt(100),"=",10);
+  println(m.int_sqrt(120),"=",10);
+  println(m.int_sqrt(121),"=",11);
+  println(m.int_sqrt(-1),"KO: erreur 'absence de return' attendue");
+}
+
+ 

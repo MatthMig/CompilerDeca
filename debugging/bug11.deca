@@ -1,0 +1,9 @@
+class $ {
+  void $ () {
+    println("J'aime les $");
+  }
+}
+
+{
+  (new $()).$();
+}
