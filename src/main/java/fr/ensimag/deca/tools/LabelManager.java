@@ -12,6 +12,7 @@ public class LabelManager {
     private Label objetcEqualsLabel = new Label("code.Object.equals");
     private Label objectInitLabel = new Label("init.Object");
     private Label impossibleDownCastLabel = new Label("downcast_error");
+    private Label getMethodNeverReturns = new Label("methodNeverReturns_error");
 
     /**
      * Getter of the lowest free label integer
@@ -189,5 +190,13 @@ public class LabelManager {
      */
     public Label getImpossibleDownCastLabel(){
         return this.impossibleDownCastLabel;
+    }
+
+    /**
+     * Returns a label for method never returns error
+     * @return
+     */
+    public Label getMethodNeverReturns() {
+        return this.getMethodNeverReturns;
     }
 }

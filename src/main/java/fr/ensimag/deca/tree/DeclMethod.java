@@ -20,6 +20,7 @@ import fr.ensimag.ima.pseudocode.instructions.PUSH;
 import fr.ensimag.ima.pseudocode.instructions.POP;
 import fr.ensimag.ima.pseudocode.instructions.STORE;
 import fr.ensimag.ima.pseudocode.instructions.BOV;
+import fr.ensimag.ima.pseudocode.instructions.BRA;
 import fr.ensimag.ima.pseudocode.instructions.TSTO;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
 
@@ -223,7 +224,7 @@ public class DeclMethod extends AbstractDeclMethod{
             compiler.addInstruction(new SUBSP(localVariableCount));
 
             // Return to old context
-            compiler.addInstruction(new RTS());
+            compiler.addInstruction(new BRA(compiler.getLabelManager().getMethodNeverReturns()));
         }
         else{
             this.methodBody.codeGen(compiler);
