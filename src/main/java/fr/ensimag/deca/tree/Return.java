@@ -9,6 +9,7 @@ import fr.ensimag.deca.tools.IndentPrintStream;
 import fr.ensimag.ima.pseudocode.GPRegister;
 import fr.ensimag.ima.pseudocode.instructions.LOAD;
 import fr.ensimag.ima.pseudocode.instructions.RTS;
+import fr.ensimag.ima.pseudocode.instructions.POP;
 
 import java.io.PrintStream;
 
@@ -91,6 +92,10 @@ public class Return extends AbstractInst {
             this.returnExpr.codeGenExp(compiler, 2);
 
         compiler.addInstruction(new LOAD(GPRegister.getR(2), GPRegister.getR(0)));
+        // Restore saved registers
+        for(int i = compiler.getMaxRegister() ; i >= 2 ; i--){
+            compiler.addInstruction(new POP(GPRegister.getR(i)),"restore register R" + i);
+        }
         compiler.addInstruction(new RTS());
     }
 
