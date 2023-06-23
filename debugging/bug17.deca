@@ -1,0 +1,17 @@
+#include "Math.decah"
+
+{
+  Math m=new Math();
+  float ff = 1.0e-10, ii=1.0e-20, aa ;
+  while (ff <= 1.0e-04) {
+    aa = 1.0 - m.cos(ff);
+    if (aa != 0.0) {
+      println("KO ", ff, " =[cos]=> ", aa);
+    }
+    ii = 4.0*ii;
+    ff = ff+ii;
+  }
+  println("---");
+  println(m.sin(2.61216e+14)," < 0");
+  println(m.sin(2.61216e+09)," ~ 0.8");
+}

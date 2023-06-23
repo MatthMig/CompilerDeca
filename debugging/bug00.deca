@@ -1,0 +1,10 @@
+// codegen/valid
+
+class A {
+  void a(int x){ println("i", x); }
+}
+
+{
+  A o = new A();
+  o.a(3);
+}

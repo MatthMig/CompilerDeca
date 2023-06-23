@@ -1,0 +1,11 @@
+// context/invalid
+
+class A {
+  void a(float x){ println("f", x); }
+  void a(int x){ println("i", x); }
+}
+
+{
+  A o = new A();
+  o.a(3);
+}
