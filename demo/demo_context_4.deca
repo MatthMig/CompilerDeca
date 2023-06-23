@@ -1,0 +1,9 @@
+class Demo {
+    boolean mauvaiseSignature(int a) {
+        return true;
+    }
+}
+{
+    Demo d = new Demo();
+    d instanceof MauvaiseNote;
+}

@@ -44,6 +44,11 @@ public class UnaryMinus extends AbstractUnaryExpr {
     }
 
     @Override
+    protected void codeGenPrint(DecacCompiler compiler) {
+        this.codeGenExp(compiler, 2);
+    }
+
+    @Override
     protected String getOperatorName() {
         return "-";
     }
