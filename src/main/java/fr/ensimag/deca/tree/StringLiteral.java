@@ -48,6 +48,16 @@ public class StringLiteral extends AbstractStringLiteral {
     }
 
     @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        this.codeGenExp(compiler, 2);
+    }
+
+
+    @Override
+    protected void codeGenExp(DecacCompiler compiler, int n) {
+    }
+
+    @Override
     public void decompile(IndentPrintStream s) {
         s.print(this.value);
     }
