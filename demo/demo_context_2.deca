@@ -1,0 +1,5 @@
+class Demo {
+    boolean mauvaisReturn() {
+        return 1;
+    }
+}
