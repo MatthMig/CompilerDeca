@@ -52,4 +52,9 @@ public abstract class AbstractOpBool extends AbstractBinaryExpr {
         // End
         compiler.addLabel(labels[1]);
     }
+
+    @Override
+    protected void codeGenInst(DecacCompiler compiler) {
+        codeGenExp(compiler, 2);
+    }
 }

@@ -115,12 +115,12 @@ public abstract class AbstractOpArith extends AbstractBinaryExpr {
         if (!t2.isInt()&&!t2.isFloat()){
             throw new ContextualError("right operand is not an int nor a float",this.getLocation());
         }
-        // Check if the operation is division and the divisor is 0
-        if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0)
-                                            || ( this.getRightOperand().getClass() == FloatLiteral.class &&  (((FloatLiteral) this.getRightOperand()).getValue() == 0.0)))){
-            throw new ContextualError("division by zero not allowed", this.getLocation());
+        // // Check if the operation is division and the divisor is 0
+        // if (this instanceof Divide && ((this.getRightOperand().getClass() == IntLiteral.class && ((IntLiteral) this.getRightOperand()).getValue() == 0)
+        //                                     || ( this.getRightOperand().getClass() == FloatLiteral.class &&  (((FloatLiteral) this.getRightOperand()).getValue() == 0.0)))){
+        //     throw new ContextualError("division by zero not allowed", this.getLocation());
 
-        }
+        // }
 
         if (this instanceof Divide) {
             if(t2.isInt()){
