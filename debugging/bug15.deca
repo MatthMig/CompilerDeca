@@ -1,0 +1,36 @@
+// codegen/valid
+
+class A {
+  protected int x = init_x();
+
+  int init_x() {
+    return 1;
+  }
+  
+}
+
+class B extends A {
+  
+  boolean equals(Object o) {
+    if (o instanceof C) {
+      return x==(C)(o).x;
+    }
+    return this==o;
+  }
+  
+}
+
+class C extends B {
+  int init_x() {
+    return 7;
+  }
+}
+
+{
+  A a = new C(), b = new C();
+  if (a.equals(b)) {
+    println("OK");
+  } else {
+    println("KO");
+  }
+}

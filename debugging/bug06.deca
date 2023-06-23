@@ -1,0 +1,23 @@
+// test context/invalid en Deca!
+
+class A {
+  int p() { 
+    return 0;
+  }
+  void p(int b) {
+    println(p(),"=",b);
+  }
+}
+
+class B extends A {
+  int p() {
+    return 1;
+  }
+}
+
+{
+  A a = new A();
+  A b = new B();
+  a.p(0);
+  b.p(1);
+}

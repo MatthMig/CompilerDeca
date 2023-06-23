@@ -1,0 +1,14 @@
+// test codegen/invalid !
+
+class Ping {
+  Pong pong = new Pong();
+}
+
+class Pong {
+  Ping ping = new Ping();
+}
+
+{
+  Ping ping = new Ping();
+  println("KO: on attend un stack overflow bien propre du programme Deca!");
+}

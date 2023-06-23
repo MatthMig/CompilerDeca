@@ -1,0 +1,42 @@
+// codegen/valid
+
+class A {
+
+  float m() {
+    return 3.14;
+  }
+  
+}
+
+class B { }
+
+class C extends A {
+
+  float m() {
+    return 7;
+  }
+}
+
+{
+  A ac = new C(), aa = new A(), an = null;
+
+  println(ac.m(), "=", 7.0);
+  
+  if (an != null) {
+    println("KO 1");
+  } else {
+    println("OK");
+  }
+  
+  if (null == null) {
+    println("OK");
+  } else {
+    println("KO 2");
+  }
+  
+  if (an instanceof B) {
+    println("KO 3");
+  } else {
+    println("OK");
+  }
+}

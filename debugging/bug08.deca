@@ -1,0 +1,30 @@
+// test codegen/valid !
+
+class Ping {
+  Pong pong = new Pong();
+  
+  void send(int n) {
+    println("ping: ", n);
+    if (n > 0) {
+      pong.ping = this;
+      pong.send(n-1);
+    }
+  }
+}
+
+class Pong {
+  Ping ping;
+  
+  void send(int n) {
+    println("pong: ", n);
+    if (n > 0) {
+      ping.send(n-1);
+    }
+  }
+}
+
+{
+  Ping ping = new Ping();
+  println("C'est parti !");
+  ping.send(10);
+}

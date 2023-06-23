@@ -1,0 +1,23 @@
+// test codegen/valid
+
+class A {
+  int p() { 
+    return 0;
+  }
+  void q(int b) {
+    println(p(),"=",b);
+  }
+}
+
+class B extends A {
+  int p() {
+    return 1;
+  }
+}
+
+{
+  A a = new A();
+  A b = new B();
+  a.q(0);
+  b.q(1);
+}

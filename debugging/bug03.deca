@@ -1,0 +1,8 @@
+{
+  boolean b = true;
+  b || 1/0==0;
+  println("OK");
+  b = false;
+  b || 1/0==0;
+  println("KO: on attend une erreur à l'exec avant ce code");
+}
