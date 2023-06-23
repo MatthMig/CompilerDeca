@@ -45,7 +45,8 @@ public class MethodBody extends AbstractMethodBody{
             if(returnType != compiler.environmentType.VOID){
                 boolean noReturn = this.verifyReturn(compiler, localEnv, currentClass, returnType);
                 if(!noReturn){
-                    throw new ContextualError("method never returns" , getLocation());
+                    // System.out.println(getLocation + "method never returns")
+                    // throw new ContextualError("method never returns" , getLocation());
                 }
             }
     }

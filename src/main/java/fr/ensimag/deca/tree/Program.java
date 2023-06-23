@@ -86,6 +86,11 @@ public class Program extends AbstractProgram {
             compiler.addInstruction(new WSTR("Error : Impossible downcast"));
             compiler.addInstruction(new WNL());
             compiler.addInstruction(new ERROR());
+
+            compiler.addLabel(compiler.getLabelManager().getMethodNeverReturns());
+            compiler.addInstruction(new WSTR("Error : une méthode n'a pas de retour de contexte"));
+            compiler.addInstruction(new WNL());
+            compiler.addInstruction(new ERROR());
         }
     }
 
